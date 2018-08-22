@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SIT Portal Password Change Request</title>
+    <style>
+        div { font-size: 13px; color: black; font-family: Arial, Verdana; }
+        div { margin: 25px 10px; }
+    </style>
+</head>
+<body>
+    <h3> SIT Portal Password Change Request </h3>
+    <div>
+        We are sending this e-mail because we have received a request to reset the password for your SIT portal account.
+        If you did not initiate this request you may simply disregard this email.
+    </div>
+    <div>
+        Click on the following link and follow the instructions to create a new password. If you cannot access the link below
+        you can paste the address into your browser:
+        <div style="margin:40px;">
+            <a href="[emailURL]">[emailURL]</a>
+        </div>
+    </div>
+    <div>
+        For security reasons password resets must be completed within 24 hours of the request or the request will expire.
+        Only one reset request may be outstanding at any time. If multiple requests are made only the most recent
+        will be considered valid.
+    </div>
+    <div>
+        Feel free to contact the Tax Office if you have concerns or questions over the security of your account
+    </div>
+    <div>
+        Thank you.
+    </div>
+    <div style="font-style: italic;font-size: 11px;">
+        (This is an automated e-mail. Please do not reply.)
+    </div>
+</body>
+</html>

@@ -1,0 +1,240 @@
+
+<div class="payment-summary">
+	<h2> Payment Verification </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<div class="user-notification">
+		<div class="summary-text">
+			<h3 style="margin-top:0px;"> Please review the payment information below </h3>
+		</div>
+		<br>
+
+			<!--
+			Please review the information below, you will see the amount of taxes that you have 
+			chosen to pay.
+			<br> <br> 
+			-->
+			<div class="user_instructions">
+				If the payment information and amount is correct, click the 
+				<span class="ref-button">Make My Payment</span> button at the bottom of the page.
+				<br> <br>
+                <div ng-if="payment.method.type=='VENDOR'">
+                    You will be redirected to the {{vendor}} website where you will enter your payment method information.
+                </div>
+                <div ng-if="payment.method.type!='VENDOR'">
+                    You will receive a confirmation screen after your information has been submitted.
+                </div>
+			</div>
+	</div>
+
+	<style>
+	</style>
+
+
+	<center>
+	<div style="width:920px;text-align:left;">
+
+	<div style="clear:both;"></div>
+	<div style="width: 920px; float:left;">
+	<div class="payment-summary-block account">
+		<div class="section-header"> PROPERTY PAYMENT INFORMATION </div>
+
+		<div style="margin-bottom: 30px;font-size:13px;">
+			<div class="row" ng-repeat="account in payment.accounts | filter:{showOnSummary: true}">
+				<div ng-if="$index > 0" class="separator"></div>
+
+				<div class="entry">
+						<div class="owner">
+							<div ng-if="config.accountDetailUrl">
+								<a href="{{config.accountDetailUrl}}{{account.account}}"> {{account.account}} </a> <br>
+							</div>
+							<div ng-if="!config.accountDetailUrl" style="color:darkblue;font-weight:bold;margin-bottom:5px;">
+								{{account.account}} <br>
+							</div>
+
+                            <div style="color:darkgrey;margin-bottom: 5px;">
+                                <span ng-if="account.owner.name.length > 0">{{account.owner.name}}<br></span>
+                                <span ng-if="account.owner.address1.length > 0">{{account.owner.address1}}<br></span>
+                                <span ng-if="account.owner.address2.length > 0">{{account.owner.address2}}<br></span>
+                                <span ng-if="account.owner.address3.length > 0">{{account.owner.address3}}<br></span>
+                                <span ng-if="account.owner.city.length > 0">{{account.owner.city}}</span>
+                                <span ng-if="account.owner.city.length > 0 && account.owner.state.length > 0">, </span>
+                                <span ng-if="account.owner.state.length > 0">{{account.owner.state}}</span>
+                                <span ng-if="account.owner.city.length > 0 || account.owner.state.length > 0"> &nbsp; </span>
+                                <span ng-if="account.owner.zipcode.length > 0">{{account.owner.zipcode}}</span>
+                            </div>
+
+                            <div ng-if="account.description" style="color:darkblue;font-weight:bold;">
+                                {{account.description}}
+                            </div>
+						</div>
+						<div class="account-payment">
+							<table class="payment-account" border=0>
+							<tr>  <th> This is the amount you owe: </th> <td> {{account.amountDue | currency}} </td> </tr>
+							<tr div ng-if="account.paymentYear.length > 0">  <th> Apply payment to year: </th> <td style="font-weight: bold;"> {{account.paymentYear}} </td> </tr>
+							<tr ng-if="!account.lienPayment">  <th> Payment Amount: </th> <td style="font-weight: bold;"> {{account.paymentAmount | currency}} </td> </tr>
+							<tr ng-if="account.lienPayment">  <th> Lien Payment Amount</th> <td style="font-weight: bold;"> {{account.paymentAmount | currency}} </td> </tr>
+							<tr ng-hide="true">  <th> Payment Type </th> <td style="font-weight: bold;"> {{account.paymentType}} </td> </tr>
+							</table>
+						</div>
+				</div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div>
+	</div>
+
+	<div style="clear:both;"></div>
+	<div style="width: 450px; margin-right:20px; float:left;">
+		<div class="payment-summary-block amount">
+			<div class="section-header"> PAYMENT SUMMARY </div>
+
+			<div ng-if="payment.amount.fee > 0">
+				<table class="payment-metadata amount" border=0>
+					<caption> This is the amount you are paying </caption>
+					<tr> <th> Tax Amount: </th> <td> {{payment.amount.tax | currency}} </td> </tr>
+					<tr> <th> Fee Amount: </th> <td> {{payment.amount.fee | currency}} </td> </tr>
+				</table>
+				<table class="payment-metadata amount" border=0 style="margin-top:5px;">
+					<tr> <th> Total Payment Amount: </th> 
+						<td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> 
+					</tr>
+				</table>
+			</div>
+
+			<div ng-if="payment.amount.fee == 0">
+				<table class="payment_metadata amount" border=0>
+					<caption> This is the tax amount you are paying </caption>
+					<tr> <th> Total Tax Payment Amount: </th> <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> </tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div style="width: 450px; float:left;">
+		<div class="payment-summary-block method">
+			<div class="section-header"> PAYMENT METHOD </div>
+			<div ng-if="payment.method.type=='vendor'">
+                <div class="user-notification" style="font-weight: normal;margin-top:0px;padding:0px 5px;color: red; font-size: 1.1em; text-align: left;"> 
+                    Your payment will be processed by {{payment.method.displayName}}
+                    <div style="margin-top:15px;font-size:13px;font-weight:bold;color:darkblue;">{{payment.method.displayName}} charges a convenience fee for this service</div>
+                    <div ng-repeat="rate in payment.fees">
+                        <div style="margin-top:8px;font-size:13px;font-weight:bold;xcolor:darkblue;">
+                            <span ng-if="rate.amount">
+                                <span ng-if="rate.amount > 0">
+                                {{rate.name}} convenience fee is {{rate.amount | currency}} 
+                                </span>
+                                <span ng-if="rate.amount == 0">
+                                {{rate.name}} payments are not charged a convenience fee
+                                </span>
+                            </span>
+                            <span ng-if="rate.rate">
+                            {{rate.name}} convenience fee is {{rate.rate*100 | number:2}}% of your tax payment amount 
+                            </span>
+                        </div>
+                    </div>
+                    <div style="margin:15px 0px 25px 0px;">
+                        <div style="margin-top:15px;font-size:13px;font-weight:bold;color:darkblue;">
+                            Estimated Fee Amounts for your payment:
+                        </div>
+                        <div ng-repeat="rate in payment.fees">
+                            <div style="display:inline-block;width:185px; text-align:left;font-weight:bold;margin-left:25px;margin-top:10px;">
+                                <span style='font-weight:normal;font-style:italic;padding-right:5px;'>If paying by</span>
+                                {{rate.name}}:
+                            </div> 
+                            <div style="display:inline-block; width:75px; text-align:right;font-weight:normal;">
+                                {{rate.fee | currency}}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="color:darkblue;">
+                        Press the 
+                        <span ng-if="payment.method.type!='PDS'" class="ref-button">Make My Payment</span> 
+                        button at the bottom of the page to select your method of payment.
+                    </div>
+                </div>
+			</div>
+
+			<div ng-if="payment.method.type=='EC'">
+				<!--<div class="section-header"> BANK ACCOUNT INFORMATION </div>-->
+
+				<table class="payment-metadata" border=0>
+					<caption> Payment will be charged to this Bank Account </caption>
+					<tr>  <th> Payment Method: </th> <td> ECheck </td> </tr>
+					<tr>  <th> Bank Name: </th> <td> Bank of America </td> </tr>
+					<tr>  <th> Routing&nbsp;Number: </th> <td> {{payment.method.routingNumber}} </td> </tr>
+					<tr>  <th> Checking&nbsp;Account&nbsp;Number: </th> <td> {{payment.method.accountNumber}} </td> </tr>
+				</table>
+			</div>
+
+			<div ng-if="payment.method.type=='CC'">
+				<!--<div class="section-header"> CREDIT CARD INFORMATION </div>-->
+
+				<table class="payment-metadata" border=0>
+					<caption> Payment will be charged to this Credit Card </caption>
+					<tr>  <th> Payment Method: </th> <td> Credit Card </td> </tr>
+					<tr ng-if="payment.method.cardType">  <th> Card Type: </th> <td> {{payment.method.cardType}} </td> </tr>
+					<tr>  <th> Account&nbsp;Number: </th> <td> {{payment.method.cardNumber}} </td> </tr>
+					<tr>  <th> CVC/CVV: </th> <td> {{payment.method.cvc}} </td> </tr>
+					<tr>  <th> Expiration: </th> 
+							<td> {{payment.method.expiryMonth}}  /  {{payment.method.expiryYear}} </td> 
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div style="clear:both;"></div>
+
+
+
+	<div style="clear:both;"></div>
+	<div style="width: 920px;float:left;">
+	<div class="payment-summary-block contact">
+		<div class="section-header"> CONTACT INFORMATION </div>
+		<table class="payment-metadata" border=0>
+		<tr> <th> Name: </th> <td> {{payment.contact.name}} </td> </tr>
+		<tr> <th> Address: </th> <td> {{payment.contact.street}} </td> </tr>
+		<tr> <th> City: </th> <td> {{payment.contact.city}} </td> </tr>
+
+		<tr ng-if="payment.contact.state.length > 0"> <th> State: </th> <td> {{payment.contact.state}} </td> </tr>
+		<tr ng-if="payment.contact.zipcode.length > 0"> <th> Zip Code: </th> <td> {{payment.contact.zipcode}} </td> </tr>
+		<tr ng-if="payment.contact.country.length > 0"> <th> Country: </th> 
+			<td> <div ng-if="payment.contact.country.length == 0">United States</div>
+				<div ng-if="payment.contact.country.length > 0">{{payment.contact.country}}</div>
+			</td> 
+		</tr>
+
+		<tr> <td>&nbsp;</td></tr>
+		<tr ng-if="payment.contact.email.length > 0"> <th> Email&nbsp;Address: </th> <td> {{payment.contact.email}} </td> </tr>
+		<tr ng-if="payment.contact.phone.length > 0"> <th> Phone&nbsp;Number: </th> <td> {{payment.contact.phone}} </td> </tr>
+		<tr> <td style="height:4px;line-height:4px;">&nbsp;</td></tr>
+
+		</table>
+	</div>
+	</div>
+	<div style="clear:both;"></div>
+
+	</div>
+	</center>
+
+	<div ng-if="payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+		</div>
+	</div>
+
+	<div class="user-notification">
+		To avoid multiple payments please click only once
+	</div>
+	<div id="option-block">
+		<button ng-click="processPayment()"> Make My<br>Payment </button>
+		<button ng-click="reenterInformation()"> Change Payment<br>Information </button>
+		<button ng-if="config.accountSearchUrl" ng-click="newSearch()"> I've Changed<br>My Mind </button>
+		<br><br>
+	</div>
+	<br><br><br>
+</div>

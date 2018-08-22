@@ -1,0 +1,162 @@
+<%!
+public class PostbackNotice {
+    public PostbackNotice() {}
+
+    public String    server            = "";
+    public String    contextPath       = "";
+    public String    servletPath       = "";
+    public String    remoteAddr        = "";
+    public String    remoteHost        = "";
+
+    public String    vendor            = "Unknown";
+
+    public String    clientId          = null;
+    public String    account           = null;
+    public String    ownerNo           = null;
+
+    public boolean   isVoid            = false;
+    public String    rptid             = null;
+
+    public String    transactionMode   = null;
+    public String    paymentChannel    = null;
+    public String    ptid              = null;
+    public String    paymentDate       = null;
+    public String    method            = null;
+    public double    amount            = 0.0;
+
+    public String    name              = null;
+    public String    street            = null;
+    public String    city              = null;
+    public String    state             = null;
+    public String    zipcode           = null;
+    public String    country           = null;
+
+    public String    phone             = null;
+    public String    email             = null;
+
+    public boolean   isVoid() { return isVoid; }
+    public boolean   isSuccessful() { return ! isVoid; }
+
+    public String toString() {
+        return toString(false);
+    }
+
+    public String toString(boolean includeHeader) {
+        StringBuffer buffer = new StringBuffer();
+
+        //TID/ACCOUNT      DateTime         Type  Mode     Channel     Amount PTID             RPTID
+        //TID1510854       20170125         CC    CREDIT   ADMIN     7,610.03 GALPRT000220253  GALPRT000220227
+        //1234567890123456 1234567890123456 12345 12345678 1234567 1234567890 1234567890123456 1234567890123456
+
+        if ( includeHeader ) {
+            buffer.append(String.format("%-9s %-8s %-7s %-8s %-20s %-5s %10s %-16s %-16s",
+                                        "Client",
+                                        "Mode",
+                                        "Channel",
+                                        "TID",
+                                        "DateTime",
+                                        "Type",
+                                        "Amount",
+                                        "PTID",
+                                        (isDefined(rptid) ? "RPTID" : "")
+                                        ).trim()
+                        );
+            buffer.append("\n");
+        }
+        buffer.append(String.format("%-9s %-8s %-7s %-8s %-20s %-5s %10s %-16s %-16s",
+                                    nvl(clientId,"-----"),
+                                    nvl(transactionMode,"-----"),
+                                    nvl(paymentChannel,"-----"),
+                                    nvl(account,"No TID"),
+                                    nvl(paymentDate,"No Date"),
+                                    nvl(method,"--"),
+                                    (new DecimalFormat("###,##0.00")).format(amount),
+                                    nvl(ptid,"No PTID"),
+                                    (isDefined(rptid) ? rptid : "")
+                                    ).trim()
+                    );
+        //buffer.append("\n");
+
+        return buffer.toString();
+    }
+
+    public String maxLen(String value, int length) {
+        if ( value != null && value.length() > length ) 
+            value = value.substring(0, length);
+        return value;
+    }
+
+    public PostbackNotice setAccount(String clientId, String account, String ownerNo) {
+        this.clientId = clientId;
+        this.account  = account;
+        this.ownerNo  = ownerNo;
+
+        return this;
+    }
+    public PostbackNotice setAccount(String clientId, String account) {
+        this.clientId = clientId;
+        this.account  = account;
+        this.ownerNo  = null;
+
+        return this;
+    }
+
+    public PostbackNotice setPayment(String vendor, String paymentChannel, String ptid, String paymentDate, String method, double amount) {
+        this.vendor         = vendor;
+        this.paymentChannel = paymentChannel;
+        this.ptid           = ptid;
+        this.paymentDate    = paymentDate;
+        this.method         = ("EC".equals(method) || "ACH".equals(method) ? "EC" : "CC");
+        this.amount         = Math.max(amount,0.0);
+
+        return this;
+    }
+    public PostbackNotice setPayer(String name, String street, String city, String state, String zipcode, String country) {
+        this.name           = maxLen(name,40);
+        this.street         = maxLen(street,40);
+        this.city           = maxLen(city,24);
+        this.state          = maxLen(state,2);
+        this.zipcode        = maxLen(zipcode,12);
+        this.country        = maxLen(country,40);
+
+        return this;
+    }
+    public PostbackNotice setContact(String phone, String email) {
+        this.phone          = maxLen(phone,20);
+        this.email          = maxLen(email,60);
+
+        return this;
+    }
+
+    public PostbackNotice setRequestContext(javax.servlet.http.HttpServletRequest request) {
+        return setRequestContext(request.getServerName(),
+                                request.getContextPath(), request.getServletPath(),
+                                request.getRemoteAddr(), request.getRemoteHost());
+    }
+
+    public PostbackNotice setRequestContext(String server, 
+                                               String contextPath, String servletPath,
+                                               String remoteAddr, String remoteHost) {
+        this.server         = server;
+        this.contextPath    = contextPath;
+        this.servletPath    = servletPath;
+        this.remoteAddr     = remoteAddr;
+        this.remoteHost     = remoteHost;
+
+        return this;
+    }
+
+    public boolean isDefined(String val) { return val != null && val.length() > 0; }
+    public boolean notDefined(String val) { return val == null || val.length() == 0; }
+    public String nvl(String val) { 
+        return (val == null ? "" : val); 
+    }
+    public String nvl(String val, String def) { 
+        return (val == null || val.length() == 0 ? def : val); 
+    }
+
+    public double nvl(String val, double def) { 
+        try { return Double.parseDouble(val); } catch (Exception ignore) {} return def; 
+    }
+}
+%>

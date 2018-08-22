@@ -1,0 +1,195 @@
+<%!
+// ------------------- Transaction Record Classes ---------------------------------
+public class Transaction {
+    public Transaction() {}
+
+    String clientId     = null;
+    String tid          = null;
+    String ptid         = null;
+    String rptid        = null;
+    String paymentDate  = null;
+    String method       = null;
+    String status       = null;
+    String name         = null;
+    double amount       = 0.0;
+
+    TransactionAccount[]    accounts    = null;
+
+    DecimalFormat amountFormat = new DecimalFormat("###,##0.00");
+
+    public String toString(Transaction[] transactions) {
+        StringBuffer buffer = new StringBuffer();
+
+        if ( transactions != null && transactions.length > 0 ) {
+            buffer.append(transactions[0].toString(true));
+            if ( transactions.length > 1 ) {
+                for ( int i=1; i < transactions.length; i++ ) {
+                    buffer.append("\n");
+                    buffer.append(transactions[i].toString());
+                }
+            }
+        }
+
+        return buffer.toString();
+    }
+    public String toString() {
+        return toString(false);
+    }
+    public String toString(boolean includeHeader) {
+        StringBuffer buffer = new StringBuffer();
+        int total = 0;
+
+        if ( accounts == null || accounts.length == 0 ) {
+            if ( includeHeader || true ) {
+                buffer.append(String.format("%-8s %-16s %-5s %10s %-16s %-16s",
+                                        "TID",
+                                        "DateTime",
+                                        "State",
+                                        "Amount",
+                                        "PTID",
+                                        (isDefined(rptid) ? "RPTID" : "")
+                                        ).trim()
+                            );
+                buffer.append("\n");
+            }
+            buffer.append(String.format("%-8s %-16s %-2s %-2s %10s %-16s %-16s",
+                                        tid,
+                                        paymentDate,
+                                        method,
+                                        status,
+                                        amountFormat.format(amount),
+                                        nvl(ptid), 
+                                        nvl(rptid)
+                                        ).trim()
+                            );
+            buffer.append("\n");
+        } else {
+            if ( includeHeader || true ) {
+                buffer.append(String.format("%-8s %-16s %-5s %-3s %-20s %-4s %-9s %10s %-16s %-16s",
+                                        "TID",
+                                        "DateTime",
+                                        "State",
+                                        "SID",
+                                        "Account",
+                                        "Year",
+                                        "Month",
+                                        "Amount",
+                                        "PTID",
+                                        (isDefined(rptid) ? "RPTID" : "")
+                                        ).trim()
+                            );
+                buffer.append("\n");
+            }
+            buffer.append(String.format("%-8s %-16s %-2s %-2s ",
+                                        tid,
+                                        paymentDate,
+                                        method,
+                                        status
+                                        )
+                            );
+            buffer.append(String.format("%3s %-20s %-4s %-9s %10s ",
+                                        accounts[0].sid,
+                                        accounts[0].account,
+                                        nvl(accounts[0].year),
+                                        nvl(accounts[0].month),
+                                        amountFormat.format(accounts[0].amount)
+                                        )
+                            );
+            buffer.append(String.format("%-16s %-16s", nvl(ptid), nvl(rptid)).trim());
+            buffer.append("\n");
+
+            total = (int) (accounts[0].amount*100);
+            for ( int i=1; i < accounts.length; i++ ) {
+                total += (int) (accounts[i].amount*100);
+                buffer.append(String.format("%32s%2s %-20s %-4s %-9s %10s\n",
+                                            "",
+                                            accounts[i].sid,
+                                            accounts[i].account,
+                                            accounts[i].year,
+                                            accounts[i].month,
+                                            amountFormat.format(accounts[i].amount)
+                                            )
+                                );
+            }
+
+            if ( accounts.length > 1 ) {
+                buffer.append("\n");
+                buffer.append(String.format("%57sTotal: %10s\n", "", 
+                                amountFormat.format(((double)total)/100)));
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    public String nvl(String value) { return (value == null ? "" : value); }
+    public boolean isDefined(String val) { return val != null && val.length() > 0; }
+}
+
+public class TransactionAccount {
+    public TransactionAccount() {}
+
+    DecimalFormat amountFormat = new DecimalFormat("###,##0.00");
+
+    String clientId     = null;
+    String tid          = null;
+    String ptid         = null;
+    String rptid        = null;
+    String paymentDate  = null;
+    String method       = null;
+    String status       = null;
+    String name         = null;
+    double amount       = 0.0;
+
+    String sid          = null;
+    String account      = null;
+    String year         = null;
+    String month        = null;
+
+    public String nvl(String value) { return (value == null ? "" : value); }
+    public boolean isDefined(String val) { return val != null && val.length() > 0; }
+    public boolean notDefined(String val) { return val == null || val.length() == 0; }
+    public String toString() {
+        return toString(false);
+    }
+    public String toString(boolean includeHeader) {
+        StringBuffer buffer = new StringBuffer();
+
+        if ( includeHeader || true ) {
+            buffer.append(String.format("%-8s %-16s %-5s %-3s %-20s %-4s %-9s %10s %-16s %-16s",
+                                    "TID",
+                                    "DateTime",
+                                    "State",
+                                    "SID",
+                                    "Account",
+                                    "Year",
+                                    "Month",
+                                    "Amount",
+                                    "PTID",
+                                    (isDefined(rptid) ? "RPTID" : "")
+                                    ).trim()
+                        );
+            buffer.append("\n");
+        }
+        buffer.append(String.format("%-8s %-16s %-2s %-2s ",
+                                    tid,
+                                    paymentDate,
+                                    method,
+                                    status
+                                    )
+                        );
+        buffer.append(String.format("%3s %-20s %-4s %-9s %10s ",
+                                    sid,
+                                    account,
+                                    nvl(year),
+                                    nvl(month),
+                                    amountFormat.format(amount)
+                                    )
+                        );
+        buffer.append(String.format("%-16s %-16s", nvl(ptid), nvl(rptid)).trim());
+        buffer.append("\n");
+
+        return buffer.toString();
+    }
+}
+%>

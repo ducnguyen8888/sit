@@ -1,0 +1,3 @@
+update sit_sales
+set sale_type = 'VM'
+where sale_type = 'VTM';

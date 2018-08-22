@@ -1,0 +1,37 @@
+<!--
+    DN-PRC 194328-12/1/2017
+        Create a pop up window for reference id message
+-->
+<div>
+    <button type="button"  data-toggle="modal" data-target="#myModal">Select Payment Method</button>
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+    <div style="position: absolute; top:250px; bottom: 0; left:0; right:0; margin: auto; width: 500px;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">PAYMENT REFERENCE INFORMATION </h4>
+        </div>
+        <div class="modal-body">
+          <p style="font-weight: bold;color: red;">
+            Please make a note of this Reference ID Number.<br>
+            You will need it later if paying by eCheck.<br><br>
+          </p>
+          <p><strong>Reference ID: {{payment.reference.tid}}</strong></p>
+        </div>
+        <div class="modal-footer">
+            <form action="https://www.payconnexion.com/pconWeb/epay.jhtml" method="post">
+                <input type="hidden" name="billerPayorId" value="{{payment.reference.tid}}">
+                <input type="hidden" name="productCode" value="TaxPayment"> 
+                <input type="hidden" name="amountDue" value="{{payment.amount.total}}">
+                <input type="hidden" name="iDealerNumber" value="{{payment.reference.tid}}">
+                <input type="hidden" name="billerId" value="{{processorParam.biller}}">
+                <input type="hidden" name="billerGroupId" value="{{processorParam.billerGroup}}">
+                <input type="hidden" name="disallowLogin" value="Y">
+                <!--<input type="submit" ng-click = "alertReferenceId()" value="Select Payment Method">-->
+                <input type="submit"  value="OK"/>
+             </form>
+        </div>
+      </div>
+    </div>
+  </div>
+

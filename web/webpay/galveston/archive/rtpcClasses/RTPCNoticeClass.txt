@@ -1,0 +1,745 @@
+<%!
+public class RTPCNotice extends Thread {
+	private static final long serialVersionUID = 1;
+    public RTPCNotice(javax.servlet.http.HttpServletRequest request,
+            String datasource, PostbackNotice notice) {
+        summaryLog.append(requestSummary(request, datasource));
+
+        noticeReceived  = System.currentTimeMillis();
+        postbackNotice  = notice;
+        this.datasource = datasource;
+
+        summaryLog.append("Client: ");
+        summaryLog.append(postbackNotice.clientId);
+        if ( postbackNotice.clientId != null && clients.containsKey(postbackNotice.clientId) )
+            summaryLog.append(" - " + (String)clients.get(postbackNotice.clientId));
+        summaryLog.append("\n\n");
+
+        summaryLog.append("Parameters:\n");
+        summaryLog.append(listParameters(request));
+        summaryLog.append("\n\n");
+
+        summaryLog.append("Notice:\n");
+        summaryLog.append(postbackNotice.toString());
+        summaryLog.append("\n\n");
+
+        detailLog.append("Debug:\n");
+        trace("Notice received:\n"
+                + postbackNotice.toString(true) + "\n");
+
+        logNotice(notice, listParameters(request));
+    }
+    public void logNotice(PostbackNotice notice, String comment) {
+        transactionLog.info("Notice received: " 
+                + notice.clientId + "-" + logIdentifier + "\n"
+                + comment + "\n"
+                + notice.toString(true) + "\n");
+    }
+    public void logCompletion(PostbackNotice notice, String comment) {
+        transactionLog.info("Notice processed: " 
+                + notice.clientId + "-" + logIdentifier + "\n"
+                + comment + "\n"
+                + this.toString() + "\n");
+    }
+
+
+    public String requestSummary(javax.servlet.http.HttpServletRequest request) {
+        return requestSummary(request,null);
+    }
+    public String requestSummary(javax.servlet.http.HttpServletRequest request, String datasource) {
+        StringBuffer buffer = new StringBuffer();
+
+        try {
+            buffer.append("Server: " + server + "\n");
+            buffer.append("Action: " + request.getRequestURL() + "\n");
+            String ipAddress = request.getRemoteAddr();
+            if ( ! ipAddress.equals(request.getRemoteHost()) )
+                ipAddress += " - " + request.getRemoteHost();
+            buffer.append("IPAddr: " + ipAddress + "\n");
+            if ( datasource != null && datasource.length() > 0 ) {
+                String databaseName = "*unknown*";
+                try {
+                    databaseName = Connect.getName(datasource);
+                } catch (Exception ignore) {
+                }
+                buffer.append("DBName: " + datasource + "  (" + databaseName + ")\n");
+            }
+        } catch (Exception ignore) {
+        }
+
+        return buffer.toString();
+    }
+
+    public String server = "";
+    {   try {
+            server = java.net.InetAddress.getLocalHost().toString();
+        } catch (Exception ignore) {
+        }
+    }
+    public Map clients = new HashMap();
+    {   try {
+            clients.put("7580", "Dallas");
+        } catch (Exception ignore) {
+        }
+    }
+    public boolean isDefined(String val) { return val != null && val.length() > 0; }
+    public boolean notDefined(String val) { return val == null || val.length() == 0; }
+
+    public void run() {
+        process();
+    }
+    public String toString() {
+        return summaryLog.toString()
+                + detailLog.toString()
+                + "\n"
+                + " Created: " + (noticeReceived == 0 ? "" : (new java.util.Date(noticeReceived)).toString()) + "\n"
+                + " Started: " + (processingStarted == 0 ? "Not started" : (new java.util.Date(processingStarted)).toString()) + "\n"
+                + "Finished: " + (processingCompleted == 0 ? "" : (new java.util.Date(processingCompleted)).toString()) + "\n"
+                + (duration() > 0 ? "Duration: " + duration() + " ms\n" : "");
+    }
+    public void sendEmail() {
+        try {
+            EMail.sendHtml("ChaseSitPayment@lgbs.com","Scott.Shike@lgbs.com",
+                            "Chase payment postback received",
+                            "<pre>" + toString() + "</pre>");
+            trace("Email sent");
+        } catch (Exception e) {
+            trace("Failed to send Email:\n" + e.toString());
+        }
+    }
+
+    StringBuffer summaryLog = new StringBuffer();
+    StringBuffer detailLog  = new StringBuffer();
+
+    boolean         commitChanges           = false;
+    boolean         reportOnly              = true;
+
+    String          logIdentifier           = ""+System.currentTimeMillis();
+    String          datasource              = null;
+    PostbackNotice  postbackNotice          = null;
+
+    Transaction[]   transactionsMatched     = null;
+    Transaction[]   finalTransactions       = null;
+
+    ChaseLog        transactionLog          = new ChaseLog();
+
+    public long noticeReceived      = 0;
+    public long processingStarted   = 0;
+    public long processingCompleted = 0;
+    public long duration() { 
+        return (processingStarted == 0 
+                        ? 0
+                        : (processingCompleted == 0 
+                                    ? 0
+                                    : (processingCompleted-processingStarted)
+                           )
+                );
+    }
+    public String timestamp()  { return (new java.util.Date()).toString(); }
+    public void trace(String msg) { detailLog.append(timestamp() + ": " + msg + "\n"); }
+    public void process() {
+        Connection conn = null;
+        long        start                   = System.currentTimeMillis();
+
+        Exception   executionError          = null;
+        Exception   executionWarning        = null;
+        Exception   executionNotice         = null;
+
+        ArrayList   updatedTransactions     = new ArrayList();
+
+
+        try {
+            processingStarted = System.currentTimeMillis();
+
+            trace("Connect to database: " + datasource);
+            conn = Connect.open(datasource);
+            conn.setAutoCommit(false);
+
+            trace("Searching for matching transactions");
+            transactionsMatched = findMatchingTransactions(conn, postbackNotice);
+            if ( transactionsMatched == null || transactionsMatched.length == 0 ) {
+                trace("Failed to match any existing transactions");
+                if ( postbackNotice.isVoid() ) {
+                    throw new WarningException("Void notice received but failed to find matching transaction");
+                } else if ( postbackNotice.isSuccessful() ) {
+                    throw new MustAddressException("Success notice received but no matching transaction was found, need to create NYI");
+                } else {
+                    throw new InfoException("Failure notice received but failed to find matching transaction, ignoring");
+                }
+            }
+            if ( transactionsMatched.length == 1 ) {
+                trace("1 matching transaction found:\n" + transactionsMatched[0].toString());
+            } else {
+                trace(transactionsMatched.length + " matching transactions found:\n" 
+                    + transactionsMatched[0].toString(transactionsMatched));
+            }
+
+
+            // Since this is a VOID we will need to manage it very carefully. We may have
+            // several transactions that match and we want to void the correct one.
+            // We're assuming that the matched transactions are in reverse order
+            // (most recent first), this will allow us to catch the possible error where
+            // a notice was incorrectly entered as a successful payment.
+            if ( postbackNotice.isVoid() ) {
+                // If there isn't a PTID then we won't process the void since we
+                // can't be sure we have the correct transaction, instead of just one
+                // that happens to match.
+                if ( notDefined(postbackNotice.ptid) ) {
+                    trace("Error: Void received but no PTID defined, invalid notice");
+                    throw new MustAddressException("Failed to void transaction, no notice PTID defined\n");
+                }
+
+                String voidIdPattern = "(" + postbackNotice.ptid + "|" + postbackNotice.rptid + ")";
+
+                // Loop through each of our matching transactions until we handle only the
+                // specific ones we need to.
+                for ( Transaction transactionToVoid : transactionsMatched ) {
+                    trace("VOID - Checking transaction " + transactionToVoid.tid);
+                    if ( notDefined(transactionToVoid.ptid) ) {
+                        trace("VOID - Transaction has no PTID, skipping");
+                        continue;
+                    }
+
+                    if ( Pattern.matches(voidIdPattern,transactionToVoid.ptid) ) {
+                        trace("VOID - Matching PTID found, voiding");
+                        if ( "VO".equals(transactionToVoid.status) ) {
+                            summaryLog.append("IGNORE:  Matching transaction " + transactionToVoid.tid + " already voided\n");
+                            trace("VOID - Transaction already voided\n" + transactionToVoid.toString());
+                            continue;
+                        }
+                        if ( "CI".equals(transactionToVoid.status) ) {
+                            summaryLog.append("IGNORE:  Matching transaction " + transactionToVoid.tid + " already deleted");
+                            summaryLog.append((postbackNotice.ptid.equals(transactionToVoid.ptid) ? " - void notice transaction" : "") + "\n");
+                            trace("VOID - Transaction already deleted\n" + transactionToVoid.toString());
+                            continue;
+                        }
+                        if ( "RT".equals(transactionToVoid.status) ) {
+                            summaryLog.append("IGNORE:  Matching transaction " + transactionToVoid.tid + " already posted");
+                            summaryLog.append((postbackNotice.ptid.equals(transactionToVoid.ptid) ? " - void notice transaction" : "") + "\n");
+                            trace("VOID - Transaction already posted\n" + transactionToVoid.toString());
+                            continue;
+                        }
+                        // If SB void to prevent future approval updates
+
+                        // Transaction should be AP or SB
+                        try {
+                            updatedTransactions.add(transactionToVoid);
+                            voidNotice(conn, postbackNotice, transactionToVoid);
+                            summaryLog.append("Success:  Transaction voided");
+                            summaryLog.append((postbackNotice.ptid.equals(transactionToVoid.ptid) ? " - void notice transaction" : "") + "\n");
+                            trace("VOID - Transaction successfully voided");
+                        } catch (InfoException informational) {
+                            trace("Informational: Transaction void failed: " + informational.getMessage());
+                            summaryLog.append("INFORM:  Transaction void failed\n");
+                        } catch (WarningException warning) {
+                            trace("Warning: Failed to void transaction: " + warning.getMessage());
+                            summaryLog.append("WARNING: Void based transaction, Failed to void\n");
+                        } catch (Exception exception) {
+                            summaryLog.append("Error:  Failed to void transaction");
+                            trace("Error: Failed to void transaction: " + exception.getMessage());
+                            summaryLog.append("ERROR:   Void based transaction, Failed to void\n");
+                        }
+                    }
+
+                    if ( true ) continue;
+                }
+
+                boolean transactionVoided = true;
+                // Since we reviewed potentially several transactions we need to verify if
+                // we were able to successful void the target transaction or not
+                if ( ! transactionVoided ) {
+                    throw new MustAddressException("Failed to void transaction, original transaction not found\n");
+                }
+            } else if ( postbackNotice.isSuccessful() ) {
+                updatedTransactions.add(transactionsMatched[0]);
+                successNotice(conn, postbackNotice, transactionsMatched[0]);
+                summaryLog.append("Success:  Transaction updated\n");
+            } else {
+                updatedTransactions.add(transactionsMatched[0]);
+                failureNotice(conn, postbackNotice, transactionsMatched[0]);
+                summaryLog.append("Success:  Transaction flagged as failed\n");
+            }
+
+            if ( ! commitChanges ) {
+                trace("Executing rollback - undoing changes");
+                summaryLog.append("Revert:  Rolling transaction back - Undoing all changes\n");
+                conn.rollback();
+            }
+            conn.commit();
+        } catch (InfoException informational) {
+            trace("Informational: " + informational.getMessage());
+            summaryLog.append("Inform:  " + informational.getMessage() + "\n");
+            transactionLog.info(informational.getMessage() + summaryLog.toString() + detailLog.toString());
+            executionNotice = informational;
+        } catch (WarningException warning) {
+            trace("Warning: " + warning.getMessage());
+            summaryLog.append("Warning: " + warning.getMessage() + "\n");
+            transactionLog.warn(warning.getMessage() + summaryLog.toString() + detailLog.toString());
+            executionWarning = warning;
+        } catch (Exception exception) {
+            trace("Error: " + exception.getMessage());
+            summaryLog.append("Error:   " + exception.getMessage() + "\n");
+            executionError = exception;
+        } finally {
+            if ( conn != null ) {
+                try { conn.rollback(); } catch (Exception ignore) {}
+                try { conn.setAutoCommit(true); } catch (Exception ignore) {}
+
+                if ( updatedTransactions != null && updatedTransactions.size() > 0 ) {
+                    try {
+                        finalTransactions = (Transaction[]) updatedTransactions.toArray(new Transaction[0]);
+                        trace("Affected Transactions: " + (finalTransactions == null ? "NULL" : ""+finalTransactions.length));
+                        for ( int i=0; i < finalTransactions.length; i++ ) {
+                            finalTransactions[i] = getTransaction(conn, postbackNotice.clientId, finalTransactions[i].tid);
+                            summaryLog.append("\nFinal Database Record:\n" + finalTransactions[i].toString());
+                            if ( ! commitChanges ) {
+                                trace("Final transaction state:\n" + finalTransactions[i].toString(true));
+                            }
+                        }
+                        summaryLog.append("\n\n");
+                    } catch (Exception ignore) {
+                        trace("Final record exception: " + ignore.toString());
+                    }
+                }
+
+                try { conn.close(); } catch (Exception ignore) {}
+            }
+        }
+
+        if ( executionError != null ) {
+            transactionLog.error(executionError.getMessage() + "\n\n" + summaryLog.toString() + detailLog.toString());
+        } else if ( executionWarning != null ) {
+            transactionLog.warn(executionWarning.getMessage() + "\n\n" + summaryLog.toString() + detailLog.toString());
+        } else if ( executionNotice != null ) {
+            transactionLog.info(executionNotice.getMessage() + "\n\n" + summaryLog.toString() + detailLog.toString());
+        } else {
+            transactionLog.info("Update Successful\n\n" + summaryLog.toString() + detailLog.toString());
+        }
+
+        processingCompleted = System.currentTimeMillis();
+        logCompletion(postbackNotice, "");
+        //sendEmail();
+    }
+// -------------------------------------
+%><%!
+    public String create(Connection conn, PostbackNotice notice, String status) throws Exception {
+        return "Method: create";
+    }
+%><%!
+    public void updateTransaction(Connection conn, String tid, PostbackNotice notice,
+                                    String status, String note) throws Exception {
+        PreparedStatement   ps              = null;
+
+        //-- create
+        //least(nvl(to_date(?,'mm/dd/yy') + (sysdate-trunc(sysdate)),sysdate),sysdate)
+
+        if ( reportOnly ) {
+            trace("REPORT-ONLY: Update transaction status: " + status);
+            return;
+        }
+
+        try {
+            ps = conn.prepareStatement(
+                              "update sit_epay "
+                            + "   set status=?, "
+                            + "        note=nvl(?,note), "
+                            + "        ptid=substr(nvl(?,ptid),1,50), "
+                            + "        name=substr(nvl(?,name),1,40), "
+                            + "        address=substr(nvl(?,address),1,40), "
+                            + "        city=substr(nvl(?,city),1,24), "
+                            + "        state=substr(nvl(?,state),1,2), "
+                            + "        zipcode=substr(nvl(?,zipcode),1,12), "
+                            + "        country=substr(nvl(?,country),1,40), "
+                            + "        phone=substr(nvl(?,phone),1,20), "
+                            + "        email=substr(nvl(?,email),1,60), "
+                            + "        paymentdate=least(nvl(to_date(replace(?,'T',' '),'YYYY-MM-DD HH24:MI:SS')-1/24,paymentdate),paymentdate) "
+                            + " where client_id=? and tid=?"
+                        );
+
+            ps.setString( 1, status);
+            ps.setString( 2, note);
+
+            ps.setString( 3, notice.ptid);
+
+            ps.setString( 4, notice.name);
+            ps.setString( 5, notice.street);
+            ps.setString( 6, notice.city);
+
+            ps.setString( 7, notice.state);
+            ps.setString( 8, notice.zipcode);
+            ps.setString( 9, notice.country);
+
+            ps.setString(10, notice.phone);
+            ps.setString(11, notice.email);
+
+            ps.setString(12, notice.paymentDate); // Date format is expected to be '2017-03-01T16:07:05' (EST)
+
+            ps.setString(13, notice.clientId);
+            ps.setString(14, tid);
+
+            if ( ps.executeUpdate() != 1 ) throw new MustAddressException("Failed to update database, 0 rows reported");
+        } catch (Exception exception) {
+            throw exception;
+        } finally {
+            try { ps.close(); } catch(Exception ignore) {}
+        }
+
+        return;
+    }
+%><%!
+
+    public void updatePayer(Connection conn, String tid, PostbackNotice notice) throws Exception {
+        PreparedStatement   ps              = null;
+
+
+        if ( reportOnly ) {
+            trace("REPORT-ONLY: Update payer: " + notice.name);
+            return;
+        }
+
+        try {
+            ps = conn.prepareStatement(
+                              "update sit_epay "
+                            + "        name=substr(nvl(?,name),1,40), "
+                            + "        address=substr(nvl(?,address),1,40), "
+                            + "        city=substr(nvl(?,city),1,24), "
+                            + "        state=substr(nvl(?,state),1,2), "
+                            + "        zipcode=substr(nvl(?,zipcode),1,12), "
+                            + "        country=substr(nvl(?,country),1,40), "
+                            + "        phone=substr(nvl(?,phone),1,20), "
+                            + "        email=substr(nvl(?,email),1,60), "
+                            + "        paymentdate=least(nvl(to_date(replace(?,'T',' '),'YYYY-MM-DD HH24:MI:SS')-1/24,paymentdate),paymentdate) "
+                            + " where client_id=? and tid=?"
+                        );
+
+            ps.setString( 1, notice.name);
+            ps.setString( 2, notice.street);
+            ps.setString( 3, notice.city);
+
+            ps.setString( 4, notice.state);
+            ps.setString( 5, notice.zipcode);
+            ps.setString( 6, notice.country);
+
+            ps.setString( 7, notice.phone);
+            ps.setString( 8, notice.email);
+
+            ps.setString( 9, notice.paymentDate);
+
+            ps.setString(10, notice.clientId);
+            ps.setString(11, tid);
+
+            if ( ps.executeUpdate() != 1 ) throw new MustAddressException("Failed to update payer, 0 rows reported");
+        } catch (Exception exception) {
+            throw exception;
+        } finally {
+            try { ps.close(); } catch(Exception ignore) {}
+        }
+
+        return;
+    }
+%><%!
+// -------------------------------------
+    public Transaction[] findMatchingTransactions(Connection conn, PostbackNotice notice) throws Exception {
+        PreparedStatement   ps              = null;
+        ResultSet           rs              = null;
+        Transaction     transaction     = null;
+        ArrayList           list            = new ArrayList();
+
+        try {
+            boolean fullDatetime = isDefined(notice.paymentDate)
+                    && !notice.paymentDate.matches("^(0-9){4}(-){0,1}(0-9){1,2}(-){0,1}(0-9){1,2}$");
+			ps = conn.prepareStatement(
+					"select tid, client_id as \"clientId\", ptid, "
+                    + "     paytype as \"method\", status, name, amount, "
+                    + "     to_char(paymentdate,'MM/DD/YY HH:MIam') as \"paymentDate\" "
+					+ " from sit_epay "
+                    + " where client_id=? and (tid=? or 'TID'||tid=?) "
+                    + (fullDatetime
+                            ? "   and to_date(replace(?,'T',' '),'YYYY-MM-DD HH24:MI:SS')-1/24 "
+                            : "   and to_date(replace(?,'-',''),'yyyymmdd') "
+                        )
+                    + " between paymentdate-10 and paymentdate+8 "
+					+ "   and (ptid in (?,?) or ptid is null) "
+					+ "   and status in ('SB','??','AP','RT','VO') "
+					+ "   and amount=?"
+                    + " order by tid desc");
+			ps.setString(1, notice.clientId);
+			ps.setString(2, notice.account);
+			ps.setString(3, notice.account);
+			ps.setString(4, notice.paymentDate);
+			ps.setString(5, notice.ptid);
+            ps.setString(6, notice.rptid);
+			ps.setDouble(7, notice.amount);
+
+            rs = ps.executeQuery();
+
+            while ( rs.next() ) {
+                transaction = new Transaction();
+
+                transaction.clientId       = rs.getString("clientId");
+                transaction.tid            = rs.getString("tid");
+                transaction.ptid           = rs.getString("ptid");
+                transaction.paymentDate    = rs.getString("paymentDate");
+                transaction.method         = rs.getString("method");
+                transaction.status         = rs.getString("status");
+                transaction.name           = rs.getString("name");
+                transaction.amount         = Double.parseDouble(rs.getString("amount"));
+
+                //transaction.accounts       = getTransactionAccounts(conn, notice.clientId, transaction.tid);
+                list.add(transaction);
+            }
+        } catch (Exception exception) {
+            //throw exception;
+            trace("--Failed to find: " + exception.toString());
+        } finally {
+            try { rs.close(); } catch(Exception ignore) {}
+            try { ps.close(); } catch(Exception ignore) {}
+        }
+
+        return (Transaction[]) list.toArray(new Transaction[0]);
+    }
+
+
+    public Transaction getTransaction(Connection conn, String clientId, String tid) throws Exception {
+        PreparedStatement   ps              = null;
+        ResultSet           rs              = null;
+        Transaction     transaction     = null;
+
+        try {
+			ps = conn.prepareStatement(
+					"select tid, client_id as \"clientId\", ptid, "
+                    + "     paytype as \"method\", status, name, amount, "
+                    + "     to_char(paymentdate,'MM/DD/YY HH:MIam') as \"paymentDate\" "
+					+ " from sit_epay "
+                    + " where client_id=? and (tid=? or 'TID'||tid=?) "
+                    + " order by tid desc");
+			ps.setString(1, clientId);
+			ps.setString(2, tid);
+			ps.setString(3, tid);
+
+            rs = ps.executeQuery();
+
+            if ( rs.next() ) {
+                transaction = new Transaction();
+
+                transaction.clientId       = rs.getString("clientId");
+                transaction.tid            = rs.getString("tid");
+                transaction.ptid           = rs.getString("ptid");
+                transaction.paymentDate    = rs.getString("paymentDate");
+                transaction.method         = rs.getString("method");
+                transaction.status         = rs.getString("status");
+                transaction.name           = rs.getString("name");
+                transaction.amount         = Double.parseDouble(rs.getString("amount"));
+
+                transaction.accounts       = getTransactionAccounts(conn, clientId, tid);
+            }
+        } catch (Exception exception) {
+            throw exception;
+        } finally {
+            try { rs.close(); } catch(Exception ignore) {}
+            try { ps.close(); } catch(Exception ignore) {}
+        }
+
+        return transaction;
+    }
+
+    public TransactionAccount[] getTransactionAccounts(Connection conn, String clientId, String tid) throws Exception {
+        PreparedStatement       ps      = null;
+        ResultSet               rs      = null;
+        TransactionAccount  account = null;
+        ArrayList               list    = new ArrayList();
+
+        try {
+			ps = conn.prepareStatement(
+					"select tid, epay_sequence as \"sid\", "
+                    + "     client_id as \"clientId\", ptid, "
+                    + "     status, amount, "
+                    + "     can as \"account\", year, month "
+					+ " from sit_epaydtl "
+                    + " where client_id=? and (tid=? or 'TID'||tid=?) "
+                    + " order by epay_sequence asc");
+			ps.setString(1, clientId);
+			ps.setString(2, tid);
+			ps.setString(3, tid);
+
+            rs = ps.executeQuery();
+
+            while ( rs.next() ) {
+                account = new TransactionAccount();
+
+                account.ptid        = rs.getString("ptid");
+                account.sid         = rs.getString("sid");
+                account.status      = rs.getString("status");
+                account.account     = rs.getString("account");
+                account.year        = rs.getString("year");
+                account.month       = rs.getString("month");
+                account.amount      = Double.parseDouble(rs.getString("amount"));
+
+                list.add(account);
+            }
+        } catch (Exception exception) {
+            throw exception;
+        } finally {
+            try { rs.close(); } catch(Exception ignore) {}
+            try { ps.close(); } catch(Exception ignore) {}
+        }
+
+        return (TransactionAccount[]) list.toArray(new TransactionAccount[0]);
+    }
+
+// -------------------------------------
+    public Transaction successNotice(Connection conn, PostbackNotice notice,
+                                            Transaction transaction) throws Exception {
+        if ( transaction == null ) {
+            trace("Success notification, no transaction specified");
+            throw new MustAddressException("No transaction specified, unable to continue");
+        }
+        trace("Processing success notification - TID: " + transaction.tid);
+
+        trace("Checking transaction status");
+        if ( "SB".equals(transaction.status) ) {
+            trace("Current status is 'SB', updating transaction");
+            updateTransaction(conn, transaction.tid, notice, "AP", 
+                                "Approved by postback notice: " + (new java.util.Date()).toString());
+
+            transaction = getTransaction(conn, transaction.clientId, transaction.tid);
+            trace("Transaction approved:\n" + transaction.toString());
+        } else {
+            if ( "AP".equals(transaction.status) ) {
+                if ( (transaction.name != null && transaction.name.length() > 0)
+                    || notice.name == null || notice.name.length() == 0 ) {
+                    trace("Transaction already approved, skipping");
+                    throw new InfoException("Transaction already approved, possible duplicate notice");
+                }
+                trace("Transaction already approved, updating payer information");
+                updatePayer(conn, transaction.tid, notice);
+                transaction = getTransaction(conn, transaction.clientId, transaction.tid);
+            } else if ( "RT".equals(transaction.status) ) {
+                trace("Transaction already posted, skipping");
+                throw new InfoException("Transaction already posted, possible duplicate notice");
+            } else if ( "??".equals(transaction.status) ) {
+                trace("Unable to update transaction, transaction flagged as failed");
+                throw new MustAddressException("Unable to APPROVE transaction, already flagged as failed");
+            } else if ( "VO".equals(transaction.status) ) {
+                trace("Unable to update transaction, transaction has been voided");
+                throw new InfoException("Unable to APPROVE transaction, transaction has been voided");
+            } else if ( "CI".equals(transaction.status) ) {
+                trace("Unable to update transaction, transaction has been deleted");
+                throw new InfoException("Unable to APPROVE transaction, transaction has been deleted");
+            } else {
+                trace("Transaction is in an unexpected status, skipping");
+                throw new InfoException("Unable to APPROVE transaction, transaction in an unknown status: " + transaction.status);
+            }
+        }
+
+        return transaction;
+    }
+%><%!
+
+    public Transaction failureNotice(Connection conn, PostbackNotice notice, 
+                                            Transaction transaction) throws Exception {
+        if ( transaction == null ) {
+            trace("Failure notification, no transaction specified");
+            throw new MustAddressException("No transaction specified, unable to continue");
+        }
+        trace("Processing failure notification - TID: " + transaction.tid);
+
+        trace("Checking transaction status");
+        if ( "SB".equals(transaction.status) ) {
+            trace("Current status is 'SB', updating transaction");
+
+            updateTransaction(conn, transaction.tid, notice, "??",
+                                "Rejected by postback notice: " + (new java.util.Date()).toString());
+            transaction =  getTransaction(conn, transaction.clientId, transaction.tid);
+            trace("Transaction failed:\n" + transaction.toString());
+        } else {
+            if ( "??".equals(transaction.status) ) {
+                trace("Transaction already failed, skipping");
+                throw new InfoException("Transaction already failed, possible duplicate notice");
+            } else if ( "RT".equals(transaction.status) ) {
+                trace("Transaction already posted, skipping");
+                throw new WarningException("Unable to fail transaction, transaction already posted");
+            } else if ( "AP".equals(transaction.status) ) {
+                trace("Unable to fail transaction, transaction flagged as approved");
+                throw new MustAddressException("Unable to FAIL transaction, already flagged as failed");
+            } else if ( "VO".equals(transaction.status) ) {
+                trace("Unable to update transaction, transaction has been voided");
+                throw new WarningException("Unable to FAIL transaction, transaction has been voided");
+            } else if ( "CI".equals(transaction.status) ) {
+                trace("Unable to update transaction, transaction has been deleted");
+                throw new InfoException("Unable to Fail transaction, transaction has been deleted");
+            } else {
+                trace("Transaction is in an unexpected status, skipping");
+                throw new InfoException("Unable to FAIL transaction, transaction in an unknown status: " + transaction.status);
+            }
+        }
+
+        return transaction;
+    }
+%><%!
+
+    public Transaction voidNotice(Connection conn, PostbackNotice notice,
+                                    Transaction transaction) throws Exception {
+        if ( transaction == null ) {
+            trace("Void notification, no trasaction specified");
+            throw new MustAddressException("No transaction specified, unable to continue");
+        }
+        trace("Processing void notification - TID: " + transaction.tid);
+
+        trace("Checking transaction status: " + transaction.status);
+        if ( "AP".equals(transaction.status) ) {
+            trace("Updating transaction");
+
+            updateTransaction(conn, transaction.tid, notice, "VO",
+                                "Voided by postback notice: " + (new java.util.Date()).toString());
+            transaction =  getTransaction(conn, transaction.clientId, transaction.tid);
+            trace("Transaction voided:\n" + transaction.toString());
+        } else {
+            if ( "VO".equals(transaction.status) ) {
+                trace("Transaction already voided, skipping");
+                throw new InfoException("Duplicate notice, transaction already voided - skipping");
+            } else if ( "RT".equals(transaction.status) ) {
+                trace("Transaction already posted, skipping");
+                throw new WarningException("Unable to VOID transaction, already posted");
+            } else if ( "??".equals(transaction.status) ) {
+                trace("Transaction flagged as failed, skipping");
+                throw new InfoException("Unable to VOID transaction, already flagged as failed");
+            } else if ( "SB".equals(transaction.status) ) {
+                trace("Transaction not approved, skipping");
+                throw new MustAddressException("Unable to VOID transaction, transaction not approved");
+            } else if ( "CI".equals(transaction.status) ) {
+                trace("Transaction deleted, skipping");
+                throw new InfoException("Unable to VOID transaction, already deleted");
+            } else {
+                trace("Transaction is in an unexpected status, skipping");
+                throw new InfoException("Unable to VOID transaction, transaction in an unknown status: " + transaction.status);
+            }
+        }
+
+        return transaction;
+    }
+
+    public class MustAddressException extends InterruptedException {
+        public MustAddressException(String message) { super(message); }
+    }
+    public class WarningException extends MustAddressException {
+        public WarningException(String message) { super(message); }
+    }
+    public class InfoException extends WarningException {
+        public InfoException(String message) { super(message); }
+    }
+}
+public class ChaseLog {
+    public ChaseLog() {}
+    public  void info(String comment) {
+        //detailLog.append("(ChaseLog-Info):\n" + comment + "\n");
+    }
+    public  void warn(String comment) {
+        //detailLog.append("(ChaseLog-warn):\n" + comment + "\n");
+    }
+    public  void error(String comment) {
+        //detailLog.append("(ChaseLog-error):\n" + comment + "\n");
+    }
+}
+
+%>

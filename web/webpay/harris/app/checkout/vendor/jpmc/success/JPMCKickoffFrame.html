@@ -1,0 +1,81 @@
+<div class="payment-summary success">
+	<h2> Payment Method </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">
+                Begin a New Search
+            </a> 
+		</center>
+	</div>
+	<div class="user-notification">
+        <div class="summary-text">
+            <h3 style="margin-top:0px;"> 
+            You are now leaving this site<br><br>
+            You are being taken to the {{payment.method.displayName}} website to complete your payment
+            </h3>
+        </div>
+        <br>
+        <div class="no-print">
+            <div class="user_instructions">
+                Please click the 
+                <span class="ref-button">Select Payment Method</span> 
+                button to be taken to the {{payment.method.displayName}} website to select your method of payment
+                <br><br><br>
+                <div id="option-block"></div>
+            </div>
+        </div>
+        <hr>
+        <div>
+            <form action="https://www.payconnexion.com/pconWeb/epay.jhtml" method="post">
+                <input type="hidden" name="FORM_NUMBER" value="{{processorParam.form_number}}">
+                <input type="hidden" name="DEFENDANT"   value="{{payment.reference.can_owner | limitTo:35}}"> 
+                <input type="hidden" name="TOTAL"       value="{{payment.amount.total}}">
+                <input type="hidden" name="CAN"         value="{{payment.reference.tid}}">
+                <button type="submit">Select Payment Method</button>
+             </form>
+        </div>
+        <br>
+
+        <div ng-if="payment.isTest">
+            <div class="user-notification notice">
+                <span class="standout">Test Transaction:</span>
+                This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+            </div>
+        </div>
+	</div>
+
+	<center>
+	<div style="width:920px;text-align:left;">
+        <div style="clear:both;"></div>
+        <div style="width: 450px; margin-right:20px; float:left;">
+            <div class="payment-summary-block amount">
+                <div class="section-header"> PAYMENT SUMMARY </div>
+
+                <div ng-if="payment.amount.fee > 0">
+                    <table class="payment-metadata amount" border=0>
+                        <caption> This is the amount you are paying </caption>
+                        <tr> <th> Tax Amount: </th> <td> {{payment.amount.tax | currency}} </td> </tr>
+                        <tr> <th> Fee Amount: </th> <td> {{payment.amount.fee | currency}} </td> </tr>
+                    </table>
+                    <table class="payment-metadata amount" border=0 style="margin-top:5px;">
+                        <tr> <th> Total Payment Amount: </th> 
+                            <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> 
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-if="payment.amount.fee == 0">
+                    <table class="payment_metadata amount" border=0>
+                        <caption> </caption>
+                        <tr> <th> Total Tax Payment Amount: </th> <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div style="clear:both;"></div>
+	</div>
+	</center>
+
+	<br><br><br>
+</div>
+

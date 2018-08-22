@@ -1,0 +1,87 @@
+
+<div class="payment-summary failure">
+	<h2> Payment Failed </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<div class="user-notification">
+			<div class="summary-text">
+				<h3 style="margin-top:0px;"> Your payment was unsuccessful </h3>
+                <div ng-if="payment.reference.type">
+                    <br>{{payment.reference.type}}
+                </div>
+				<br>{{payment.reference.detail}}
+			</div>
+			<div class="no-print">
+				<br>
+				<div class="user_instructions">
+					To re-enter your payment information please click the 
+					<span class="ref-button">Re-enter Information</span> button.
+					<br> <br>
+					<div id="option-block">
+						<button ng-click="reenterInformation()" style="width: 190px;"> Re-enter Information </button>
+					</div>
+
+					<div ng-if="config.accountSearchUrl">
+						<br>
+						If you would like to search for other accounts, please click the 
+						<span class="ref-button">New Search</span> button.
+						<br> <br>
+						<div id="option-block">
+							<button ng-click="newSearch()"> New Search </button>
+						</div>
+					</div>
+				</div>
+			</div>
+	</div>
+
+
+	<center>
+	<div style="width:920px;text-align:left;">
+        <div style="clear:both;"></div>
+        <div style="width: 450px; margin-right:20px; float:left;">
+            <div class="payment-summary-block amount">
+                <div class="section-header"> PAYMENT SUMMARY </div>
+
+                <div ng-if="payment.amount.fee > 0">
+                    <table class="payment-metadata amount" border=0>
+                        <caption> This is the amount you were paying </caption>
+                        <tr> <th> Tax Amount: </th> <td> {{payment.amount.tax | currency}} </td> </tr>
+                        <tr> <th> Fee Amount: </th> <td> {{payment.amount.fee | currency}} </td> </tr>
+                    </table>
+                    <table class="payment-metadata amount" border=0 style="margin-top:5px;">
+                        <tr> <th> Total Payment Amount: </th> 
+                            <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> 
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-if="payment.amount.fee == 0 || ! payment.amount.fee">
+                    <table class="payment_metadata amount" border=0>
+                        <caption> This is the amount you were paying </caption>
+                        <tr> <th> Total Payment Amount: </th> <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div style="width: 450px; float:left;">
+            <div class="payment-summary-block method">
+                <div class="section-header"> </div>
+            </div>
+        </div>
+
+        <div style="clear:both;"></div>
+	</div>
+	</center>
+
+	<div ng-if="payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+		</div>
+	</div>
+
+	<br><br><br>
+</div>

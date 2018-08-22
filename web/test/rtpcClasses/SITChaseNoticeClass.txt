@@ -1,0 +1,47 @@
+<%!
+public class SITChaseNotice extends PostbackNotice {
+    public SITChaseNotice() {}
+    public SITChaseNotice(String client, javax.servlet.http.HttpServletRequest request) {
+        this(request);
+        clientId          = nvl(client);
+    }
+    public SITChaseNotice(javax.servlet.http.HttpServletRequest request) {
+        // These are the custom client fields
+        clientId          = nvl(request.getParameter("3clientid"));
+        account           = nvl(request.getParameter("iDealerNumber")).trim();
+
+        // These Chase fields should be the same regardless of client
+        transactionMode   = nvl(request.getParameter("TransactionMode"));
+        isVoid            = ("CANCEL".equals(transactionMode) || "CREDIT".equals(transactionMode));
+
+        ptid              = nvl(request.getParameter("ConfirmationId"));
+        rptid             = nvl(request.getParameter("ReplacesConfirmationId"));
+
+        paymentChannel    = nvl(request.getParameter("PaymentChannel"));
+
+        paymentDate       = nvl(request.getParameter("InitiationDate"));
+        if ( notDefined(paymentDate) )
+            paymentDate   = nvl(request.getParameter("PaymentEffectiveDate")).replaceAll("-","");
+
+        method            = ("ACH".equals(nvl(request.getParameter("PaymentMethod"))) ? "EC" : "CC");
+        amount            = nvl(request.getParameter("PaymentAmount"),0.0);
+
+        name              = (nvl(request.getParameter("payer_first_name")) + " " +  nvl(request.getParameter("payer_last_name"))).trim();
+        street            = nvl(request.getParameter("payer_street"));
+        city              = nvl(request.getParameter("payer_city"));
+        state             = nvl(request.getParameter("payer_state"));
+        zipcode           = (nvl(request.getParameter("payer_zip5")) + nvl(request.getParameter("payer_zip4"))).trim();
+        country           = null;
+        phone             = nvl(request.getParameter("payer_phone_number"));
+        email             = nvl(request.getParameter("payer_email"));
+
+        this.setRequestContext(request)
+            .setAccount(clientId, account, ownerNo)
+            .setPayment(vendor, paymentChannel, ptid, paymentDate, method, amount)
+            .setPayer(name, street, city, state, zipcode, country)
+            .setContact(phone, email);
+    }
+
+    public String vendor = "Chase";
+}
+%>

@@ -1,0 +1,75 @@
+This is a test form that was submitted:
+
+<form action="https://www.payconnexion.com/pconWeb/epay.jhtml" method="post" class="ng-pristine ng-valid">
+    <input type="hidden" name="billerPayorId" value="310">
+    <input type="hidden" name="productCode" value="TaxPayment"> 
+    <input type="hidden" name="amountDue" value="58.33">
+    <input type="hidden" name="iDealerNumber" value="310">
+    <input type="hidden" name="billerId" value="SIT">
+    <input type="hidden" name="billerGroupId" value="GAL">
+    <input type="hidden" name="disallowLogin" value="Y">
+    <!--<input type="submit" ng-click = "alertReferenceId()" value="Select Payment Method">-->
+    <input type="submit" value="OK">
+ </form>
+
+
+
+These are the RTPC post back parameter received:
+
+Parameters Received 
+AmountDue: (58.33)
+BillerBusinessDate: (N/A)
+BillerProductCode: (TaxPayment)
+ConfirmationId: (GALSIT000280823)
+ConvenienceFee: (1.46)
+DueDate: (N/A)
+InitiationDate: (2018-06-05T16:08:54)
+PaymentAmount: (58.33)
+PaymentChannel: (WEB)
+PaymentEffectiveDate: (2018-06-05)
+PaymentMethod: (CC)
+TransactionMode: (PAYMENT)
+UserID: (!GALSIT082384879)
+iDealerNumber: (310)
+
+
+
+
+
+iDealerNumber is the TID of the transaction being paid.
+
+
+
+As Of June 26, 2018 in Dev:
+
+<form action="https://www.payconnexion.com/pconWeb/epay.jhtml" method="post" class="ng-pristine ng-valid">
+    <input type="hidden" name="billerPayorId" value="326">
+    <input type="hidden" name="productCode" value="TaxPayment"> 
+    <input type="hidden" name="amountDue" value="79.39">
+    <input type="hidden" name="iDealerNumber" value="326">
+    <input type="hidden" name="billerId" value="SIT">
+    <input type="hidden" name="billerGroupId" value="GAL">
+    <input type="hidden" name="disallowLogin" value="Y">
+    <!--<input type="submit" ng-click = "alertReferenceId()" value="Select Payment Method">-->
+    <input type="submit" value="OK">
+</form>
+
+http://apollo/act_webdev/duc_sit/webpay/galveston/rtpc-gal-test.jsp?AmountDue=79.39&BillerBusinessDate=N/A&BillerProductCode=TaxPayment&ConfirmationId=GALSIT000281825&ConvenienceFee=1.98&DueDate=N/A&InitiationDate=2018-06-26T13:49:56&PaymentAmount=79.39&PaymentChannel=WEB&PaymentEffectiveDate=2018-06-26&PaymentMethod=CC&TransactionMode=PAYMENT&UserID=!GALSIT083229849&iDealerNumber=326
+http://apollo/act_webdev/duc_sit/webpay/galveston/rtpc-gal-test.jsp?AmountDue=56.02&BillerBusinessDate=N/A&BillerProductCode=TaxPayment&ConfirmationId=GALSIT000281825&ConvenienceFee=1.98&DueDate=N/A&InitiationDate=2018-06-27T13:49:56&PaymentAmount=56.02&PaymentChannel=WEB&PaymentEffectiveDate=2018-06-27&PaymentMethod=CC&TransactionMode=PAYMENT&UserID=!GALSIT083229849&iDealerNumber=173
+http://apollo/act_webdev/duc_sit/webpay/galveston/rtpc-gal-test.jsp?AmountDue=165&BillerBusinessDate=N/A&BillerProductCode=TaxPayment&ConfirmationId=GALSIT000281825&ConvenienceFee=1.98&DueDate=N/A&InitiationDate=2018-06-27T13:49:56&PaymentAmount=165&PaymentChannel=WEB&PaymentEffectiveDate=2018-06-27&PaymentMethod=EC&TransactionMode=PAYMENT&UserID=!GALSIT083229849&iDealerNumber=175
+Parameters Received 
+AmountDue: (79.39)
+BillerBusinessDate: (N/A)
+BillerProductCode: (TaxPayment)
+ConfirmationId: (GALSIT000281825)
+ConvenienceFee: (1.98)
+DueDate: (N/A)
+InitiationDate: (2018-06-26T13:49:56)
+PaymentAmount: (79.39)
+PaymentChannel: (WEB)
+PaymentEffectiveDate: (2018-06-26)
+PaymentMethod: (CC)
+TransactionMode: (PAYMENT)
+UserID: (!GALSIT083229849)
+iDealerNumber: (326)
+

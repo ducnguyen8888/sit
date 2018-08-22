@@ -1,0 +1,110 @@
+  body {background: #e6e6e6; font-family: verdana, helvetica; font-size: 12px;} /* removing sidebar height solves sidebar problem */
+        header, #body, #sideBar, footer { position: absolute; }
+        header  { height:153px; top:0px; left:0px; right:0px; overflow:hidden; background: #165983; color: white; }
+        #body   { top:340px; left:0px; bottom:15px; right:200px; overflow:auto; background: #b0b0b0;}
+        #bodyTop{ position:absolute; background: #b0b0b0; top:152px; left:0px; right:200px; height:200px; }
+        #sideBar{ top:152px; right:1px; background: #e6e6e6; width: 200px; border-left: 1px solid grey; }
+        footer  { height: 15px; left:0px; bottom:0px; right: 0px; overflow:hidden; font-size: 9px; text-align: right; padding-top: 1px; background: #165983; color: white; }
+        /**********************************************************/
+        #hdrImg { float: left; margin: 5px;  width: 115px; height: 111px; background-image: url("../../images/HARRIS-LOGO.png"); 
+                  background-repeat: no-repeat; background-position: left; border: 1px solid black; }
+        #hdrTitle { margin-top:17px; margin-bottom: 17px; margin-left: 135px; color: white; font-weight: bold; font-size: 24px; }
+        .hdrDiv   { margin-top: 5px; padding-bottom: 3px; margin-left: 125px; color: black; background: white; }
+        
+        #user-name, #system-date, #system-time { float:left; margin-left:5px; font-size:11px; padding-top:3px; }
+        #system-date, #system-time, #command-logout, #command-help  {margin-left: 29px;}
+        
+        #cart, #payments, #dealers, #logout, #help, #feedback { display: inline-block; font-size: 12px; padding-top:2px; }
+        #payments a, #cart a, #dealers a, #logout a, #help a, #feedback a { color: black; }
+        #payments i, #cart i, #dealers i, #logout i, #help i, #feedback i { margin-right: 5px; color: #165983; font-size: 16px;}
+        #payments i, #cart i, #dealers i{ margin-left: 5px; }
+        #payments i, #cart i, #logout i, #help i, #feedback i   {margin-left: 25px; }
+        
+        #body { /*padding: 15px;*/ border-right: 1px solid grey; }
+        
+        .nav-tabs { padding-top:8px; }
+        .nav-tabs > li.active > a { background:#557baf; }
+        .nav-tabs > li.active > a:hover { background:#596da2; }
+        .nav-tabs > li > a:hover { background:#596da2; }
+        .nav-tabs > li > a:focus { background:#596da2; }
+        .nav > li > a { padding-top:4px; padding-bottom:4px; color:white;}
+        .nav > li.active > a {color:white;}
+        #navDiv {background: #165983; padding-left: 20px;}
+        
+        #bodyTop { padding: 15px; padding-left: 45px; margin-bottom: 15px; border-right:1px solid grey;}
+        /* REMOVED POST WIDGET
+        #account { border: 1px solid black; background: #C4CFDD; margin-right: 15px; padding: 10px; min-width: 400px; max-width: 800px; float: left; }
+        #filingYear { border: 1px solid black; background: #C4CFDD; text-align: center; width: 200px; height: 100px; padding: 12px; float: left;  }
+        #filingYear p { color: #1f2f8f; font-weight: bold; }
+        */
+
+        #myTable{ margin-left: 20px; width: 700px;}
+        #myTable tr th { border: 1px solid black; padding: 4px; text-align:center; background: #edf3fe; }
+        #myTable tr td { border: 1px solid black; padding: 4px; text-align:center; }
+        #myTable #ds { width: 100px;}
+        #myTable tr:nth-child(odd) td { background: white; }
+        #myTable tr:nth-child(even) td { background: #edf3fe; }
+        #myTable tr td span {color: red};
+        .aLeft { text-align: left !important; }
+        .aRight { text-align: right !important; }
+        .fa-times { color: red; }
+        .fa-check { color: green; }
+        .scrollit { overflow-y:auto; height:290px; }
+        
+/*        #sidebarTitle { padding-left:10px; font-weight:bold; font-style:italic; border-bottom:1px solid grey; }*/
+        #sidebar a { margin-left:10px; margin-top:15px; display:block; text-decoration:underline; }
+        td.recent { padding-left: 10px; padding-top: 5px; padding-bottom: 5px;}
+        #sidebar a:hover { text-decoration:none;}
+        #sidebarRecent { font-size:10px; text-transform:uppercase; }
+        #sideBar table tr:nth-child(odd) td { background: #bcc9e2; }
+        
+        
+        .widget1 {
+            min-width:250px; 
+            height:150px; 
+            -webkit-border-top-left-radius:4px;
+            -webkit-border-top-right-radius:4px;
+            -moz-border-radius-topleft:4px;
+            -moz-border-radius-topright:4px;
+            border-top-left-radius:4px;
+            border-top-right-radius:4px; 
+            background:#C4CFDD;
+            float:left;
+            margin-left:30px;
+             -webkit-box-shadow:0 8px 6px -6px black;
+            -moz-box-shadow:0 8px 6px -6px black;
+            box-shadow:0 8px 6px -6px black;
+            margin-bottom:10px;
+        }
+        #sidebarTitle {
+            font-weight: bold;
+            color:white;
+            text-align:center;
+            margin-top: 3px;
+        }
+
+        .widget1 div.wtitle {
+            font-weight: bold;
+            color:white;
+            text-align:center;
+            /* Permalink - use to edit and share this gradient:http://colorzilla.com/gradient-editor/#3498db+0,2c3e50+100 */
+            background:rgb(52,152,219); /* Old browsers */
+            background:-moz-linear-gradient(top,  rgba(52,152,219,1) 0%, rgba(44,62,80,1) 100%); /* FF3.6+ */
+            background:-webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(52,152,219,1)), color-stop(100%,rgba(44,62,80,1))); /* Chrome,Safari4+ */
+            background:-webkit-linear-gradient(top,  rgba(52,152,219,1) 0%,rgba(44,62,80,1) 100%); /* Chrome10+,Safari5.1+ */
+            background:-o-linear-gradient(top,  rgba(52,152,219,1) 0%,rgba(44,62,80,1) 100%); /* Opera 11.10+ */
+            background:-ms-linear-gradient(top,  rgba(52,152,219,1) 0%,rgba(44,62,80,1) 100%); /* IE10+ */
+            background:linear-gradient(to bottom,  rgba(52,152,219,1) 0%,rgba(44,62,80,1) 100%); /* W3C */
+            filter:progid:DXImageTransform.Microsoft.gradient( startColorstr='#3498db', endColorstr='#2c3e50',GradientType=0 ); /* IE6-9 */
+        }
+        .widget1 div.wtitle {height:30px; padding-top:6px; margin-bottom:10px; -webkit-border-radius:4px; -moz-border-radius:4px; border-radius:4px; } 
+        #sidebarTitle {position:absolute; right: 0px; top:115px; width: 200px; height:35px; padding-top:5px; border-left:1px solid grey; }       
+        
+        #totalDue{border: 1px solid grey; width: 300px; padding: 3px; margin-top: 15px; margin-left: 400px; text-align: center; background: #C4CFDD}        
+        
+        @media (max-width:1100px) { 
+            #sidebarTitle { display: none; }
+            #sideBar      { display: none; } 
+            #body         { right: 0px; } 
+            #bodyTop      { right: 0px; width: 100%; }
+        }   

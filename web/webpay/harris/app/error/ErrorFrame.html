@@ -1,0 +1,40 @@
+<div class="payment-summary success">
+	<h2> {{error.title}} </h2>
+	<div class="no-print">
+		<center ng-if="accountSearchUrl">
+			<a href="{{accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<div class="user-notification">
+			<div class="summary-text">
+				<h3 style="color:red;margin-top:0px;"> {{error.summary}} </h3>
+			</div>
+			<br>
+			{{error.description}}
+	</div>
+
+	<center>
+	<div style="width:920px;text-align:left;">
+
+	<div style="clear:both;"></div>
+
+	</div>
+	<div style="clear:both;"></div>
+	<div ng-if="error.detail">
+		<h5 style="font-style:italic;text-decoration:underline;"> Technical Information: </h5>
+		{{error.detail}}
+	</div>
+	</center>
+
+
+
+
+	<div ng-if="payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account was <span class="standout">NOT</span> credited for any payments made.
+		</div>
+	</div>
+
+	<br><br><br>
+</div>

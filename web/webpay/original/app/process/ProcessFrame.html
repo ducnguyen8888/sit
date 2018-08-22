@@ -1,0 +1,112 @@
+
+<div class="payment-summary">
+	<h2> Your Payment Is Being Processed </h2>
+	<div class="no-print">
+		<center ng-if="accountSearchUrl">
+			<a href="{{accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<div class="user-notification">
+		<div class="summary-text">
+			<h3 style="color:red;font-style:italic;margin-top:0px;"> Please wait while your payment is processed... </h3>
+		</div>
+		<center>
+		<div style="width:300px; margin-top: 20px; margin-bottom: 30px;">
+			<div class="statusbar"></div>
+		</div>
+		</center>
+		<br>
+
+		<div class="user_instructions">
+			Depending on payment volume your payment may take longer than normal to complete.
+			<br> <br>
+			Once your processing has completed you will receive a payment confirmation screen.
+			<br> <br>
+			<h4 ng-if="processingStatus"> {{processingStatus}} </h4>
+		</div>
+	</div>
+	<style>
+		@-xwebkit-keyframes statusbar {
+			0% { width: 0px; }
+			100% { width: 100%; }
+		}
+		@-xmoz-keyframes statusbar {
+			0% { width: 0px; }
+			100% { width: 100%; }
+		}
+		@-xo-keyframes statusbar {
+			0% { width: 0px; }
+			100% { width: 100%; }
+		}
+		@keyframes statusbar {
+			0% { width: 0px; margin-right: 100%; background-color: white; }
+			45% { width: 100%; margin-right: 0px; }
+			51% { width: 100%; margin-left: 0px; background-color: red; }
+			100% { width: 0px; margin-left: 100%; background-color: white; }
+		}
+		.statusbar { border-radius: 2px;
+					width: 0px; height: 3px; background-color: darkblue; 
+					-webkit-animation: statusbar 3s infinite;
+					-moz-animation: statusbar 3s infinite;
+					-o-animation: statusbar 3s infinite;
+					animation: statusbar 3s infinite;
+		}
+		.xstatusbar { width: 0px; height: 3px; background-color: darkblue; 
+					-webkit-transition: width 1.5s ease-in-out;
+					-moz-transition: width 1.5s ease-in-out;
+					-o-transition: width 1.5s ease-in-out;
+					transition: width 1.5s ease-in-out; float:right;
+					}
+		.statusbar.start { width: 100%; float:left;
+					-webkit-transition: width 1.5s ease-in-out;
+					-moz-transition: width 1.5s ease-in-out;
+					-o-transition: width 1.5s ease-in-out;
+					transition: width 1.5s ease-in-out;
+					}
+		.statusbar.end { width: 100%; }
+
+		@keyframes tooLong {
+			0% { height: 0px; opacity: 0; }
+			95% { height: 0px; opacity: 0; }
+			100% { height: 310px; opacity: 1.0; }
+		}
+		.wayTooLong { border-radius: 2px; border: 1px solid darkblue; height: 310px; opacity: 1.0; max-width: 600px;
+					font-size: 16px; font-weight: bold; color: darkblue; padding: 20px; 
+					margin: 20px auto 20px auto; 
+					-webkit-animation: tooLong 26s 1;
+					-moz-animation: tooLong 26s 1;
+					-o-animation: tooLong 26s 1;
+					animation: tooLong 26s 1;
+		}
+
+	</style>
+	<div ng-if="true || payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+		</div>
+	</div>
+	<div class="user-notification">
+		To avoid multiple payments, please do not use your back button
+	</div>
+		<div class="wayTooLong no-print" style="text-align:left;overflow:hidden;">
+			The payment processor is taking longer than expected to process your payment. 
+			You may continue to wait for your transaction to complete or
+			you may search for other accounts while we continue trying to process your payment.
+			<br><br>
+			If the transaction completes successfully you will see the payment reflected as a
+			pending payment on the account information screen for the account(s) you are paying
+			once the processor approves the payment.
+			<br><br>
+			To search for other accounts please click the <span class="ref-button">New Search</span> button.
+				<div class="user_instructions">
+					
+					<br>
+					<div id="option-block" style="font-weight: normal;" ng-if="accountSearchUrl">
+						<button ng-click="newSearch()"> New Search </button>
+					</div>
+				</div>
+		</div>
+		<br><br><br>
+	<div>
+</div>

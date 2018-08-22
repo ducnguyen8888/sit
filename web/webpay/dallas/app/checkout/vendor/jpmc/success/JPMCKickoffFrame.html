@@ -1,0 +1,128 @@
+<div class="payment-summary success">
+	<h2> Payment Method </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">
+                Begin a New Search
+            </a> 
+		</center>
+	</div>
+	<div class="user-notification">
+        <div class="summary-text">
+            <h3 style="margin-top:0px;"> 
+            You are now leaving this site<br><br>
+            You are being taken to the {{payment.method.displayName}} website to complete your payment
+            </h3>
+        </div>
+        <br>
+        <div class="no-print">
+            <div class="user_instructions">
+                Please click the 
+                <span class="ref-button">Select Payment Method</span> 
+                button to be taken to the {{payment.method.displayName}} website to select your method of payment
+                <br><br><br>
+                <div id="option-block"></div>
+            </div>
+        </div>
+        <div>
+            <button type="button"  data-toggle="modal" data-target="#myModal">Select Payment Method</button>
+        </div>
+        <div class="modal fade" id="myModal" role="dialog">
+            <div style="position: absolute; top:250px; bottom: 0; left:0; right:0; margin: auto; width: 500px;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title">PAYMENT REFERENCE INFORMATION </h4>
+                </div>
+                <div class="modal-body">
+                  <p style="font-weight: bold;color: red;">
+                    Please make a note of this Reference ID Number.<br>
+                    You will need it later if paying by eCheck.<br><br>
+                  </p>
+                  <p><strong>Reference ID: {{payment.reference.tid}}</strong></p>
+                </div>
+                <div class="modal-footer">
+                    <form action="https://www.payconnexion.com/pconWeb/epay.jhtml" method="post">
+                        <input type="hidden" name="billerPayorId" value="{{payment.reference.tid}}">
+                        <input type="hidden" name="productCode" value="TaxPayment"> 
+                        <input type="hidden" name="amountDue" value="{{payment.amount.total}}">
+                        <input type="hidden" name="iDealerNumber" value="{{payment.reference.tid}}">
+                        <input type="hidden" name="billerId" value="{{processorParam.biller}}">
+                        <input type="hidden" name="billerGroupId" value="{{processorParam.billerGroup}}">
+                        <input type="hidden" name="disallowLogin" value="Y">
+                        <!--<input type="submit" ng-click = "alertReferenceId()" value="Select Payment Method">-->
+                        <input type="submit"  value="OK"/>
+                     </form>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        <br>
+
+        <div ng-if="payment.isTest">
+            <div class="user-notification notice">
+                <span class="standout">Test Transaction:</span>
+                This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+            </div>
+        </div>
+	</div>
+
+	<center>
+	<div style="width:920px;text-align:left;">
+        <div style="clear:both;"></div>
+        <div style="width: 450px; margin-right:20px; float:left;">
+            <div class="payment-summary-block amount">
+                <div class="section-header"> PAYMENT SUMMARY </div>
+
+                <div ng-if="payment.amount.fee > 0">
+                    <table class="payment-metadata amount" border=0>
+                        <caption> This is the amount you are paying </caption>
+                        <tr> <th> Tax Amount: </th> <td> {{payment.amount.tax | currency}} </td> </tr>
+                        <tr> <th> Fee Amount: </th> <td> {{payment.amount.fee | currency}} </td> </tr>
+                    </table>
+                    <table class="payment-metadata amount" border=0 style="margin-top:5px;">
+                        <tr> <th> Total Payment Amount: </th> 
+                            <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> 
+                        </tr>
+                    </table>
+                </div>
+
+                <div ng-if="payment.amount.fee == 0">
+                    <table class="payment_metadata amount" border=0>
+                        <caption> </caption>
+                        <tr> <th> Total Tax Payment Amount: </th> <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- PRC 194328 replace by a pop-up window for reference id message
+            <div style="width: 450px; margin-right:0px; float:left;">
+            <div class="payment-summary-block amount">
+                <div class="section-header"> PAYMENT REFERENCE INFORMATION </div>
+
+                <div ng-if="payment.reference.tid">
+                    <div class="user_instructions" style="font-weight: bold;color: red;">
+                    <br>
+                    Please make a note of this Reference ID Number<br>
+                    You will need it later if paying by eCheck
+                    </div>
+                    <table class="payment_metadata amount" border=0>
+                        <caption> </caption>
+                        <tr> <th style="vertical-align: top;"> Reference ID: </th> 
+                             <td style="font-weight: bold;width:250px;text-align:left;padding-left:25px;">
+                                {{payment.reference.tid}} 
+                             </td> 
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>-->
+       
+        
+        <div style="clear:both;"></div>
+	</div>
+	</center>
+
+	<br><br><br>
+</div>
+

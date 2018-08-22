@@ -1,0 +1,84 @@
+Aug 04, 2018 12:03:43 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 12:03:51 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 12:12:45 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 12:19:25 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:21:24 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:21:24 PM act.log.SITLog error
+SEVERE: 
+Problem getting file date, report status, and finalize date in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:21:24 PM act.log.SITLog error
+SEVERE: 
+Problem getting count in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:21:24 PM act.log.SITLog info
+INFO: client_id: null, can: , year: , month: , chosenReportSeq: null
+Aug 04, 2018 2:21:24 PM act.log.SITLog error
+SEVERE: 
+Problem getting tax rate in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:57:06 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:57:06 PM act.log.SITLog error
+SEVERE: 
+Problem getting file date, report status, and finalize date in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:57:06 PM act.log.SITLog error
+SEVERE: 
+Problem getting count in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:57:06 PM act.log.SITLog info
+INFO: client_id: null, can: , year: , month: , chosenReportSeq: null
+Aug 04, 2018 2:57:06 PM act.log.SITLog error
+SEVERE: 
+Problem getting tax rate in __getStatement.jsp
+
+java.lang.NumberFormatException: For input string: ""
+Aug 04, 2018 2:57:22 PM act.log.SITLog error
+SEVERE: 
+getting file_blob bytes in viewForm.jsp
+
+java.io.FileNotFoundException: \usr2\webtemp\SIT_VIEW_08042018145722.pdf (The system cannot find the path specified)
+Aug 04, 2018 2:58:24 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:58:33 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:58:48 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:58:53 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:58:57 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 2:59:00 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 3:25:52 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 04, 2018 4:13:36 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+Aug 06, 2018 5:02:49 PM act.log.SITLog error
+SEVERE: exception: java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection
+java.lang.ClassCastException: com.sun.gjc.spi.jdbc40.ConnectionWrapper40 cannot be cast to oracle.jdbc.OracleConnection

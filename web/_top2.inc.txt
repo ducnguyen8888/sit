@@ -1,0 +1,92 @@
+</head>
+<body>
+    <header>
+        <div id="hdrImg" style="background-image: url('images/logo-<%= nvl(session.getAttribute("imageName"), "act") %>.png');"></div>
+        <div id="hdrTitle">Special Inventory Tax System</div>    
+        <div class="hdrDiv">
+            <div id="user-summary" > 
+                <% if (!"login.jsp".equals(current_page) && !"password_reset.jsp".equals(current_page)) { %>
+                    <div id="user-name"><%= nvl(session.getAttribute("username"), "") %></div>
+                <% } %>
+                <div id="system-date">&nbsp;</div>
+                <div id="system-time">&nbsp;</div>
+                <div id="connected-system-name">&nbsp;</div>
+            </div>
+        </div>  
+        <div class="hdrDiv">
+            <% if (!"login.jsp".equals(current_page) && !"password_reset.jsp".equals(current_page)) { %>
+                <div id="dealers"><i class="fa fa-car"></i><a href="dealerships.jsp">Dealerships</a></div>
+                <div id="payments"><i class="fa fa-bank"></i><a href="paymentsDue.jsp">Payments Due</a></div>
+                <% if(payments.size() > 0){ %> <div id="cart"><i class="fa fa-cart-arrow-down"></i><a href="pay.jsp">Cart</a></div> <% } %>
+                <div id="logout" ><i class="fa fa-sign-out"></i><a href="logout.jsp">Logout</a></div>
+            <% } %>
+            <%
+                Connection connection2 = null;
+                PreparedStatement ps2 = null;
+                ResultSet rs2 = null;
+                try { 
+                         
+                    connection2 = connect();   
+                    ps2 = connection2.prepareStatement("select help_url from acthelp where module='SIT' AND upper(screen)=upper(?)");
+                    ps2.setString(1, "portal" + current_page.replaceAll(".jsp", ""));
+                    rs2 = ps2.executeQuery();
+
+                    if(rs2.next()){ 
+                        out.print("<div id=\"help\"><i class=\"fa fa-question\"></i><a href=\""+  rs2.getString(1) + "\" target=\"_blank\">Help</a></div>");
+                    } 
+                } catch (Exception e) {
+                     SITLog.error(e, "\r\nProblem getting help for " + current_page + "\r\n");
+                } finally {
+                    try { rs2.close(); } catch (Exception e) { }
+                    rs2 = null;
+                    try { ps2.close(); } catch (Exception e) { }
+                    ps2 = null;
+                    try { connection2.close(); } catch (Exception e) { }
+                    connection2 = null;                    
+                }// try get help file  
+            %>
+            
+            <% if (!"login.jsp".equals(current_page) && !"password_reset.jsp".equals(current_page) && !"feedback.jsp".equals(current_page)) { %>
+            <!-- <div id="feedback"><i class="fa fa-comment"></i><a id="<%= current_page %>" href="#">Feedback</a></div> -->
+            <% } %>
+        </div>
+        <% if (!"login.jsp".equals(current_page) && !"password_reset.jsp".equals(current_page)) { %>
+        <div id="sidebarTitle" style="">Recent Dealerships</div>
+           
+           <% if (!"dealerships.jsp".equals(current_page) && !"feedback.jsp".equals(current_page)) { 
+           
+                switch(d.dealerType){
+                    case 1:  category="MV";
+                             break;
+                    case 2:  category="VTM";
+                             break;
+                    case 3:  category="HE";
+                             break;
+                    case 4:  category="MH";
+                             break;
+                    default: category="MV";
+                             break;
+                }
+            %>
+
+           <div id="navDiv" style="margin-top: 6px; font-size: 16px;">
+               <!-- <ul class="nav nav-tabs" role="navigation"> -->
+                    <!-- MV, DL, FL, SS -->
+                    <%
+                        if ("MV".equals(category)) out.println("Motor Vehicle Inventory\r\n");
+                        if ("HE".equals(category)) out.println("Heavy Equipment\r\n");
+                        if ("MH".equals(category)) out.println("Housing\r\n");
+                        if ("VTM".equals(category)) out.println("Outboard\r\n");
+                    
+
+                        //out.println("<li " + ("MV".equals(category) ?"class=\"active\"":"class=\"disabled\"") + "><a id=\"MV\"  href=\"#\">Motor Vehicle Inventory</a></li>\r\n");
+                        //out.println("<li " + ("HE".equals(category) ?"class=\"active\"":"class=\"disabled\"") + "><a id=\"HE\"  href=\"#\">Heavy Equipment</a></li>\r\n");
+                        //out.println("<li " + ("MH".equals(category) ?"class=\"active\"":"class=\"disabled\"") + "><a id=\"MH\"  href=\"#\">Housing</a></li>\r\n");
+                        //out.println("<li " + ("VTM".equals(category)?"class=\"active\"":"class=\"disabled\"") + "><a id=\"VTM\" href=\"#\">Outboard</a></li>\r\n");                        
+                    %>
+                    
+               <!-- </ul>   -->
+           </div>
+           <% } /**/ %>
+         <% } %>
+    </header>
