@@ -17,7 +17,6 @@
           if ( isDefined( clientId)
             && isDefined(can)
             && isDefined(year)
-            && sales > 0
             && isDefined(salesType) ) {
                 
                 try {

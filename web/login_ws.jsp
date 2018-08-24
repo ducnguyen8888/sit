@@ -167,7 +167,7 @@
                                                                     break;
                                         }
 
-                                        out.println(String.format("{ \"status\": \"ok\", \"action\": \"ok\" }"));
+                                        out.println(String.format("{ \"status\": \"ok\", \"action\": \"ok\",\"readOnly\":" + sitUser.readOnly()+"}"));
                                         break;
             }
         }

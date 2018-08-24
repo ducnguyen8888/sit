@@ -571,7 +571,11 @@ NEED an ERROR page....
                                             else 
                                             {
                                                 $("#loginMessages .errors").html("");
-                                                location = "dealerships.jsp";
+                                                if ( response.readOnly ){
+                                                    location = "search.jsp";
+                                                } else {
+                                                    location = "dealerships.jsp";
+                                                }
                                             }
                                         }
                                         catch (err)

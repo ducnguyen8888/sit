@@ -99,7 +99,7 @@
 </div>
 <% if(session.getAttribute("client_id").equals("7580")){%>
 		<div style="color: red;" align="center">
-			<Strong><i>Note: Any months filed and paid by mail or in person will not be reflected on the portal.</i></Strong>
+			<Strong><i>Note: Any months filed and paid by mail or in person will not be reflected on the portal.<%= readOnly %></i></Strong>
 		</div>
 <% } %>
 

@@ -12,15 +12,19 @@
             </div>
         </div>  
         <div class="hdrDiv">
+            <% if ( !readOnly ) {%>
             <div id="dealers"><i class="fa fa-car"></i><a href="dealerships.jsp">Dealerships</a></div>
             <div id="payments"><i class="fa fa-bank"></i><a href="paymentsDue.jsp">Payments Due</a></div>
 
             <%
-            // Display cart link if we have items in the cart
-            if( payments.size() > 0 )
-            {
-                %><div id="cart"><i class="fa fa-cart-arrow-down"></i><a href="pay.jsp">Cart</a></div><%
-            }
+
+                    // Display cart link if we have items in the cart
+                    if( payments.size() > 0 )
+                    {
+                        %><div id="cart"><i class="fa fa-cart-arrow-down"></i><a href="pay.jsp">Cart</a></div><%
+                    }
+                }
+
             %>
 
             <div id="logout" ><i class="fa fa-sign-out"></i><a href="logout.jsp">Logout</a></div>
@@ -36,9 +40,11 @@
             <!-- <div id="feedback"><i class="fa fa-comment"></i><a id="<%= current_page %>" href="#">Feedback</a></div> -->
         </div>
 
+        <% if( !readOnly ) { %>
         <div id="sidebarTitle" style="">Recent Dealerships</div>
 
         <%
+            }
         // Display the dealership category name
         if ( ! "dealerships.jsp".equals(currentPage) && ! "feedback.jsp".equals(currentPage) && dealership != null )
         {
