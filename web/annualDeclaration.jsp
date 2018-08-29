@@ -73,7 +73,7 @@ month = "13";
     int                 requiredMonthsView          = 13;
     int                 requiredMonthsClose         = 12;
     
-    // PRC 198588 in case of the imported records, if the value of client pref "SIT_PORT_INCL_LOAD_ANN_DEC" is "Y",
+    // PRC 198588 in case of the imported records, if the value of sit codeset "SIT_PORT_INCL_LOAD_ANN_DEC" is "Y",
     //the data of fields will be retrieved from database, but all fields are editable.
     boolean             includedLoad                = false;
     
@@ -92,7 +92,7 @@ month = "13";
 if(request.getParameter("can") != null){
     connection = connect();
     try{ // big outer
-        includedLoad = "Y".equals( nvl(getClientPref(connection, ps, rs, client_id, "SIT_PORT_INCL_LOAD_ANN_DEC")) );
+        includedLoad = "Y".equals( nvl( getSitClientPref(connection, ps, rs, client_id, "SIT_PORT_INCL_LOAD_ANN_DEC") ) );
 
         try { // Step #1 get the dealer info          
             ps = connection.prepareStatement("select count(can), to_char(sum(sales_price), '$999,999,999.00') amount, sale_type"

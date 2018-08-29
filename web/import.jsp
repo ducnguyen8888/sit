@@ -69,7 +69,8 @@
     if(request.getParameter("can") != null){
         connection = connect();
         try{ // big outer
-            formatType = nvl( getClientPref( connection, ps, rs, client_id, "CSV_FILE_FORMAT_FOR_SIT_PORTAL"), "1");
+             // PRC 194803 use sit codeset "CSV_FILE_FORMAT_FOR_SIT_PORTAL" to control the import format
+            formatType = nvl( getSitClientPref( connection, ps, rs, client_id, "CSV_FILE_FORMAT_FOR_SIT_PORTAL" ), "1");
 
             try {
             // note that Dawn and Fakhar said (1/5/2016) to use this function, which returns .002 for H00001 | 2013 | 79000000. 
@@ -354,7 +355,7 @@
     var loadYear  = "<%= year %>".c$valueOf();
     var currentYear = (new Date()).getFullYear();
 
-    var saleTypes = [ "MV", "FL", "DL", "SS", "VM", "HE", "MH" ];
+    var saleTypes = [ "MV", "FL", "DL", "SS", "VM", "HE", "MH", 'RL' ];
     function readCSVFile()
     {   console.log( defaultFormat );
         var reader = new FileReader();

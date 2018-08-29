@@ -152,8 +152,8 @@ if(request.getParameter("can") != null){
         startDate   = dateFormat( convertToDate( startDate ) );   
     }
     
-    // PRC 198588 - 08/06/2018 - declarationYear = declarationYear +1 if "ANNUAL_DECLARATION_YEAR" sit pref value = 1
-    if ( "1".equals( getClientPref(connection, ps, rs, client_id, "ANNUAL_DECLARATION_YEAR") ) ) {
+    // PRC 198588 - 08/06/2018 - declarationYear = declarationYear +1 if "ANNUAL_DECLARATION_YEAR" sit codeset value = 1
+    if ( "1".equals( getSitClientPref(connection, ps, rs, client_id, "ANNUAL_DECLARATION_YEAR") ) ) {
         declarationYear = declarationYear + 1;
     }
     
