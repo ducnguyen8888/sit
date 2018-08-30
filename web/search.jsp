@@ -10,13 +10,9 @@
     public StringBuffer getDealerAddress(Dealership d){
         StringBuffer sb = new StringBuffer();
         if (isDefined(d.nameline1)){sb.append(d.nameline1 );}
-        //if (isDefined(d.nameline1)){sb.append("<a id = \"" + d.can + "\" class = \"" + d.dealerType + "\" href=\"#\">" + d.nameline1 + "</a>");}
         if (isDefined(d.nameline2)){sb.append("<br>" + d.nameline2);}
-        // if (isDefined(d.nameline3)){sb.append("<br>" + d.nameline3);}
         if (isDefined(d.nameline4)){sb.append("<br>" + d.nameline4);}
         sb.append("<br>" + nvl(d.city) + ", " + nvl(d.state));
-        //if (isDefined(d.phone)){sb.append("<br>Phone: " + formatPhone(d.phone));}
-        //sb.append("<br>Acct: " + d.aprdistacc);
         return sb;
     }
 
@@ -101,6 +97,48 @@
     .dealerWidget:hover{background:#e6e6e6; cursor: pointer;}
 
 </style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        search();
+        reset();
+        getAccountDetail();
+    })
+
+    function search(){
+        $("#searchBtn").click(function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $("#dealersContainer").remove();
+            $("#searchDealers").submit();
+        })
+    }
+    function reset(){
+        $("#resetBtn").click(function(){
+            $("#dealersContainer").remove();
+        })
+    }
+
+    function getAccountDetail(){
+        console.log("Hello World");
+        $("#dealersContainer div").click(function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var bigID = $(this).parent().attr("id").split("|");
+            if(bigID[2] == undefined){
+                bigID = $(this).attr("id").split("|");
+            }
+            var can         = bigID[0];
+            var dealer_type = bigID[1];
+            var name        = bigID[2];
+            var theForm = $("form#navigation");
+            theForm.children("input#can").prop("value", can);
+            theForm.children("input#dealer_type").prop("value", dealer_type);
+            theForm.children("input#name").prop("value", name);
+            theForm.submit();
+        });
+    }
+</script>
 <%
     String dealershipNo         = nvl(request.getParameter("no"));
     String dealershipName       = nvl(request.getParameter("name"));
@@ -109,18 +147,19 @@
     String userId               = nvl(request.getParameter("userId"));
 
     ArrayList<Dealership> viewDealerships = new ArrayList<Dealership>();
-    boolean atLeastOneSpecified = AtLeastOneSpecified(dealershipNo, dealershipName, dealershipAddress, userName, userId);
+    boolean atLeastOneSpecified           = AtLeastOneSpecified(dealershipNo, dealershipName, dealershipAddress, userName, userId);
+    SearchCriteria criteria               = new SearchCriteria(dealershipNo, dealershipName, dealershipAddress, userName, userId);
     if ( sitAccount.isValid()
             && sitAccount.getUser().readOnly()
             && atLeastOneSpecified) {
-        sitAccount.loadDealerships();
+        sitAccount.loadDealerships( criteria);
         viewDealerships = sitAccount.dealerships;
     }
 %>
 <fieldset>
     <legend>Enter Your Search Criteria</legend>
     <div id="searchFields">
-        <form action="search.jsp" method="post">
+        <form id="searchDealers" action="search.jsp" method="post">
             <div class="searchField" id="no">
                 <input name="no" type="text"
                        size="20" maxlength="30"
@@ -147,7 +186,7 @@
                        placeholder="User ID" />
             </div>
             <div class="searchField">
-                <input type="submit" id="searchBtn" value="Search"/>
+                <input type="button" id="searchBtn" value="Search"/>
                 <input type="button" id="resetBtn" value="Reset"/>
             </div>
         </form>
@@ -174,5 +213,12 @@
         }
     %>
 </div>
+<form id="navigation" action="yearlySummary.jsp" method="post">
+    <input type="hidden" name="can" id="can" value="">
+    <input type="hidden" name="name" id="name" value="">
+    <input type="hidden" name="dealer_type" id="dealer_type" value="">
+    <input type="hidden" name="current" id="current" value="<%= current_page %>">
+</form>
+
 
 <%@ include file="_bottom.inc" %>

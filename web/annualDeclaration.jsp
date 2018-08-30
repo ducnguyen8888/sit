@@ -335,7 +335,7 @@ if (finalized == requiredMonthsView){
                     %>>View Form</button>
                 </form>
                 <button style="margin-left: 30px;" id="btnFinalize" name="btnFinalize" 
-                <%= (finalized == requiredMonthsClose) ? "class=\"btn btn-primary\"" : "class=\"btn btn-disabled\" disabled" %>>Close Year</button>
+                <%= (finalized == requiredMonthsClose) && !readOnly ? "class=\"btn btn-primary\"" : "class=\"btn btn-disabled\" disabled" %>>Close Year</button>
                 <div style="width:550px;">
                     <div id="requiredStar"><span style="color: red;">*</span><b>Required</b></div>
                     <div id="fieldNotice"><b>You must fill in all of the fields below</b></div>
