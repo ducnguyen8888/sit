@@ -36,6 +36,7 @@
 
 <style>
     fieldset{ margin-top: 17rem;}
+    legend{text-align: center; }
     #searchFields {
         clear: both;
         position: relative; margin: 2rem auto auto auto;
@@ -47,9 +48,19 @@
 
     .searchField { display: inline-block; margin-top: 4rem; margin-bottom: 4rem;}
 
+    #searchBtn, #resetBtn {
+        height:3rem; width: 6rem;
+        background-color: #169BD7;
+        color: white;
+    }
+
+    #searchBtn:hover, #resetBtn:hover{
+        background-color: #253B80;
+    }
+
     #dealersContainer{
         clear: both;
-        position: relative; margin: 5rem auto auto auto;
+        position: relative; margin: 5rem auto 1rem auto;
         border-radius: 5px;
         width: 150rem; background-color: whitesmoke;
     }
@@ -68,9 +79,7 @@
         -webkit-box-shadow:0 8px 6px -6px black;
         -moz-box-shadow:0 8px 6px -6px black;
         box-shadow:0 8px 6px -6px black;
-        margin-top: 40px;
-        margin-bottom: 40px;
-        margin-left: 40px;
+        margin: 2rem auto 2rem 4rem;
     }
     .dealerWidget div.wtitle {
         background:#B4C4D9;
@@ -96,6 +105,8 @@
     }
     .dealerWidget:hover{background:#e6e6e6; cursor: pointer;}
 
+
+
 </style>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
@@ -109,13 +120,18 @@
         $("#searchBtn").click(function(e){
             e.preventDefault();
             e.stopPropagation();
-            $("#dealersContainer").remove();
-            $("#searchDealers").submit();
+            if (isAtLeastOneSpecified()) {
+                $("#dealersContainer").empty();
+                $("#searchDealers").submit();
+            } else {
+                $("#dealersContainer").html("<div style=\" text-align: center; color: red; font-size:15px;\">Please specify at least one criteria</div>");
+            }
         })
     }
     function reset(){
         $("#resetBtn").click(function(){
-            $("#dealersContainer").remove();
+            $("#searchDealers")[0].reset();
+            $("#dealersContainer").empty();
         })
     }
 
@@ -138,6 +154,18 @@
             theForm.submit();
         });
     }
+
+    function isAtLeastOneSpecified(){
+        if ($('[name="no"]').val().length > 0
+            || $('[name="name"]').val().length > 0
+            || $('[name="address"]').val().length > 0
+            || $('[name="userName"]').val().length > 0
+            || $('[name="userId"]').val().length > 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
 </script>
 <%
     String dealershipNo         = nvl(request.getParameter("no"));
@@ -146,9 +174,10 @@
     String userName             = nvl(request.getParameter("userName"));
     String userId               = nvl(request.getParameter("userId"));
 
-    ArrayList<Dealership> viewDealerships = new ArrayList<Dealership>();
+    ArrayList<Dealership> viewDealerships =  new ArrayList<Dealership>();;
     boolean atLeastOneSpecified           = AtLeastOneSpecified(dealershipNo, dealershipName, dealershipAddress, userName, userId);
     SearchCriteria criteria               = new SearchCriteria(dealershipNo, dealershipName, dealershipAddress, userName, userId);
+    userId = "";
     if ( sitAccount.isValid()
             && sitAccount.getUser().readOnly()
             && atLeastOneSpecified) {
@@ -157,7 +186,7 @@
     }
 %>
 <fieldset>
-    <legend>Enter Your Search Criteria</legend>
+    <legend><h1>Enter Your Search Criteria</h1></legend>
     <div id="searchFields">
         <form id="searchDealers" action="search.jsp" method="post">
             <div class="searchField" id="no">
@@ -205,14 +234,17 @@
                     out.println("  <div class='wbody'>" + getDealerAddress(d) + "</div>");
                     out.println("</div>");
                 }
+                viewDealerships.clear();
             }catch (Exception e){
                 SITLog.error(e, "\r\nProblem in table loop for dealerships.jsp\r\n");
             }
         } else if (atLeastOneSpecified ) {
-            out.println("<tr><td colspan=\"3\" style=\"text-align: center;\">Sorry. No records found</td></tr>");
+            out.println("<div style=\"text-align: center; color:red; font-size:15px;\">Sorry. No records found</div>");
         }
     %>
+
 </div>
+
 <form id="navigation" action="yearlySummary.jsp" method="post">
     <input type="hidden" name="can" id="can" value="">
     <input type="hidden" name="name" id="name" value="">
@@ -221,4 +253,6 @@
 </form>
 
 
+
 <%@ include file="_bottom.inc" %>
+

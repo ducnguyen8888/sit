@@ -4,7 +4,7 @@
         #body   { top:340px; left:0px; bottom:15px; right:200px; overflow:auto; background: #b0b0b0;}
         #bodyTop{ position:absolute; background: #b0b0b0; top:152px; left:0px; right:200px; height:200px; }
         #sideBar{ top:152px; right:1px; background: #e6e6e6; width: 200px; border-left: 1px solid grey; }
-        footer  { height: 15px; left:0px; bottom:0px; right: 0px; overflow:hidden; font-size: 9px; text-align: right; padding-top: 1px; background: #165983; color: white; }
+        footer  { height: 15px; left:0px; right: 0px; bottom: 0px; overflow:hidden; font-size: 9px; text-align: right; padding-top: 1px; background: #165983; color: white; position: absolute; }
         /**********************************************************/
         #hdrImg { float: left; margin: 5px;  width: 115px; height: 111px; background-image: url("../../images/HARRIS-LOGO.png"); 
                   background-repeat: no-repeat; background-position: left; border: 1px solid black; }
