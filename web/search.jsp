@@ -124,7 +124,7 @@
                 $("#dealersContainer").empty();
                 $("#searchDealers").submit();
             } else {
-                $("#dealersContainer").html("<div style=\" text-align: center; color: red; font-size:15px;\">Please specify at least one criteria</div>");
+                $("#dealersContainer").html("<div style=\" text-align: center; color: red; font-size:15px;\">Please specify at least one of criteria</div>");
             }
         })
     }
