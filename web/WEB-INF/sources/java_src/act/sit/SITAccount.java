@@ -131,6 +131,76 @@ public class SITAccount
     }
 
 
+    public void loadDealerships(SearchCriteria criteria) throws Exception {
+        dealerships.clear();
+
+        if ( ! this.isValid() ) throw new Exception("SIT user is not valid");
+
+        try ( Connection        con  = Connect.open(datasource);
+              PreparedStatement  ps  = con.prepareStatement(
+                      "with "
+                              + "    dealerships (client_id, userid, username, can, year, yearList) "
+                              + "    as  (select ownership.client_id, ownership.userid, sit_users.username, ownership.can, max(owner.year), "
+                              + "                listagg(owner.year,',') within group (order by owner.year) as year "
+                              + "          from  sit_ownership_username ownership "
+                              + "                join sit_users"
+                              + "                     on (sit_users.client_id = ownership.client_id and sit_users.userid = ownership.userid)"
+                              + "                join owner "
+                              + "                     on (owner.client_id=ownership.client_id and owner.can=ownership.can) "
+                              + "         where  ownership.active='Y' "
+                              + "         group by "
+                              + "                ownership.client_id, ownership.userid, sit_users.username, ownership.can "
+                              + "        ) "
+                              + "select  owner.can, taxdtl.dealer_type, taxdtl.aprdistacc, "
+                              + "        owner.city, owner.state, owner.zipcode, owner.country, "
+                              + "        owner.nameline1, owner.nameline2, owner.nameline3, owner.nameline4, "
+                              + "        owner.phone, owner.email, "
+                              + "        owner.anameline1, owner.anameline2, owner.anameline3, owner.anameline4, "
+                              + "        owner.acity, owner.astate, owner.azip, "
+                              + "        dealerships.yearList, "
+                              + "        nvl(taxdtl.start_date,to_date('12/31/'||(taxdtl.year-1),'mm/dd/yyyy')) as \"startDate\", "
+                              + "        nvl(extract(year from taxdtl.start_date),taxdtl.year-1) as \"startYear\", "
+                              + "        nvl(extract(month from taxdtl.start_date),12) as \"startMonth\" "
+                              + "  from  dealerships "
+                              + "        join owner "
+                              + "             on (owner.client_id=dealerships.client_id and owner.can=dealerships.can "
+                              + "                   and owner.year=dealerships.year) "
+                              + "        join taxdtl "
+                              + "             on (taxdtl.client_id=owner.client_id and taxdtl.can=owner.can and taxdtl.year=owner.year) "
+                              + " where  dealerships.client_id=?"
+                              + condition(criteria.dealerNo,        "and dealerships.can like ?")
+                              + condition(criteria.dealerName,      "and owner.nameline1 like ?")
+                              + condition(criteria.dealerAddress,   "and owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 like ?")
+                              + condition(criteria.userId,          "and dealerships.userid like ?")
+                              + condition(criteria.userName,        "and dealerships.username like ?")
+                              + " order by "
+                              + "        owner.can asc, owner.nameline1 asc"
+              );
+        )
+        {   ps.setString(1, clientId);
+            int columnPosition = 1;
+            columnPosition = setPsValue(criteria.dealerNo,ps,columnPosition);
+            columnPosition = setPsValue(criteria.dealerName,ps,columnPosition);
+            columnPosition = setPsValue(criteria.dealerAddress,ps,columnPosition);
+            columnPosition = setPsValue(criteria.userId,ps,columnPosition);
+            columnPosition = setPsValue(criteria.userName,ps,columnPosition);
+
+            try ( ResultSet rs = ps.executeQuery(); )
+            {   if ( ! rs.next() )
+            {  return;
+            }
+
+                dealerships.add(new Dealership(datasource, clientId, rs));
+                while ( rs.next() )
+                {   dealerships.add(new Dealership(datasource, clientId, rs));
+                }
+            }
+        }
+
+        return;
+    }
+
+
     public void setPreferences()
     {
         SIT_FINALIZE_ON_PAY = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
@@ -195,6 +265,33 @@ public class SITAccount
             if ( value != null ) return value;
         }
         return "";
+    }
+
+    public boolean isDefined(String... values)
+    {   if ( values == null || values.length == 0 ) return false;
+        for ( String value : values )
+        {   if ( value == null || value.length() == 0 ) return false;
+        }
+        return true;
+    }
+
+    public String condition(String criteria, String value){
+        return isDefined(criteria)? value:"";
+    }
+
+    public int setPsValue(String criteria,
+                           PreparedStatement ps,
+                           int position) throws Exception{
+        if ( isDefined(criteria.replaceAll("%","")) ) {
+            position = position+1;
+            ps.setString(position,sanitize(criteria)+"%");
+        }
+
+        return position;
+    }
+
+    public String sanitize(String value ) {
+        return value.replaceAll("[\\.,\']","%").trim();
     }
 
     public static String[][] getSITClients(String datasource) throws Exception
