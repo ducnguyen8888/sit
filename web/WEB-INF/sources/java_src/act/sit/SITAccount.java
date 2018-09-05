@@ -168,11 +168,13 @@ public class SITAccount
                               + "        join taxdtl "
                               + "             on (taxdtl.client_id=owner.client_id and taxdtl.can=owner.can and taxdtl.year=owner.year) "
                               + " where  dealerships.client_id=?"
-                              + condition(criteria.dealerNo,        "and dealerships.can like ?")
-                              + condition(criteria.dealerName,      "and owner.nameline1 like ?")
-                              + condition(criteria.dealerAddress,   "and owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 like ?")
-                              + condition(criteria.userId,          "and dealerships.userid like ?")
-                              + condition(criteria.userName,        "and dealerships.username like ?")
+                              + condition(criteria.dealerNo,        "and dealerships.can like UPPER(?)")
+                              + "   and  (? is null or dealerships.can like upper(?)) "
+                              + "   and dealerships.can like nvl(upper(?),dealerships.can) "
+                              + condition(criteria.dealerName,      "and owner.nameline1 like UPPER(?)")
+                              + condition(criteria.dealerAddress,   "and owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 like UPPER(?)")
+                              + condition(criteria.userId,          "and dealerships.userid like UPPER(?)")
+                              + condition(criteria.userName,        "and dealerships.username like UPPER(?)")
                               + " order by "
                               + "        owner.can asc, owner.nameline1 asc"
               );

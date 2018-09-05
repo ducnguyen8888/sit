@@ -179,7 +179,7 @@
     SearchCriteria criteria               = new SearchCriteria(dealershipNo, dealershipName, dealershipAddress, userName, userId);
     userId = "";
     if ( sitAccount.isValid()
-            && sitAccount.getUser().readOnly()
+            && sitAccount.getUser().viewOnly()
             && atLeastOneSpecified) {
         sitAccount.loadDealerships( criteria);
         viewDealerships = sitAccount.dealerships;

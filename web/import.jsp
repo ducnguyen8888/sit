@@ -503,7 +503,7 @@
                     }
 
                     $(this).val(saleType);
-                    if ( saleTypes.includes(saleType) ) 
+                    if ( saleTypes.indexOf(saleType) > -1 )
                     {
                         $(this).removeClass("error"); 
                     }

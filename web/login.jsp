@@ -571,7 +571,7 @@ NEED an ERROR page....
                                             else 
                                             {
                                                 $("#loginMessages .errors").html("");
-                                                if ( response.readOnly ){
+                                                if ( response.viewOnly ){
                                                     location = "search.jsp";
                                                 } else {
                                                     location = "dealerships.jsp";

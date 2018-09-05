@@ -46,7 +46,7 @@ public class SITUser
 
     protected   boolean         isAdmin             = false;
     protected   boolean         isLocked            = false;
-    protected   boolean         readOnly            = false;
+    protected   boolean         viewOnly            = false;
 
     protected   boolean         requiresPinChange   = false;
     protected   LocalDateTime   lastPinChangeTime   = null;
@@ -76,7 +76,7 @@ public class SITUser
 
     public      boolean         isAdmin()               { return isAdmin; }
     public      boolean         isLocked()              { return isLocked; }
-    public      boolean         readOnly()              { return readOnly; }
+    public      boolean         viewOnly()              { return viewOnly; }
 
     public      boolean         requiresPinChange()     { return requiresPinChange; }
     public      LocalDateTime   getLastPinChangeTime()  { return lastPinChangeTime; }
@@ -131,7 +131,7 @@ public class SITUser
 
                     isAdmin             = "Y".equalsIgnoreCase(rs.getString("isadmin"));
                     isLocked            = "Y".equalsIgnoreCase(rs.getString("islocked"));
-                    readOnly            = "N".equalsIgnoreCase(rs.getString("isadmin"));
+                    viewOnly            = "Y".equalsIgnoreCase(rs.getString("isadmin"));
                     requiresPinChange   = "Y".equalsIgnoreCase(rs.getString("reqpinchng")) || lastLoginTime == null;
 
                     lastPinChangeTime   = (rs.getTimestamp("lastpinchng") == null ? null : rs.getTimestamp("lastpinchng").toLocalDateTime());

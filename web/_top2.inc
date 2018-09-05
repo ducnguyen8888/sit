@@ -12,7 +12,7 @@
             </div>
         </div>  
         <div class="hdrDiv">
-            <% if ( !readOnly ) {%>
+            <% if ( !viewOnly) {%>
             <div id="dealers"><i class="fa fa-car"></i><a href="dealerships.jsp">Dealerships</a></div>
             <div id="payments"><i class="fa fa-bank"></i><a href="paymentsDue.jsp">Payments Due</a></div>
 
@@ -40,7 +40,7 @@
             <!-- <div id="feedback"><i class="fa fa-comment"></i><a id="<%= current_page %>" href="#">Feedback</a></div> -->
         </div>
 
-        <% if( !readOnly ) { %>
+        <% if( !viewOnly) { %>
         <div id="sidebarTitle" style="">Recent Dealerships</div>
 
         <%

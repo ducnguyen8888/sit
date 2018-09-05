@@ -64,7 +64,7 @@
     String      formName            = null;
     String      categoryName        = null;
 
-    boolean     readOnly            = sitAccount!= null ? sitAccount.getUser().readOnly() : false;
+    boolean viewOnly = sitAccount!= null ? sitAccount.getUser().viewOnly() : false;
 
     // Attempt to locate the selected dealership 
     Dealership  dealership          = dealerships.get(can);
