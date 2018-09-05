@@ -5,7 +5,7 @@
     String userid               = sitAccount.getUser().getUserId();
     String clientId             = sitAccount.getClientId();
 
-    can = request.getParameter("can");
+    can = "99B03507000000000";//request.getParameter("can");
 
 
     // If no CAN then no data

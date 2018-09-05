@@ -271,7 +271,7 @@
 
     public String numberFormat( String number ) throws Exception
     {
-        return number.replaceAll("[^0-9 | .]+","");
+        return number.replaceAll("[^0-9- | .]+","");
     }
     public String dateFormat( java.util.Date date ) throws Exception 
     {

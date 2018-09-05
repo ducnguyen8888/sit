@@ -6,6 +6,9 @@
         - Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
     DN - 08/21/2018 - PRC 194803
         - Updated sales type from "VTM" to "VM"
+    DN - 09/05/2018 - PRC 204028
+        - Replace "includes" with "indexOf"(IE does not support method "includes")
+        - Do not calculate tax for sale types FL, DL, SS, RL
 --%>
 <%@ include file="_configuration.inc"%>
 <% 
@@ -178,7 +181,7 @@
                         ps.setString(6, type[i]);//sale_type
                         ps.setString(7, purchaser[i]);//purchaser
                         ps.setString(8, numberFormat( price[i] ));//sales_price
-                        ps.setString(9, numberFormat( calculated[i] ));//tax_amount
+                        ps.setString(9,  numberFormat(calculated[i] ));//tax_amount
                         ps.setString(10, client_id);
                         ps.setString(11, year);
                         ps.setString(12, month);
@@ -537,7 +540,17 @@
                 {
                     var price  = $(this).parents("tr").find("input[name=price]").val().c$valueOf();
                     var tax    = $(this).parents("tr").find("input[name=tax]").val().c$valueOf();
-                    var amount = (price * taxRate).c$toFixed(2);
+                    var amount = 0;
+                    var saleType = $(this).parents("tr").find("input[name=type]").val().toUpperCase();
+                    console.log(saleType);
+                    // PRC 204028 do NOT calculate tax for sales type FL, DL, SS, RL
+                    if (saleType != "FL"
+                        && saleType != "DL"
+                        && saleType != "SS"
+                        && saleType != "RL"){
+
+                        amount = (price * taxRate).c$toFixed(2);
+                    }
                     $(this).val(amount.c$formatAsMoney());
 
                     if ( amount == tax ) 

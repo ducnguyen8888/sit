@@ -54,22 +54,25 @@ public class AmountDue implements Comparable
         this.clientId       = clientId;
         this.can            = can;
         this.year           = year;
-        this.month          = String.format("%02d",Integer.parseInt(month));
+        this.month          = month;
 
         this.id = String.format("%s%s", year, month);
     }
 
 
-    public static void main(String... args) throws Exception
+    public static void main(String... args)
     {
         String can = "1234";
-
-        AmountDue[] due = getDue("jdbc/sit", "7580","99B03144000000000");
-        //for ( AmountDue e : due )
-        //{
-        //    System.out.println(e.toString());
-        //}
-        System.out.println(showRecords(due));
+        try {
+            AmountDue[] due = getDue("jdbc:oracle:thin:@ares:1521:actd", "7580", "99B03144000000000");
+            //for ( AmountDue e : due )
+            //{
+            //    System.out.println(e.toString());
+            //}
+            System.out.println(showRecords(due));
+        } catch ( Exception e){
+          e.printStackTrace();
+        }
     }
 
 
@@ -110,7 +113,7 @@ public class AmountDue implements Comparable
                 while ( rs.next() )
                 {
                     String year  = rs.getString("year");
-                    String month = String.format("%02d", rs.getInt("month"));
+                    String month = rs.getString("month");
                     String id    = String.format("%s%s", year, month);
 
                     AmountDue record = cache.get(id);
@@ -133,7 +136,7 @@ public class AmountDue implements Comparable
                                                 + "                 sum(sales_price) as \"sales\", "
                                                 + "                 sum(tax_amount) as \"taxes\" "
                                                 + "            from sit_sales "
-                                                + "           where status <> 'D' and sale_type in ('MV','MH','HE','VTM') "
+                                                + "           where status <> 'D' and sale_type in ('MV','MH','HE','VTM','VM') "
                                                 + "           group by client_id, can, year, month "
                                                 + "         ), "
                                                 + "      filings (client_id, can, year, month, reports, finalized, filed) "
