@@ -53,7 +53,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/ojdbc6-11.2.0.3.jar!/" />
+          <root url="jar://$USER_HOME$/Documents/ojdbc14-9.2.0.1.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

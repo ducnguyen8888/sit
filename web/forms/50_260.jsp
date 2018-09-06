@@ -715,7 +715,6 @@ end.append("</div><!--page holder -->\r\n");
         end.append("        });\r\n"); 
     }       
     if (notDefined(request.getParameter("formSubmitted"))){
-        end.append("    </form>\r\n");
         end.append("        $(\"#goBack\").on(\"click\", function(e){ \r\n");
         end.append("            e.preventDefault();\r\n");
         end.append("            e.stopPropagation(); \r\n");

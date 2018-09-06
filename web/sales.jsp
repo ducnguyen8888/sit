@@ -206,6 +206,12 @@
             If there was a problem and you wish to proceed, this report will be reset.
         </div>
     </div>
+    <div id="operationWarning">
+        <div style="text-align: center; font-weight: bold;">
+          <div style="color: red;">Warning!!</div><br>
+            Attempted to perform an unauthorized operation.
+        </div>
+    </div>
     <div id="dialog">
         <form id="createSaleForm" action="__writeInfo.jsp" method="post"> <input style="height:0px; top:-1000px; position:absolute" type="text" value="">
             <div style="margin-top: 8px; margin-left: 11px; float:left;">
@@ -284,6 +290,7 @@
             var finalize_on_pay = ("<%= finalize_on_pay %>" === "true");
             var inCart = ("<%= isInCart %>" === "true");
             var cartCounter = 0;
+            var viewOnly = "<%= viewOnly%>";
 
             updateYearly();                         // initial update on page load
             <% if (showUpload) out.print("updateFileDownloads();"); %>
@@ -426,6 +433,7 @@
             $theDialog.hide();
 
             var $dialogWarning = $("#dialogWarning");
+            var $operationWarning = $("#operationWarning");
 
             var success = true;
 
@@ -443,6 +451,7 @@
             $(document).on('click', '#myTable a', function(e){ // edit link
                 e.preventDefault();
                 e.stopPropagation();
+                console.log(viewOnly);
                 if( finalize_on_pay && report_status == "I" && timeDiff < 1 && timeDiff > 0){
                         $dialogWarning.dialog( "open");
                     } else if(finalize_on_pay && inCart && cartCounter == 0){
@@ -499,10 +508,16 @@
                                 },
                                 {
                                     text: "Finish",
-                                    click: function(){ 
-                                        writeMe();
-                                        if (success)
-                                            $(this).dialog( "close" ); 
+                                    click: function(){
+                                        if("true"!=viewOnly){
+                                            writeMe();
+                                            if (success)
+                                                $(this).dialog( "close" );
+                                        } else {
+                                            $(this).dialog( "close" );
+                                            $operationWarning.dialog("open");
+                                        }
+
                                     }
                                 } // button end
                             ]  
@@ -517,10 +532,16 @@
                                 },
                                 {
                                     text: "Delete",
-                                    click: function(){ 
-                                        writeMe();
-                                        if (success)
-                                            $(this).dialog( "close" ); 
+                                    click: function(){
+                                        if("true"!=viewOnly){
+                                            writeMe();
+                                            if (success)
+                                                $(this).dialog( "close" );
+                                        } else {
+                                            $(this).dialog( "close" );
+                                            $operationWarning.dialog("open");
+                                        }
+
                                     }
                                 } // button end
                             ]  
@@ -580,8 +601,14 @@
                             {
                                 text: "Add Another",
                                 click: function(){
-                                    writeMe();
-                                    $theForm.find("#model").focus(); 
+                                    if ("true" != viewOnly){
+                                        writeMe();
+                                        $theForm.find("#model").focus();
+                                    } else {
+                                        $(this).dialog( "close" );
+                                        $operationWarning.dialog("open");
+                                    }
+
                                 }
                             },
                             {
@@ -590,10 +617,16 @@
                             },
                             {
                                 text: "Finish",
-                                click: function(){ 
-                                    writeMe();
-                                    if (success)
-                                        $(this).dialog( "close" ); 
+                                click: function(){
+                                    if ("true" != viewOnly){
+                                        writeMe();
+                                        if (success)
+                                            $(this).dialog( "close" );
+                                    } else {
+                                        $(this).dialog( "close" );
+                                        $operationWarning.dialog("open");
+                                    }
+
                                 }
                             } // button end
                         ]  );// buttons end                 
@@ -757,12 +790,20 @@
                 ]  
                 
             }); // end of dialog
-
-       
-             
-            
             //$dialogWarning.show();
 
+            $operationWarning.dialog({
+                autoOpen: false,
+                open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
+                modal:true,
+                width:500,
+                buttons:[
+                    {
+                        text:"OK",
+                        click: function() { $(this).dialog("close");}
+                    }
+                ]
+            });
 
             function cleanMe(){
                 $theForm.find("#model").prop("value", "").removeClass('error');

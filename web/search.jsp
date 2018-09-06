@@ -136,7 +136,6 @@
     }
 
     function getAccountDetail(){
-        console.log("Hello World");
         $("#dealersContainer div").click(function(e) {
             e.preventDefault();
             e.stopPropagation();

@@ -330,363 +330,393 @@
                 <input type="hidden" name="report_seq" value="<%= reportSequence %>">
             </form>
         </div><!-- /myTableDiv -->
+        <div id="operationWarning">
+            <div style="text-align: center; font-weight: bold;">
+                <div style="color: red;">Warning!!</div><br>
+                Attempted to perform an unauthorized operation.
+            </div>
+        </div>
     </div><!-- /body -->
 
 
  
 <%@ include file="_bottom.inc" %>
 <!-- include scripts here -->
-<script src="assets/js/jquery.min.js"></script> 
-<script src="assets/js/sitcommon.js"></script> 
+<script src="assets/js/sitcommon.js"></script>
     <script>
     
     $(document).ready(function(){
         $("#inputfile").change(readCSVFile);
         submitRecords();
         goBack();
-    });
 
 
-    var dealerType      = "<%= category %>";
-    var taxRate         = "<%= uptv %>".c$valueOf();
-    var defaultFormat   = "1" == "<%= formatType %>"
+        var dealerType      = "<%= category %>";
+        var taxRate         = "<%= uptv %>".c$valueOf();
+        var defaultFormat   = "1" == "<%= formatType %>"
 
-    var firstRowHeader      =  !defaultFormat; // Based on client pref
-    var swapSalesTypeColumn =  defaultFormat;    // Based on dealer type, HE dealers have switched columns
+        var firstRowHeader      =  !defaultFormat; // Based on client pref
+        var swapSalesTypeColumn =  defaultFormat;    // Based on dealer type, HE dealers have switched columns
 
-    var loadMonth = "<%= month %>".c$valueOf();
-    var loadYear  = "<%= year %>".c$valueOf();
-    var currentYear = (new Date()).getFullYear();
+        var loadMonth = "<%= month %>".c$valueOf();
+        var loadYear  = "<%= year %>".c$valueOf();
+        var currentYear = (new Date()).getFullYear();
 
-    var saleTypes = [ "MV", "FL", "DL", "SS", "VM", "HE", "MH", 'RL' ];
-    function readCSVFile()
-    {   console.log( defaultFormat );
-        var reader = new FileReader();
-        reader.onload = function(e)
-        {
-            var records = reader.result.split(/\r?\n|\r/);
-            if ( records.length == 0 )
+        var saleTypes = [ "MV", "FL", "DL", "SS", "VM", "HE", "MH", 'RL' ];
+
+        var $operationWarning = $("#operationWarning");
+        var viewOnly          = "<%= viewOnly %>"
+
+        function readCSVFile()
+        {   console.log( defaultFormat );
+            var reader = new FileReader();
+            reader.onload = function(e)
             {
-                return;
-            }
-
-            // Check if first line is a header row
-            var fields = records[0].split(",");
-            if ( firstRowHeader )
-            {
-                records.shift();
-                fields = records[0].split(",");
-            }
-
-
-            // Switch Sales Type and Purchaser Name fields if needed
-            // Heavy Equipment CSV import has Type and Purchaser fields switched.
-           // if ( swapSalesTypeColumn )
-           // {
-            //    var offset = fields.length-8 + fieldPosition.saleType;
-             //   if (  ! (saleTypes.includes(fields[offset]) && fields[offset+1].indexOf(" ") > 0) )
-             //   {
-              //      swapSalesTypeColumn = true;
-             //   }
-           // }
-
-
-
-
-            // Create the base table and headers
-            var table = $("<table/>")
-                .append( $("<caption/>").html("Calculated tax is using tax factor of " + taxRate + " and will be used instead of Entered Tax value."))
-                .append( $("<tr/>")
-                            //.append($("<th/>").html("Date<br>of Sale"))
-                            .append($("<th/>").html("Sale Date"))
-                            .append($("<th/>").html("Model<br>Year"))
-                            .append($("<th/>").html("Make"))
-                            .append($("<th/>").html("Identification<br>Number"))
-                            .append($("<th/>").html("Purchaser"))
-                            .append($("<th/>").html("Sale<br>Type"))
-                            .append($("<th/>").html("Price"))
-                            .append($("<th/>").html("Entered<br>Tax"))
-                            .append($("<th/>").html("Calculated<br>Tax"))
-                            );
-            table.append( "<input type='hidden' name='inputDate' value='" + getCurrentDate() + "'>")
-
-
-            // Process each record
-            var line = 0;
-            records.forEach(function(record)
-            {
-                line++;
-
-                var fields = record.split(",");
-
-                // Probable blank line if only one field
-                if ( fields.length < 2 )
+                var records = reader.result.split(/\r?\n|\r/);
+                if ( records.length == 0 )
                 {
                     return;
                 }
 
-                // Adjust for Heavy Equipment record set to normalize our data. 
-                // Heavy Equipment records exclude model year.
-                if ( fields.length == 7 )
+                // Check if first line is a header row
+                var fields = records[0].split(",");
+                if ( firstRowHeader )
                 {
-                    fields.splice(fieldPosition.modelYear,0,"");
+                    records.shift();
+                    fields = records[0].split(",");
                 }
+
 
                 // Switch Sales Type and Purchaser Name fields if needed
                 // Heavy Equipment CSV import has Type and Purchaser fields switched.
-                if ( swapSalesTypeColumn )
+               // if ( swapSalesTypeColumn )
+               // {
+                //    var offset = fields.length-8 + fieldPosition.saleType;
+                 //   if (  ! (saleTypes.includes(fields[offset]) && fields[offset+1].indexOf(" ") > 0) )
+                 //   {
+                  //      swapSalesTypeColumn = true;
+                 //   }
+               // }
+
+
+
+
+                // Create the base table and headers
+                var table = $("<table/>")
+                    .append( $("<caption/>").html("Calculated tax is using tax factor of " + taxRate + " and will be used instead of Entered Tax value."))
+                    .append( $("<tr/>")
+                                //.append($("<th/>").html("Date<br>of Sale"))
+                                .append($("<th/>").html("Sale Date"))
+                                .append($("<th/>").html("Model<br>Year"))
+                                .append($("<th/>").html("Make"))
+                                .append($("<th/>").html("Identification<br>Number"))
+                                .append($("<th/>").html("Purchaser"))
+                                .append($("<th/>").html("Sale<br>Type"))
+                                .append($("<th/>").html("Price"))
+                                .append($("<th/>").html("Entered<br>Tax"))
+                                .append($("<th/>").html("Calculated<br>Tax"))
+                                );
+                table.append( "<input type='hidden' name='inputDate' value='" + getCurrentDate() + "'>")
+
+
+                // Process each record
+                var line = 0;
+                records.forEach(function(record)
                 {
-                    fields.swap(fieldPosition.saleType,fieldPosition.saleType-1);
+                    line++;
+
+                    var fields = record.split(",");
+
+                    // Probable blank line if only one field
+                    if ( fields.length < 2 )
+                    {
+                        return;
+                    }
+
+                    // Adjust for Heavy Equipment record set to normalize our data.
+                    // Heavy Equipment records exclude model year.
+                    if ( fields.length == 7 )
+                    {
+                        fields.splice(fieldPosition.modelYear,0,"");
+                    }
+
+                    // Switch Sales Type and Purchaser Name fields if needed
+                    // Heavy Equipment CSV import has Type and Purchaser fields switched.
+                    if ( swapSalesTypeColumn )
+                    {
+                        fields.swap(fieldPosition.saleType,fieldPosition.saleType-1);
+                    }
+
+                    // Ignore records with an invalid number of fields...should we report error?
+                    if ( fields.length != 8 )
+                    {
+                        return;
+                    }
+
+                    var row = $("<tr/>")
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":fields[fieldPosition.saleDate]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model",  "value":fields[fieldPosition.modelYear]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":fields[fieldPosition.modelMake]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":fields[fieldPosition.vin]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":fields[fieldPosition.purchaserName]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":fields[fieldPosition.saleType]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":fields[fieldPosition.salePrice]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":fields[fieldPosition.taxAmount]})))
+                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"calculated", "value":"0"}).prop("readonly","readonly")))
+                                ;
+
+                    table.append(row);
+                });
+
+
+                // //////////////
+                // Add change triggers on the data columns
+                // //////////////
+
+                // Sale Date
+                $("tr td:first-child input",table).change(
+                    function()
+                    {
+                        if ( isValidSaleDate($(this).val()) )
+                        {
+                            $(this).removeClass("error");
+                        }
+                        else
+                        {
+                            $(this).addClass("error");
+                        }
+                    }
+                ).change();
+
+                // Model Year
+                $("tr td:nth-child(2) input",table).change(
+                    function()
+                    {
+                        if ( isValidModelYear($(this).val()) )
+                        {
+                            $(this).removeClass("error");
+                        }
+                        else if ( dealerType != "HE")
+                        {
+                            $(this).addClass("error");
+                        }
+                    }
+                ).change();
+
+                // Sale Type
+                $("tr td:nth-child(6) input",table).change(
+                    function()
+                    {
+                        var saleType = $(this).val().toUpperCase();
+                        if ( saleType == "VTM" )
+                        {
+                            saleType = "VM";
+                        }
+
+                        $(this).val(saleType);
+                        if ( saleTypes.indexOf(saleType) > -1 )
+                        {
+                            $(this).removeClass("error");
+                        }
+                        else
+                        {
+                            $(this).addClass("error");
+                        }
+                    }
+                ).change();
+
+                // Sale Price
+                $("tr td:nth-child(7) input",table).change(
+                    function()
+                    {
+                        var amount = $(this).val().c$formatAsMoney();
+                        $(this).val(amount);
+
+                        // Since the calculated and entered tax amounts trigger off of each
+                        // other to denote errors we'll need to trigger them in the following
+                        // way. This ensures that the error indications are shown based on
+                        // the current values and not because of a prior value.
+                        $(this).parents("tr").find("input[name=calculated]").change();
+                        $(this).parents("tr").find("input[name=tax]").change();
+                        $(this).parents("tr").find("input[name=calculated]").change();
+                    }
+                ).change();
+
+                // Calculated Tax
+                $("tr td:nth-child(9) input",table).change(
+                    function()
+                    {
+                        var price  = $(this).parents("tr").find("input[name=price]").val().c$valueOf();
+                        var tax    = $(this).parents("tr").find("input[name=tax]").val().c$valueOf();
+                        var amount = 0;
+                        var saleType = $(this).parents("tr").find("input[name=type]").val().toUpperCase();
+                        console.log(saleType);
+                        // PRC 204028 do NOT calculate tax for sales type FL, DL, SS, RL
+                        if (saleType != "FL"
+                            && saleType != "DL"
+                            && saleType != "SS"
+                            && saleType != "RL"){
+
+                            amount = (price * taxRate).c$toFixed(2);
+                        }
+                        $(this).val(amount.c$formatAsMoney());
+
+                        if ( amount == tax )
+                        {
+                            $(this).removeClass("taxError");
+                        }
+                        else
+                        {
+                            $(this).addClass("taxError");
+                        }
+                    }
+                ).change();
+
+                // Entered Tax
+                // Defined after calculated amount so it compares with the actual calculated amount
+                $("tr td:nth-child(8) input",table).change(
+                    function()
+                    {
+                        var taxAmount = $(this).val().c$valueOf();
+                        $(this).val(taxAmount.c$formatAsMoney());
+
+                        var calculatedAmountField = $(this).parents("tr").find("input[name=calculated]");
+                        var calculatedAmount = calculatedAmountField.val().c$valueOf();
+                        if ( taxAmount == calculatedAmount )
+                        {
+                            $(this).removeClass("taxError");
+                        }
+                        else
+                        {
+                            $(this).addClass("taxError");
+                        }
+                        calculatedAmountField.change();
+                    }
+                ).change();
+
+
+
+                // Remove model year if dealer type doesn't have model years
+                if ( dealerType == "HE" )
+                {
+                    table.addClass("nomodelyear");
                 }
 
-                // Ignore records with an invalid number of fields...should we report error?
-                if ( fields.length != 8 )
-                {
-                    return;
-                }
-
-                var row = $("<tr/>")
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":fields[fieldPosition.saleDate]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model",  "value":fields[fieldPosition.modelYear]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":fields[fieldPosition.modelMake]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":fields[fieldPosition.vin]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":fields[fieldPosition.purchaserName]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":fields[fieldPosition.saleType]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":fields[fieldPosition.salePrice]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":fields[fieldPosition.taxAmount]})))
-                            .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"calculated", "value":"0"}).prop("readonly","readonly")))
-                            ;
-
-                table.append(row);
-            });
-            
-          
-            // //////////////
-            // Add change triggers on the data columns
-            // //////////////
-
-            // Sale Date
-            $("tr td:first-child input",table).change(
-                function()
-                {
-                    if ( isValidSaleDate($(this).val()) ) 
-                    {
-                        $(this).removeClass("error");
-                    }
-                    else 
-                    {
-                        $(this).addClass("error");
-                    }
-                }
-            ).change();
-
-            // Model Year
-            $("tr td:nth-child(2) input",table).change(
-                function()
-                {
-                    if ( isValidModelYear($(this).val()) ) 
-                    {
-                        $(this).removeClass("error"); 
-                    }
-                    else if ( dealerType != "HE")
-                    {
-                        $(this).addClass("error"); 
-                    }
-                }
-            ).change();
-
-            // Sale Type
-            $("tr td:nth-child(6) input",table).change(
-                function()
-                {
-                    var saleType = $(this).val().toUpperCase();
-                    if ( saleType == "VTM" )
-                    {
-                        saleType = "VM";
-                    }
-
-                    $(this).val(saleType);
-                    if ( saleTypes.indexOf(saleType) > -1 )
-                    {
-                        $(this).removeClass("error"); 
-                    }
-                    else 
-                    {
-                        $(this).addClass("error"); 
-                    }
-                }
-            ).change();
-
-            // Sale Price
-            $("tr td:nth-child(7) input",table).change(
-                function()
-                {
-                    var amount = $(this).val().c$formatAsMoney();
-                    $(this).val(amount);
-
-                    // Since the calculated and entered tax amounts trigger off of each
-                    // other to denote errors we'll need to trigger them in the following
-                    // way. This ensures that the error indications are shown based on
-                    // the current values and not because of a prior value.
-                    $(this).parents("tr").find("input[name=calculated]").change();
-                    $(this).parents("tr").find("input[name=tax]").change();
-                    $(this).parents("tr").find("input[name=calculated]").change();
-                }
-            ).change();
-
-            // Calculated Tax
-            $("tr td:nth-child(9) input",table).change(
-                function()
-                {
-                    var price  = $(this).parents("tr").find("input[name=price]").val().c$valueOf();
-                    var tax    = $(this).parents("tr").find("input[name=tax]").val().c$valueOf();
-                    var amount = 0;
-                    var saleType = $(this).parents("tr").find("input[name=type]").val().toUpperCase();
-                    console.log(saleType);
-                    // PRC 204028 do NOT calculate tax for sales type FL, DL, SS, RL
-                    if (saleType != "FL"
-                        && saleType != "DL"
-                        && saleType != "SS"
-                        && saleType != "RL"){
-
-                        amount = (price * taxRate).c$toFixed(2);
-                    }
-                    $(this).val(amount.c$formatAsMoney());
-
-                    if ( amount == tax ) 
-                    {
-                        $(this).removeClass("taxError"); 
-                    }
-                    else 
-                    {
-                        $(this).addClass("taxError"); 
-                    }
-                }
-            ).change();
-
-            // Entered Tax 
-            // Defined after calculated amount so it compares with the actual calculated amount
-            $("tr td:nth-child(8) input",table).change(
-                function()
-                {
-                    var taxAmount = $(this).val().c$valueOf();
-                    $(this).val(taxAmount.c$formatAsMoney());
-
-                    var calculatedAmountField = $(this).parents("tr").find("input[name=calculated]");
-                    var calculatedAmount = calculatedAmountField.val().c$valueOf();
-                    if ( taxAmount == calculatedAmount ) 
-                    {
-                        $(this).removeClass("taxError");
-                    }
-                    else 
-                    {
-                        $(this).addClass("taxError"); 
-                    }
-                    calculatedAmountField.change();
-                }
-            ).change();
-
-
-
-            // Remove model year if dealer type doesn't have model years
-            if ( dealerType == "HE" )
-            {
-                table.addClass("nomodelyear");
+                // Display table for the user
+                $("#content").append(table);
             }
 
-            // Display table for the user
-            $("#content").append(table);
+            $("#content").html("");
+            $("#btnSubmitImported").css("display","inline-block");
+            reader.readAsText(document.getElementById("inputfile").files[0]);
         }
 
-        $("#content").html("");
-        $("#btnSubmitImported").css("display","inline-block");
-        reader.readAsText(document.getElementById("inputfile").files[0]);
-    }
-    
-    // submit records to insert into table 'sit_sales'
-    function submitRecords(){
-        $("#btnSubmitImported").click(function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            if ( $(".error").length == 0 ) {
-                $("#frmImport").attr("action","import.jsp");
-                $("#frmImport").submit();
-            } else {
-                $("#submitError").html("Please correct the problems above in red (you do not need to change the tax values)");
-            }
-        })
-        
-    }
-    
-    // go back to sales page and reload the sales records
-    function goBack(){
-        $("#btnPrev").click(function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            $("#navigation").attr("action","sales.jsp");
-            $("#navigation").submit();
-        })
-    }
+        // submit records to insert into table 'sit_sales'
+        function submitRecords(){
+            $("#btnSubmitImported").click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
 
-    // These are the record field positions for
-    // each value we are expecting
-    var fieldPosition = {
-                saleDate:       0,
-                modelYear:      1,
-                modelMake:      2,
-                vin:            3,
-                purchaserName:  4,
-                saleType:       5,
-                salePrice:      6,
-                taxAmount:      7
-                };
+                if ("true"== viewOnly){
+                    if ( $(".error").length == 0 ) {
+                        $("#frmImport").attr("action","import.jsp");
+                        $("#frmImport").submit();
+                    } else {
+                        $("#submitError").html("Please correct the problems above in red (you do not need to change the tax values)");
+                        $("#operationWarning").dialog("open");
+                    }
+                } else {
+                    $operationWarning.dialog("close");
+                }
+            })
+
+        }
+
+        // go back to sales page and reload the sales records
+        function goBack(){
+            $("#btnPrev").click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                $("#navigation").attr("action","sales.jsp");
+                $("#navigation").submit();
+            })
+        }
+
+        // These are the record field positions for
+        // each value we are expecting
+        var fieldPosition = {
+                    saleDate:       0,
+                    modelYear:      1,
+                    modelMake:      2,
+                    vin:            3,
+                    purchaserName:  4,
+                    saleType:       5,
+                    salePrice:      6,
+                    taxAmount:      7
+                    };
 
 
-    Array.prototype.swap = function (x,y) {
-        var b = this[x];
-        this[x] = this[y];
-        this[y] = b;
-        return this;
-    }
+        Array.prototype.swap = function (x,y) {
+            var b = this[x];
+            this[x] = this[y];
+            this[y] = b;
+            return this;
+        }
 
-    function isValidModelYear(year)
-    {
-        var date_regex = /^(19|20)\d{2}$/ ;
-        if ( date_regex.test(year) )
+        function isValidModelYear(year)
         {
-            if ( parseInt(year) <= currentYear+2 )
+            var date_regex = /^(19|20)\d{2}$/ ;
+            if ( date_regex.test(year) )
             {
-                return true;
+                if ( parseInt(year) <= currentYear+2 )
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        return false;
-    }
-    
-    
-    function getCurrentDate(){
-            var d      = new Date();
-            var month  = d.getMonth() + 1;
-            var day    = d.getDate();
-            var output = (('' + month).length < 2 ? '0' : '') + month + '/' + 
-                         (('' + day).length   < 2 ? '0' : '') + day + '/' + d.getFullYear();
-            return output;
-    }
 
-    function isValidSaleDate(saleDate)
-    {
-        var date_regex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/ ;
-        if ( date_regex.test(saleDate) )
+        function getCurrentDate(){
+                var d      = new Date();
+                var month  = d.getMonth() + 1;
+                var day    = d.getDate();
+                var output = (('' + month).length < 2 ? '0' : '') + month + '/' +
+                             (('' + day).length   < 2 ? '0' : '') + day + '/' + d.getFullYear();
+                return output;
+        }
+
+        function isValidSaleDate(saleDate)
         {
-            var testDate = new Date(saleDate);
-            if ( testDate.getMonth()+1 == loadMonth && testDate.getFullYear() == loadYear )
+            var date_regex = /^(0?[1-9]|1[0-2])\/(0?[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/ ;
+            if ( date_regex.test(saleDate) )
             {
-                return true;
+                var testDate = new Date(saleDate);
+                if ( testDate.getMonth()+1 == loadMonth && testDate.getFullYear() == loadYear )
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        return false;
-    }
-</script>
+        $operationWarning.dialog({
+            autoOpen: false,
+            open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
+            modal:true,
+            width:500,
+            buttons:[
+                {
+                    text:"OK",
+                    click: function() { $(this).dialog("close");}
+                }
+            ]
+        });
+
+    });
+
+    </script>
 </body>
 </html>
