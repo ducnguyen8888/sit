@@ -553,8 +553,13 @@ if (finalized == requiredMonthsView){
             } else if ("<%= finalized == requiredMonthsView %>" == "true") {
                 $("#myTable input").prop("disabled", true);
             }
-            var newValue = $("#priorTotal").val().replace(/[$,]/g,"")/12;
-            newValue = "$" + newValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+            var newValue = $("#priorTotal").val().replace(/[(]/g,"-").replace(/[$,)]/g,"")/12;
+            if ( newValue < 0 ) {
+                newValue = "($" + newValue.toFixed(2).replace(/[-]/g,"").replace(/(\d)(?=(\d{3})+\.)/g, '$1,')+")";
+            } else {
+                newValue = "$" + newValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+            }
+            
             $("#market").prop("value", newValue);
             var $operationWarning = $("#operationWarning");
             var viewOnly          = "<%= viewOnly %>"
@@ -663,9 +668,9 @@ if (finalized == requiredMonthsView){
 
                 if (id == "invAmount") {
                     $("#priorTotal").val( moneyFormat( $("#invAmount").val() ) ) ;
-                    var marketValue = $("#priorTotal").val().replace(/[$,]/g,"")/12;
-                    marketValue = "$" + marketValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
-                    $("#market").prop("value", marketValue);
+                    var marketValue = $("#priorTotal").val().replace(/[(]/g,"-").replace(/[$,)]/g,"")/12;
+                    console.log(  marketValue.toString().length > 0);
+                    $("#market").prop("value", moneyFormat( marketValue ) );
                 }
             }
 
@@ -674,8 +679,18 @@ if (finalized == requiredMonthsView){
             }
 
             function moneyFormat( value ){
-                        return value.length > 0 ? "$" + parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') : "$0.00";
-                 }
+                if ( !isNaN( value ) && value.toString().length > 0 ) {
+                    if (value < 0 ){
+                        return "($" + parseFloat(value).toFixed(2).replace(/[-]/g,"").replace(/(\d)(?=(\d{3})+\.)/g, '$1,') + ")";
+                    } else {
+                        return "$" + parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+                    }
+                } else {
+                    return "$0.00"
+                }
+                
+                        
+            }
 
             // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year
             function areFieldsValid(){
