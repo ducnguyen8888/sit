@@ -52,19 +52,19 @@ month = "13";
     String              pdf_url                     = "";
     
     String              invCount                    = "";
-    String              invAmount                   = "";
+    double              invAmount                   = 0.00;
 
     String              rsCount                     = "";
-    String              rsAmount                    = "";
+    double              rsAmount                    = 0.00;
 
     String              fsCount                     = "";
-    String              fsAmount                    = "";
+    double              fsAmount                    = 0.00;
 
     String              dsCount                     = "";
-    String              dsAmount                    = "";
+    double              dsAmount                    = 0.00;
 
     String              ssCount                     = "";
-    String              ssAmount                    = "";
+    double              ssAmount                    = 0.00;
     
     // PRC 194602 let the user finalize the annual statement if all available months in the startDate's year are finialized
     String              startDate                   = "";
@@ -247,11 +247,11 @@ if(request.getParameter("can") != null){
                     ssCount     = nvl( rs.getString("subsequent_sales_units"),"0");
                     rsCount     = nvl( rs.getString("retail_sales_units"),"0");
                     
-                    invAmount   = nvl( rs.getString("inventory_sales_amount"),"0.00");
-                    fsAmount    = nvl( rs.getString("fleet_sales_amount"),"0.00");
-                    dsAmount    = nvl( rs.getString("dealer_sales_amount"),"0.00");
-                    ssAmount    = nvl( rs.getString("subsequent_sales_amount"),"0.00");
-                    rsAmount    = nvl( rs.getString("retail_sales_amount"),"0.00");
+                    invAmount   = nvl( rs.getString("inventory_sales_amount"),0.00);
+                    fsAmount    = nvl( rs.getString("fleet_sales_amount"),0.00);
+                    dsAmount    = nvl( rs.getString("dealer_sales_amount"),0.00);
+                    ssAmount    = nvl( rs.getString("subsequent_sales_amount"),0.00);
+                    rsAmount    = nvl( rs.getString("retail_sales_amount"),0.00);
                     
                 }
             
@@ -335,7 +335,7 @@ if (finalized == requiredMonthsView){
                     %>>View Form</button>
                 </form>
                 <button style="margin-left: 30px;" id="btnFinalize" name="btnFinalize" 
-                <%= (finalized == requiredMonthsClose) && !viewOnly ? "class=\"btn btn-primary\"" : "class=\"btn btn-disabled\" disabled" %>>Close Year</button>
+                <%= (finalized == requiredMonthsClose)? "class=\"btn btn-primary\"" : "class=\"btn btn-disabled\" disabled" %>>Close Year</button>
                 <div style="width:550px;">
                     <div id="requiredStar"><span style="color: red;">*</span><b>Required</b></div>
                     <div id="fieldNotice"><b>You must fill in all of the fields below</b></div>
@@ -369,12 +369,13 @@ if (finalized == requiredMonthsView){
                                             class="inventory"
                                             id="invAmount" name="invAmount" 
                                             style="width:130px; padding-right: 5px;" 
-                                            value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? invAmount
+                                            value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( invAmount )
                                                                                                              :( includedLoad ?  nvl(amountMain, "$0.00") 
                                                                                                                              : "" )) 
                                                                       :  nvl(amountMain, "$0.00") %>"
                                             onkeyup="javascript:isNumber('invAmount');"
                                             onchange="javascript:isNumber('invAmount');"
+                                            onblur="javascript:convertToMoneyFormat('invAmount')"
                                             /></td>
                     </tr>
                     <% if ("MH".equals(category)) { %><!-- MH is the one with RL and no FL or DL -->
@@ -394,12 +395,13 @@ if (finalized == requiredMonthsView){
                                                     class="inventory"
                                                     id="rsAmount" name="rsAmount" 
                                                     style="width:130px; padding-right: 5px;"
-                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? rsAmount 
+                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( rsAmount )
                                                                                                                      : ( includedLoad ?  nvl(amountRL, "$0.00") 
                                                                                                                                       : "")) 
                                                                               : nvl(amountRL, "$0.00") %>"
                                                     onkeyup="javascript:isNumber('rsAmount');"
-                                                    onchange="javascript:isNumber('rsAmount');"   
+                                                    onchange="javascript:isNumber('rsAmount');"
+                                                    onblur="javascript:convertToMoneyFormat('rsAmount')"
                                                     /></td>
                         </tr>  
                     <% } else { %>
@@ -419,12 +421,13 @@ if (finalized == requiredMonthsView){
                                                     class="inventory"
                                                     id="fsAmount" name="fsAmount" 
                                                     style="width:130px; padding-right: 5px;" 
-                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? fsAmount 
+                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( fsAmount )
                                                                                                                      : ( includedLoad ?  nvl(amountFL, "$0.00") 
                                                                                                                                       : "" )) 
                                                                               : nvl(amountFL, "$0.00") %>"
                                                     onkeyup="javascript:isNumber('fsAmount');"
                                                     onchange="javascript:isNumber('fsAmount');"
+                                                   onblur="javascript:convertToMoneyFormat('fsAmount')"
                                                     /></td>
                         </tr> 
                         <tr>
@@ -443,12 +446,13 @@ if (finalized == requiredMonthsView){
                                                     class="inventory"
                                                     id="dsAmount" name="dsAmount" 
                                                     style="width:130px; padding-right: 5px;" 
-                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? dsAmount 
+                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( dsAmount )
                                                                                                                      : ( includedLoad ?  nvl(amountDL, "$0.00") 
                                                                                                                                       : "" )) 
                                                                               : nvl(amountDL, "$0.00") %>"
                                                     onkeyup=javascript:isNumber('dsAmount');
-                                                    onchange="javascript:isNumber('dsAmount');"                                                 
+                                                    onchange="javascript:isNumber('dsAmount');"
+                                                    onblur="javascript:convertToMoneyFormat('dsAmount')"
                                                     /></td>
                         </tr>
                     <% } %>
@@ -468,12 +472,13 @@ if (finalized == requiredMonthsView){
                                                     class="inventory"
                                                     id="ssAmount" name="ssAmount" 
                                                     style="width:130px; padding-right: 5px;" 
-                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? ssAmount 
+                                                    value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( ssAmount )
                                                                                                                      : ( includedLoad ?  nvl(amountSS, "$0.00") 
                                                                                                                                       : "" )) 
                                                                               : nvl(amountSS, "$0.00") %>"
                                                     onkeyup="javascript:isNumber('ssAmount');"
-                                                    onchange="javascript:isNumber('ssAmount');"                                        
+                                                    onchange="javascript:isNumber('ssAmount');"
+                                                    onblur="javascript:convertToMoneyFormat('ssAmount')"
                                                     /></td>
                     </tr>
 
@@ -494,7 +499,7 @@ if (finalized == requiredMonthsView){
                         <td style="background: #edf3fe;; text-align: center;" colspan="2">
                             <div style="float:left;margin-left:10px; font-weight: bold;font-size: 11px;text-align: center;">
                                 Dealer's Net Motor Vehicle Inventory Sales for Prior Year<br>
-                                <input type="text" id="priorTotal" name = "priorTotal" value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? invAmount 
+                                <input type="text" id="priorTotal" name = "priorTotal" value="<%= importedMonths ? (( finalized == requiredMonthsView ) ? formatMoney( invAmount )
                                                                                                                                                         : ( includedLoad ?  nvl(amountMain, "$0.00") 
                                                                                                                                                                          : "" ))  
                                                                                                                  : nvl(amountMain, "$0.00") %>" readonly="readonly">
@@ -517,6 +522,12 @@ if (finalized == requiredMonthsView){
 		</div>
 		<% } %>
     </div><!-- /body -->
+    <div id="operationWarning">
+        <div style="text-align: center; font-weight: bold;">
+            <div style="color: red;">Warning!!</div><br>
+            Attempted to perform an unauthorized operation.
+        </div>
+    </div>
 
     
         <input type="hidden" name="client_id" id="client_id" value="<%= client_id %>">
@@ -545,6 +556,8 @@ if (finalized == requiredMonthsView){
             var newValue = $("#priorTotal").val().replace(/[$,]/g,"")/12;
             newValue = "$" + newValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
             $("#market").prop("value", newValue);
+            var $operationWarning = $("#operationWarning");
+            var viewOnly          = "<%= viewOnly %>"
 
             //$("#btnViewForm").click(function(e){
             //    e.preventDefault();
@@ -566,24 +579,28 @@ if (finalized == requiredMonthsView){
             //});
 
             $("#btnFinalize").click(function(e){
-                e.preventDefault();
-                e.stopPropagation();
-                var $theForm = $("form#navigation");
-                var can = "<%= can %>";
-                var year = "<%= year %>";
-                var month = "<%= month %>";
-                var form_name = "<%= form_name %>";
-                var form_annual = "<%= form_annual %>";
-                $("#can").prop("value", can);
-                $("#year").prop("value", year);
-                $("#month").prop("value", month);
-                $("#form_name").prop("value", form_name);
-                $theForm.prop("action", "forms/" + form_annual + ".jsp"); 
-                $theForm.prop("target", "");
-                // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year
-                if ( areFieldsValid() ) {
-                     $theForm.submit();
-                } 
+                if ("true" != viewOnly ){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var $theForm = $("form#navigation");
+                    var can = "<%= can %>";
+                    var year = "<%= year %>";
+                    var month = "<%= month %>";
+                    var form_name = "<%= form_name %>";
+                    var form_annual = "<%= form_annual %>";
+                    $("#can").prop("value", can);
+                    $("#year").prop("value", year);
+                    $("#month").prop("value", month);
+                    $("#form_name").prop("value", form_name);
+                    $theForm.prop("action", "forms/" + form_annual + ".jsp");
+                    $theForm.prop("target", "");
+                    // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year
+                    if ( areFieldsValid() ) {
+                         $theForm.submit();
+                    }
+                } else {
+                    $operationWarning.dialog("open");
+                }
             });
 
             $("#btnPrev").click(function(e){
@@ -620,42 +637,68 @@ if (finalized == requiredMonthsView){
                 theForm.prop("method", "post");
                 theForm.prop("action", "feedback.jsp");
                 theForm.submit();
-            });               
+            });
+            
+            $operationWarning.dialog({
+                autoOpen: false,
+                open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
+                modal:true,
+                width:500,
+                buttons:[
+                    {
+                        text:"OK",
+                        click: function() { $(this).dialog("close");}
+                    }
+                ]
+            });
+
 
         });//doc ready
-        
-        function isNumber(id){
-            var numericPattern = /^\d+(\.\d{1,2})?$/;
-            if ( ! numericPattern.test( $("#"+id).val() )) {
-                $("#"+id).val("");
-            } 
-            
-            if (id == "invAmount") {
-                $("#priorTotal").val( $("#invAmount").val() ) ;
-                var marketValue = $("#priorTotal").val().replace(/[$,]/g,"")/12;
-                marketValue = "$" + marketValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
-                $("#market").prop("value", marketValue);
+
+            function isNumber(id){
+                var numericPattern = /^([-]?|((\-?\d)+(\.\d{0,2})?)|(\.\d+))$/;
+                if ( ! numericPattern.test( String( $("#"+id).val() ) )) {
+                    $("#"+id).val("");
+                }
+
+                if (id == "invAmount") {
+                    $("#priorTotal").val( moneyFormat( $("#invAmount").val() ) ) ;
+                    var marketValue = $("#priorTotal").val().replace(/[$,]/g,"")/12;
+                    marketValue = "$" + marketValue.toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
+                    $("#market").prop("value", marketValue);
+                }
             }
-        }
+
+            function convertToMoneyFormat(id){
+                $("#"+id).val( moneyFormat(  $("#"+id).val() ) ) ;
+            }
+
+            function moneyFormat( value ){
+                        return value.length > 0 ? "$" + parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,') : "$0.00";
+                 }
+
+            // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year
+            function areFieldsValid(){
+                var fieldsValid = true;
+
+                if ("true"=="<%= importedMonths %>") {
+                    for (i = 0; i < $(".inventory").length; i++){
+                        if ( $('.inventory:eq('+ i +')').val() == "" ){
+                            $('.inventory:eq('+ i +')').addClass("invalidField");
+                            $("#myTableDiv #fieldNotice").css("display","inline-block");
+                            fieldsValid = false;
+                        } else {
+                            $('.inventory:eq('+ i +')').removeClass("invalidField");
+                        }
+                    }
+                }
+
+                return fieldsValid;
+            }
+
+          
         
-        // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year
-       function areFieldsValid(){
-           var fieldsValid = true;
-           
-           if ("true"=="<%= importedMonths %>") {
-               for (i = 0; i < $(".inventory").length; i++){
-                   if ( $('.inventory:eq('+ i +')').val() == "" ){
-                       $('.inventory:eq('+ i +')').addClass("invalidField");
-                       $("#myTableDiv #fieldNotice").css("display","inline-block");
-                       fieldsValid = false;
-                   } else {
-                        $('.inventory:eq('+ i +')').removeClass("invalidField");
-                   } 
-               }
-           }
-           
-           return fieldsValid;
-       }
+
     </script>
 </body>
 </html>

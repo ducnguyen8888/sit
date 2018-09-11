@@ -5,30 +5,7 @@
   Time: 10:58 AM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ include file="_configuration.inc" %>
-<%!
-    public StringBuffer getDealerAddress(Dealership d){
-        StringBuffer sb = new StringBuffer();
-        if (isDefined(d.nameline1)){sb.append(d.nameline1 );}
-        if (isDefined(d.nameline2)){sb.append("<br>" + d.nameline2);}
-        if (isDefined(d.nameline4)){sb.append("<br>" + d.nameline4);}
-        sb.append("<br>" + nvl(d.city) + ", " + nvl(d.state));
-        return sb;
-    }
-
-    public boolean AtLeastOneSpecified(String account,
-                                       String name,
-                                       String address,
-                                       String userName,
-                                       String id) {
-        return ( isDefined(account)
-                || isDefined(name)
-                || isDefined(address)
-                || isDefined(userName)
-                || isDefined(id));
-    }
-%>
-<%
+<%@ include file="_configuration.inc" %><%
     String pageTitle = "ViewDealership";
 %>
 <%@ include file="_top1.inc" %>
@@ -49,13 +26,8 @@
     .searchField { display: inline-block; margin-top: 4rem; margin-bottom: 4rem;}
 
     #searchBtn, #resetBtn {
-        height:3rem; width: 6rem;
-        background-color: #169BD7;
-        color: white;
-    }
-
-    #searchBtn:hover, #resetBtn:hover{
-        background-color: #253B80;
+        height: 3rem;
+        width: 6rem;
     }
 
     #dealersContainer{
@@ -105,89 +77,126 @@
     }
     .dealerWidget:hover{background:#e6e6e6; cursor: pointer;}
 
+    .warning{ text-align: center; color: red; font-size:15px; }
+
 
 
 </style>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     $(document).ready(function(){
         search();
-        reset();
         getAccountDetail();
-    })
+        reset();
 
-    function search(){
-        $("#searchBtn").click(function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            if (isAtLeastOneSpecified()) {
-                $("#dealersContainer").empty();
-                $("#searchDealers").submit();
-            } else {
-                $("#dealersContainer").html("<div style=\" text-align: center; color: red; font-size:15px;\">Please specify at least one of criteria</div>");
-            }
-        })
-    }
-    function reset(){
-        $("#resetBtn").click(function(){
-            $("#searchDealers")[0].reset();
-            $("#dealersContainer").empty();
-        })
-    }
+        function search(){
+            $("#searchBtn").click(function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                if (isAtLeastOneSpecified()) {
+                    $("#dealersContainer").empty();
+                    $.ajax({
+                        type:'POST',
+                        url:'search_ws.jsp',
+                        data: $("#searchDealers").serialize(),
+                        success: function(res){
+                            var dealerContainer = JSON.parse(res);
+                            if (dealerContainer.searchDealershipsRequest=="success") {
+                                if (dealerContainer.data.searchDealerships == "success") {
+                                    if (dealerContainer.data.dealerships.length > 0) {
+                                        loadDealerships(dealerContainer.data.dealerships);
+                                    } else {
+                                        $("#dealersContainer").html("<div class='warning'>Sorry. No records found</div>");
+                                    }
+                                } else {
+                                    $("#dealersContainer").html("<div class='warning'>An error just occurred. Please try again</div>");
+                                }
+                            } else {
+                                $("#dealersContainer").html("<div class='warning'>"+dealerContainer.detail+"</div>");
+                            }
+                        },
+                        error: function(){
+                            $("#dealersContainer").html("<div class='warning'>An error just occurred. Please try again</div>");
+                        }
 
-    function getAccountDetail(){
-        $("#dealersContainer div").click(function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var bigID = $(this).parent().attr("id").split("|");
-            if(bigID[2] == undefined){
-                bigID = $(this).attr("id").split("|");
-            }
-            var can         = bigID[0];
-            var dealer_type = bigID[1];
-            var name        = bigID[2];
-            var theForm = $("form#navigation");
-            theForm.children("input#can").prop("value", can);
-            theForm.children("input#dealer_type").prop("value", dealer_type);
-            theForm.children("input#name").prop("value", name);
-            theForm.submit();
-        });
-    }
+                    })
+                    $("#searchDealers")[0].reset();
+                } else {
+                    $("#dealersContainer").html("<div class='warning'>Please specify at least one of criteria</div>");
+                }
 
-    function isAtLeastOneSpecified(){
-        if ($('[name="no"]').val().length > 0
-            || $('[name="name"]').val().length > 0
-            || $('[name="address"]').val().length > 0
-            || $('[name="userName"]').val().length > 0
-            || $('[name="userId"]').val().length > 0){
-            return true;
-        } else {
-            return false;
+            })
         }
-    }
-</script>
-<%
-    String dealershipNo         = nvl(request.getParameter("no"));
-    String dealershipName       = nvl(request.getParameter("name"));
-    String dealershipAddress    = nvl(request.getParameter("address"));
-    String userName             = nvl(request.getParameter("userName"));
-    String userId               = nvl(request.getParameter("userId"));
+        function reset(){
+            $("#resetBtn").click(function(){
+                $("#searchDealers")[0].reset();
+                $("#dealersContainer").empty();
+            })
+        }
 
-    ArrayList<Dealership> viewDealerships =  new ArrayList<Dealership>();;
-    boolean atLeastOneSpecified           = AtLeastOneSpecified(dealershipNo, dealershipName, dealershipAddress, userName, userId);
-    SearchCriteria criteria               = new SearchCriteria(dealershipNo, dealershipName, dealershipAddress, userName, userId);
-    userId = "";
-    if ( sitAccount.isValid()
-            && sitAccount.getUser().viewOnly()
-            && atLeastOneSpecified) {
-        sitAccount.loadDealerships( criteria);
-        viewDealerships = sitAccount.dealerships;
-    }
-%>
+        function getAccountDetail(){
+            $("#dealersContainer").on('click','.dealerWidget', function(e){
+                e.preventDefault();
+                var bigID = $(this).attr("id").split("_");
+                var can         = bigID[0];
+                var dealer_type = bigID[1];
+                var theForm = $("form#navigation");
+                theForm.children("input#can").prop("value", can);
+                theForm.children("input#dealer_type").prop("value", dealer_type);
+                theForm.submit();
+            })
+
+        }
+
+
+        function loadDealerships(dealerships){
+            for ( i=0; i<dealerships.length; i++){
+                var dealerId = dealerships[i].can+"_"+dealerships[i].dealerType;
+                $("#dealersContainer").append("<div id='"+ dealerId +"'class='dealerWidget'>");
+                $("#dealersContainer #"+ dealerId).append("<div class='wtitle'>"+ dealerships[i].can + "</div>");
+                $("#dealersContainer #"+ dealerId).append("<div class='wbody'>"+ getAddress(dealerships[i]) +"</div>");
+                $("#dealersContainer").append("</div>");
+            }
+        }
+
+
+
+
+        function isAtLeastOneSpecified(){
+            if ($('[name="no"]').val().length > 0
+                || $('[name="name"]').val().length > 0
+                || $('[name="address"]').val().length > 0
+                || $('[name="userName"]').val().length > 0
+                || $('[name="userId"]').val().length > 0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        function getAddress(dealership){
+            return dealership.nameline1
+                  + nvl(dealership.nameline2)
+                  + nvl(dealership.nameline4)
+                  + "<br>"
+                  + dealership.city+","
+                  + dealership.state ;
+        }
+
+        function nvl(value){
+            if ( value !==null
+                && value !==""){
+                return "<br>"+value;
+            } else {
+                return "";
+            }
+        }
+
+    });
+</script>
 <fieldset>
     <legend><h1>Enter Your Search Criteria</h1></legend>
     <div id="searchFields">
-        <form id="searchDealers" action="search.jsp" method="post">
+        <form id="searchDealers">
             <div class="searchField" id="no">
                 <input name="no" type="text"
                        size="20" maxlength="30"
@@ -214,35 +223,14 @@
                        placeholder="User ID" />
             </div>
             <div class="searchField">
-                <input type="button" id="searchBtn" value="Search"/>
-                <input type="button" id="resetBtn" value="Reset"/>
+                <input class="btn btn-primary" type="button" id="searchBtn" value="Search"/>
+                <input class="btn btn-primary" type="button" id="resetBtn" value="Reset"/>
             </div>
         </form>
     </div>
 </fieldset>
 
-<div id="dealersContainer">
-    <%
-        if( viewDealerships.size()  > 0){
-            try{
-                d = new Dealership();
-                for (int i = 0 ; i < viewDealerships.size() ; i++){
-                    d = (Dealership) viewDealerships.get(i);
-                    out.println("<div id= '"+ d.can +"|" + d.dealerType +"|"+ d.nameline1 +"' class='dealerWidget'>");
-                    out.println("  <div class='wtitle'>" + nvl(d.can) + "</div>");
-                    out.println("  <div class='wbody'>" + getDealerAddress(d) + "</div>");
-                    out.println("</div>");
-                }
-                viewDealerships.clear();
-            }catch (Exception e){
-                SITLog.error(e, "\r\nProblem in table loop for dealerships.jsp\r\n");
-            }
-        } else if (atLeastOneSpecified ) {
-            out.println("<div style=\"text-align: center; color:red; font-size:15px;\">Sorry. No records found</div>");
-        }
-    %>
-
-</div>
+<div id="dealersContainer"></div>
 
 <form id="navigation" action="yearlySummary.jsp" method="post">
     <input type="hidden" name="can" id="can" value="">

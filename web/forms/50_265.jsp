@@ -24,6 +24,8 @@
         In case the start date in taxdtl table is null, the start date field will be left blank instead of  populating a made up start date
     DN - 08/06/2018 - PRC 198588
         Updated the logic, declarationYear = declarationYear +1 if "ANNUAL_DECLARATION_YEAR" sit pref value = 1
+    DN - 09/11/2018 - PRC 204028
+        Sanitize all value of units sold and sales amounts put in by users
 --%><%! 
 public StringBuffer getDealerAddress(Dealership d){
     StringBuffer sb = new StringBuffer();
@@ -109,25 +111,27 @@ String todaysDate = "";
 
 String aprdistacc = "";//named like the db field
 // PRC 195488 get number of sold units and sales amount from user's input
+// PRC 204028 Sanitize all value of units sold and sales amounts put in by users
+
 boolean importedMonths          = ( "true".equals(request.getParameter("importedMonths")) );
 
-String  invCount                = nvl(request.getParameter("invCount"),"0");
-String  invAmount               = nvl(request.getParameter("invAmount"),"0");
+String  invCount                = sanitizeNumber(request.getParameter("invCount"));
+String  invAmount               = sanitizeNumber(request.getParameter("invAmount"));
 
-String  rsCount                 = nvl(request.getParameter("rsCount"),"0");
-String  rsAmount                = nvl(request.getParameter("rsAmount"),"0");
+String  rsCount                 = sanitizeNumber(request.getParameter("rsCount"));
+String  rsAmount                = sanitizeNumber(request.getParameter("rsAmount"));
 
-String  fsCount                 = nvl(request.getParameter("fsCount"),"0");
-String  fsAmount                = nvl(request.getParameter("fsAmount"),"0");
+String  fsCount                 = sanitizeNumber(request.getParameter("fsCount"));
+String  fsAmount                = sanitizeNumber(request.getParameter("fsAmount"));
 
-String  dsCount                 = nvl(request.getParameter("dsCount"),"0");
-String  dsAmount                = nvl(request.getParameter("dsAmount"),"0");
+String  dsCount                 = sanitizeNumber(request.getParameter("dsCount"));
+String  dsAmount                = sanitizeNumber(request.getParameter("dsAmount"));
 
-String  ssCount                 = nvl(request.getParameter("ssCount"),"0");
-String  ssAmount                = nvl(request.getParameter("ssAmount"),"0");
+String  ssCount                 = sanitizeNumber(request.getParameter("ssCount"));
+String  ssAmount                = sanitizeNumber(request.getParameter("ssAmount"));
 
-String priorTotal               = nvl(request.getParameter("priorTotal"),"0");
-String market                   = nvl(request.getParameter("market"),"0");
+String priorTotal               = sanitizeNumber(request.getParameter("priorTotal"));
+String market                   = sanitizeNumber(request.getParameter("market"));
 
 
 String startDate                = "";

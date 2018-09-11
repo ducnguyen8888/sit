@@ -617,16 +617,15 @@
                 e.preventDefault();
                 e.stopPropagation();
 
-                if ("true"== viewOnly){
+                if ("true"!= viewOnly){
                     if ( $(".error").length == 0 ) {
                         $("#frmImport").attr("action","import.jsp");
                         $("#frmImport").submit();
                     } else {
                         $("#submitError").html("Please correct the problems above in red (you do not need to change the tax values)");
-                        $("#operationWarning").dialog("open");
                     }
                 } else {
-                    $operationWarning.dialog("close");
+                    $("#operationWarning").dialog("open");
                 }
             })
 

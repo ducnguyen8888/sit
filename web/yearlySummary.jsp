@@ -107,7 +107,13 @@
             Note: Sales totals for all other sales types are shown on each month's statement page.
         </div>
     </div><!-- /body -->
-  
+    <div id="operationWarning">
+        <div style="text-align: center; font-weight: bold;">
+            <div style="color: red;">Warning!!</div><br>
+            Attempted to perform an unauthorized operation.
+        </div>
+    </div>
+
 
     <form id="navigation" action="yearlySummary.jsp" method="post">
         <input type="hidden" name="can"   id="can"   value="<%= can %>">
@@ -233,24 +239,33 @@
           });
 *****************************************/
             $(document).on('click', '#pay', function(e){
-              e.preventDefault();
-              e.stopPropagation();
-              var can = "<%= can %>";
-              var theYear = $("#yearSelect").val();
-              var months = $('input[type="checkbox"][name="payme"]:checked').map(function() {return this.value;}).get().join(',');
-              var totals = $('input[type="checkbox"][name="payme"]:checked').map(function() {return $(this).parents().children(".totalsForPay").val() ;}).get().join(',');
-              var theForm = $("form#navigation");
-              var client_id = "<%= client_id %>";
-              theForm.children("input#can").prop("value", can);
-              theForm.children("input#month").prop("value", months);
-              theForm.children("input#totals").prop("value", totals);
-              theForm.children("input#year").prop("value", theYear);
-              theForm.children("input#client_id").prop("value", client_id);
-              theForm.prop("action", "pay.jsp");
-              console.log(totals);
-              //theForm.prop("action", "/act_webdev/_admin/listParams.jsp");
-              theForm.submit();
-          }); 
+                  var viewOnly          = "<%= viewOnly %>";
+                  if ("true" != viewOnly) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      var can = "<%= can %>";
+                      var theYear = $("#yearSelect").val();
+                      var months = $('input[type="checkbox"][name="payme"]:checked').map(function () {
+                          return this.value;
+                      }).get().join(',');
+                      var totals = $('input[type="checkbox"][name="payme"]:checked').map(function () {
+                          return $(this).parents().children(".totalsForPay").val();
+                      }).get().join(',');
+                      var theForm = $("form#navigation");
+                      var client_id = "<%= client_id %>";
+                      theForm.children("input#can").prop("value", can);
+                      theForm.children("input#month").prop("value", months);
+                      theForm.children("input#totals").prop("value", totals);
+                      theForm.children("input#year").prop("value", theYear);
+                      theForm.children("input#client_id").prop("value", client_id);
+                      theForm.prop("action", "pay.jsp");
+                      console.log(totals);
+                      //theForm.prop("action", "/act_webdev/_admin/listParams.jsp");
+                      theForm.submit();
+                  } else {
+                      $("#operationWarning").dialog("open");
+                  }
+            });
 
         </script>
     <script>
@@ -398,7 +413,19 @@
               $theForm.children("input#year").prop("value", theYear);
               $theForm.submit();
               // }
-          });          
+          });
+          $("#operationWarning").dialog({
+              autoOpen: false,
+              open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
+              modal:true,
+              width:500,
+              buttons:[
+                  {
+                      text:"OK",
+                      click: function() { $(this).dialog("close");}
+                  }
+              ]
+          });
       });
     </script>
     <script>

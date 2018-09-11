@@ -170,26 +170,26 @@ if(request.getParameter("can") != null){
                 <tbody>
                     <tr>
                         <td nowrap>Net <%= categoryNomen %> Inventory <input type="text" disabled="true" id="" name="" style="width:40px; padding-right: 5px;" value="<%= nvl(countMain, "0") %>" /></td>
-                        <td nowrap>Net <%= categoryNomen %> Inventory <input type="text" disabled="true" id="" name="" style="width:110px; padding-right: 5px;" value="<%= nvl(amountMain, "$0.00") %>" /></td>
+                        <td nowrap>Net <%= categoryNomen %> Inventory <input type="text" disabled="true" id="" name="" style="width:130px; padding-right: 5px;" value="<%= nvl(amountMain, "$0.00") %>" /></td>
                     </tr>
                     <% if ("MH".equals(category)) { %><!-- MH is the one with RL and no FL or DL -->
                         <tr>
                             <td>Retail Sales <input type="text" disabled="true" id="" name="" style="width:40px;padding-right: 5px;" value="<%= nvl(countRL, "0") %>" /></td>
-                            <td>Retail Sales <input type="text" disabled="true" id="" name="" style="width:110px; padding-right: 5px;" value="<%= nvl(amountRL, "$0.00") %>" /></td>
+                            <td>Retail Sales <input type="text" disabled="true" id="" name="" style="width:130px; padding-right: 5px;" value="<%= nvl(amountRL, "$0.00") %>" /></td>
                         </tr> 
                     <% } else { %>
                         <tr>
                             <td>Fleet Sales <input type="text" disabled="true" id="" name="" style="width:40px; padding-right: 5px;" value="<%= nvl(countFL, "0") %>" /></td>
-                            <td>Fleet Sales <input type="text" disabled="true" id="" name="" style="width:110px; padding-right: 5px;" value="<%= nvl(amountFL, "$0.00") %>" /></td>
+                            <td>Fleet Sales <input type="text" disabled="true" id="" name="" style="width:130px; padding-right: 5px;" value="<%= nvl(amountFL, "$0.00") %>" /></td>
                         </tr> 
                         <tr>
                             <td>Dealer Sales <input type="text" disabled="true" id="" name="" style="width:40px; padding-right: 5px;" value="<%= nvl(countDL, "0") %>" /></td>
-                            <td>Dealer Sales <input type="text" disabled="true" id="" name="" style="width:110px; padding-right: 5px;" value="<%= nvl(amountDL, "$0.00") %>" /></td>
+                            <td>Dealer Sales <input type="text" disabled="true" id="" name="" style="width:130px; padding-right: 5px;" value="<%= nvl(amountDL, "$0.00") %>" /></td>
                         </tr>
                     <% } %>
                     <tr>
                         <td>Subsequent Sales <input type="text" disabled="true" id="" name="" style="width:40px; padding-right: 5px;" value="<%= nvl(countSS, "0") %>" /></td>
-                        <td>Subsequent Sales <input type="text" disabled="true" id="" name="" style="width:110px; padding-right: 5px;" value="<%= nvl(amountSS, "$0.00") %>" /></td>
+                        <td>Subsequent Sales <input type="text" disabled="true" id="" name="" style="width:130px; padding-right: 5px;" value="<%= nvl(amountSS, "$0.00") %>" /></td>
                     </tr>
                 </tbody>
             </table>     

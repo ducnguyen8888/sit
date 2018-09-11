@@ -298,7 +298,7 @@ public class SITAccount
     {
         ArrayList<String[]> clients = new ArrayList<String[]>();
 
-        try ( Connection con = act.util.Connect.open(datasource); 
+        try ( Connection con = Connect.open(datasource);
                 Statement st = con.createStatement();
                 ResultSet rs = st.executeQuery(
                                               "select distinct client.client_id, client.client_name "

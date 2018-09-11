@@ -11,6 +11,7 @@
     <link href="assets/css/font-awesome.min.css" rel="stylesheet">
     <link href="assets/css/jquery-ui.min.css" rel="stylesheet">
     <link href="assets/css/styles.css?<%= (new java.util.Date()).getTime() %>" rel="stylesheet">
+    <script src="assets/js/jquery.min.js"></script>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

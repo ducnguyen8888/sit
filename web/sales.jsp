@@ -7,6 +7,8 @@
         -Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
     DN - 08/21/2018 - PRC 194803
         - Updated sales type from "VTM" to "VM"
+    DN - 09/11/2018 - PRC 205229
+        - Use client pref "SHOW_FILE_UPLOAD_IN_SIT_PORTAL" to control the display of feature "Upload file"
 
 --%><%@ include file="_configuration.inc"%><%
     String      pageTitle   = categoryName + " Tax Statement";
@@ -22,9 +24,10 @@
     boolean showWyearSelect = false;
     boolean showWyearDisplay = false;
     boolean showWyearMonthDisplay = true;
-    boolean showUpload = (!finalize_on_pay);
+    boolean showUpload = false;
     boolean reportIsFinalized = false;
     java.text.DecimalFormat df = new java.text.DecimalFormat("$###,###,###.00");
+
 
     //int max_report_seq = 0; defined in configuration file
 
@@ -74,9 +77,15 @@
     boolean isInCart = payments.isInCart(can, year, month);
 
 
+    try{
+        showUpload = "Y".equals( getSitClientPref(client_id, "SHOW_FILE_UPLOAD_IN_SIT_PORTAL" ) );
+    } catch (Exception exception){
+        SITLog.error(String.format("Retrieve the show upload status (sales.jsp):\n%s\n",exception.toString()));
+    }
 
     try ( Connection con = connect(); ) 
-    {   // Retrieve max report sequence
+    {
+        // Retrieve max report sequence
         try ( PreparedStatement ps = con.prepareStatement(
                                           "select max(report_seq) as \"sequence\" "
                                         + "  from sit_sales_master "

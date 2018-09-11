@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"
          import="java.util.*, java.io.*, java.sql.*, java.util.logging.*, oracle.jdbc.*, java.text.*,
-                 act.log.Logs, act.log.SITLog, act.util.Sysutil, act.util.AppConfiguration,  act.sit.*"
-%><%--
+                 act.log.Logs, act.log.SITLog, act.util.Sysutil, act.util.AppConfiguration,  act.sit.*, java.time.*"
+%>
+<%@ page import="java.time.format.DateTimeFormatter" %><%--
     DN - 04/30/2018 - PRC 194602
         This PRC is applied to both Dallas and Harris County
         Set a default value for getStartDate in case the start_date in "taxdtl" table is null
@@ -92,6 +93,11 @@
     String categoryNomen    = categoryName;
 
 
+    DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
+    String sitVersion       = "SIT 1.1";
+    String updatedDate      = LocalDate.of(2018,9,11).format(formatter);
+
+
 %><%!
     String[][] dealerCategories = new String[][] {
                                                 { "0",      "MV",     "50_246",   "Motor Vehicle" },  // Default
@@ -107,6 +113,7 @@
     int       nvl(String val,  int     def) { try { return Integer.parseInt  (val.replaceAll("[^\\d.-]","")); } catch (Exception e) {} return def; }
     long      nvl(String val,  long    def) { try { return Long.parseLong    (val.replaceAll("[^\\d.-]","")); } catch (Exception e) {} return def; }
     double    nvl(String val,  double  def) { try { return Double.parseDouble(val.replaceAll("[^\\d.-]","")); } catch (Exception e) {} return def; }
+    String    sanitizeNumber( String value) { return nvl( value,"0").replace("(","-").replaceAll("[$|,)]","");}
 
     boolean isDefined(String... values)
     {   if ( values == null || values.length == 0 ) return false;
@@ -174,7 +181,7 @@
     }
     public String formatMoney(double amount)
     {
-        return NumberFormat.getCurrencyInstance().format(amount);
+       return  NumberFormat.getCurrencyInstance().format(amount) ;
     }
     
     // PRC 190602 - 06/14/2018 retrieve the startDate, startDate's month, startDate's year
@@ -227,7 +234,7 @@
 			
 			rs = ps.executeQuery();
 			
-			while(rs.next()){
+			if(rs.next()){
 				clientPref = rs.getString(1);
 			}
 		} catch(Exception e){
@@ -254,7 +261,7 @@
 			
 			rs = ps.executeQuery();
 			
-			while(rs.next()){
+			if(rs.next()){
 				sitClientPref = rs.getString(1);
 			}
 		} catch(Exception e){
@@ -267,6 +274,33 @@
 		}
 	return sitClientPref;
 	}
+
+    public String getSitClientPref(String clientId, String pref) throws Exception {
+        String sitClientPref = "";
+        try ( Connection conn = connect() ) {
+            try ( PreparedStatement ps = conn.prepareStatement(
+                                                "select description from sit_codeset"
+                                                +" where client_id = ? and type_code= 'CLIENT'"
+                                                +"	and code = ?"
+                                                )) {
+                ps.setString(1,clientId);
+                ps.setString(2, pref);
+
+                try (ResultSet rs = ps.executeQuery() ){
+                    if ( rs.next() ){
+                        sitClientPref = rs.getString(1);
+                    }
+                } catch (Exception e){
+                    throw e;
+                }
+            } catch (Exception e){
+                throw  e;
+            }
+        } catch (Exception e){
+            throw e;
+        }
+        return sitClientPref;
+    }
     
 
     public String numberFormat( String number ) throws Exception

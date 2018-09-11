@@ -44,16 +44,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="file://$MODULE_DIR$/out/act" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Documents/ojdbc14-9.2.0.1.jar!/" />
+          <root url="jar://$USER_HOME$/Documents/ojdbc6.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

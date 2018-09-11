@@ -1,10 +1,8 @@
 <% /*@page import="java.util.Arrays" */
 %><%@ include file="_configuration.inc" 
 %><%--
-
-NEED an ERROR page....
-
-
+    DN - 09/11/2018 - PRC 204949
+    - Added the pop up "about" to show the verion of SIT
 --%><%
     StringBuilder errorMessage = new StringBuilder();
 
@@ -144,6 +142,19 @@ NEED an ERROR page....
             xborder-bottom-color: #333;
             animation: spinner 0.6s linear infinite;
         }
+        
+        #about{
+            cursor: pointer;
+        }
+        
+        #about:hover{
+            text-decoration: underline;
+        }
+        
+        #aboutVersion div{
+            margin-top: 5px;
+            margin-left: 15px;
+        }
     </style>
 
 </head>
@@ -160,6 +171,7 @@ NEED an ERROR page....
         </div>  
         <div class="hdrDiv" style="min-height: 22px;"> 
             <div id="help"><i class="fa fa-question"></i><a href="<%= onlineHelpURL %>" target="_blank">Help</a></div>
+            <div id="about" style="display: inline-block; margin-left: 10px;">About</div>
         </div>
     </header>
 
@@ -361,6 +373,11 @@ NEED an ERROR page....
             </div>
         </div>
     </div><!-- content -->
+    <div id="aboutVersion" title="Special Inventory Tax System">
+        <div><b><%= sitVersion%></b></div>
+        <div>Updated on <%= updatedDate %></div>
+        <div style="font-size:12px; font-style: italic;">&copy;Appraisal &amp; Collection Technologies, LLC. All rights reserved</div>
+    </div>
 
     <footer id="footer">&copy;Appraisal &amp; Collection Technologies, LLC.</footer>
 
@@ -374,6 +391,9 @@ NEED an ERROR page....
         $(function()
         {
             if ( ! $("#help a").attr("href") ) $("#help").hide();
+            $(".hdrDiv #about").click(function(){
+                $("#aboutVersion").dialog("open");
+            })
 
             // The login view should be shown by default
             $("#login").show();
@@ -957,7 +977,20 @@ NEED an ERROR page....
                     return false;
                 }
             }
-        });
+          });
+        
+          $("#aboutVersion").dialog({
+                autoOpen: false,
+                open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
+                modal:true,
+                width:700,
+                buttons:[
+                    {
+                        text:"OK",
+                        click: function() { $(this).dialog("close");}
+                    }
+                ]
+            });
     </script>
 </body>
 </html>

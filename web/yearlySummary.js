@@ -16,6 +16,9 @@
     var completeCell  = $("<td/>").addClass("paymentCompleted").html("complete");
     var paymentCell   = $("<td/>").append($("<input/>").attr({"type": "checkbox", "name": "payme"}));
 
+    var $operationWarning = $("#operationWarning");
+    var viewOnly          = "<%= viewOnly %>"
+
     function displayYear(year,data)
     {
         var yearData = data[year];
