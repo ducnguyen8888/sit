@@ -522,12 +522,7 @@ if (finalized == requiredMonthsView){
 		</div>
 		<% } %>
     </div><!-- /body -->
-    <div id="operationWarning">
-        <div style="text-align: center; font-weight: bold;">
-            <div style="color: red;">Warning!!</div><br>
-            Attempted to perform an unauthorized operation.
-        </div>
-    </div>
+  
 
     
         <input type="hidden" name="client_id" id="client_id" value="<%= client_id %>">
@@ -561,30 +556,7 @@ if (finalized == requiredMonthsView){
             }
             
             $("#market").prop("value", newValue);
-            var $operationWarning = $("#operationWarning");
-            var viewOnly          = "<%= viewOnly %>"
-
-            //$("#btnViewForm").click(function(e){
-            //    e.preventDefault();
-            //    e.stopPropagation();
-            //    var $theForm = $("form#navigation");
-            //    var can = "<%= can %>";
-            //    var year = "<%= year %>";
-            //    var month = 13;
-            //    var form_name = "<%= form_name %>";
-            //    var form_annual = "<%= form_annual %>";
-            //    $theForm.children("#can").prop("value", can);
-            //    $theForm.children("#year").prop("value", year);
-            //    $theForm.children("#month").prop("value", month);
-            //    $theForm.children("#form_name").prop("value", form_name);
-            //    $theForm.prop("method", "post"); 
-            //    $theForm.prop("action", "forms/viewForm.jsp"); 
-            //    $theForm.prop("target", "_blank");
-            //    $theForm.submit();
-            //});
-
             $("#btnFinalize").click(function(e){
-                if ("true" != viewOnly ){
                     e.preventDefault();
                     e.stopPropagation();
                     var $theForm = $("form#navigation");
@@ -603,9 +575,6 @@ if (finalized == requiredMonthsView){
                     if ( areFieldsValid() ) {
                          $theForm.submit();
                     }
-                } else {
-                    $operationWarning.dialog("open");
-                }
             });
 
             $("#btnPrev").click(function(e){
@@ -643,19 +612,7 @@ if (finalized == requiredMonthsView){
                 theForm.prop("action", "feedback.jsp");
                 theForm.submit();
             });
-            
-            $operationWarning.dialog({
-                autoOpen: false,
-                open: function (event, ui) { $(".ui-widget-overlay").css({background: "#000", opacity: 0.7}) },
-                modal:true,
-                width:500,
-                buttons:[
-                    {
-                        text:"OK",
-                        click: function() { $(this).dialog("close");}
-                    }
-                ]
-            });
+
 
 
         });//doc ready
@@ -669,7 +626,6 @@ if (finalized == requiredMonthsView){
                 if (id == "invAmount") {
                     $("#priorTotal").val( moneyFormat( $("#invAmount").val() ) ) ;
                     var marketValue = $("#priorTotal").val().replace(/[(]/g,"-").replace(/[$,)]/g,"")/12;
-                    console.log(  marketValue.toString().length > 0);
                     $("#market").prop("value", moneyFormat( marketValue ) );
                 }
             }
@@ -686,10 +642,9 @@ if (finalized == requiredMonthsView){
                         return "$" + parseFloat(value).toFixed(2).replace(/(\d)(?=(\d{3})+\.)/g, '$1,');
                     }
                 } else {
-                    return "$0.00"
+                    return value;
                 }
-                
-                        
+
             }
 
             // PRC 198588 -  in case of the imported records, the user must fill in all of fields before closing Year

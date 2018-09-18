@@ -483,8 +483,8 @@
                     var vin       = $theRow.children(".vin").text();
                     var type      = $theRow.children(".type").text();
                     var purchaser = $theRow.children(".purchaser").text();
-                    var price     = ($theRow.children(".price").text()).replace(/[$,]/g,"");
-                    var tax       = ($theRow.children(".tax").text()).replace(/[$,]/g,"");
+                    var price     = ($theRow.children(".price").text()).replace(/[(]/g,"-").replace(/[$,)]/g,"");
+                    var tax       = ($theRow.children(".tax").text()).replace(/[(]/g,"-").replace(/[$,)]/g,"");
                     var purpose = $(this).text();
                     $theForm.find("#DOS").prop("value",       dos       );
                     $theForm.find("#model").prop("value",     model     );

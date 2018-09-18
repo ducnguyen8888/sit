@@ -168,22 +168,21 @@ public class SITAccount
                               + "        join taxdtl "
                               + "             on (taxdtl.client_id=owner.client_id and taxdtl.can=owner.can and taxdtl.year=owner.year) "
                               + " where  dealerships.client_id=?"
-                              + condition(criteria.dealerNo,        "and dealerships.can like UPPER(?)")
-                              + condition(criteria.dealerName,      "and owner.nameline1 like UPPER(?)")
-                              + condition(criteria.dealerAddress,   "and owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 like UPPER(?)")
-                              + condition(criteria.userId,          "and dealerships.userid like UPPER(?)")
-                              + condition(criteria.userName,        "and dealerships.username like UPPER(?)")
+                              + "           and dealerships.can like nvl( UPPER(?), dealerships.can )"
+                              + "           and owner.nameline1 like nvl ( UPPER(?), owner.nameline1 )"
+                              + "           and owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 like nvl( UPPER(?), owner.nameline2 || ' ' || owner.nameline3 || ' ' || owner.nameline4 )"
+                              + "           and dealerships.userid like nvl ( UPPER(?),dealerships.userid ) "
+                              + "           and dealerships.username like nvl( UPPER(?), dealerships.username )"
                               + " order by "
                               + "        owner.can asc, owner.nameline1 asc"
               );
         )
         {   ps.setString(1, clientId);
-            int columnPosition = 1;
-            columnPosition = setPsValue(criteria.dealerNo,ps,columnPosition);
-            columnPosition = setPsValue(criteria.dealerName,ps,columnPosition);
-            columnPosition = setPsValue(criteria.dealerAddress,ps,columnPosition);
-            columnPosition = setPsValue(criteria.userId,ps,columnPosition);
-            columnPosition = setPsValue(criteria.userName,ps,columnPosition);
+            ps.setString(2, sanitize(criteria.dealerNo)+"%");
+            ps.setString(3, sanitize(criteria.dealerName)+"%");
+            ps.setString(4, "%"+sanitize(criteria.dealerAddress)+"%");
+            ps.setString(5, sanitize(criteria.userId)+"%");
+            ps.setString(6, sanitize(criteria.userName)+"%");
 
             try ( ResultSet rs = ps.executeQuery(); )
             {   if ( ! rs.next() )

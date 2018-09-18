@@ -365,7 +365,7 @@ if(!finalize_on_pay || Double.parseDouble(fakharTotal) == 0.00) { // set report_
                            +"       and month=?"
                            +"       and year=?"
                            +"       and report_seq=?");
-            ps.setString(1, sitUser.getUserName() );                              
+            ps.setString(1, "WEB-"+sitUser.getUserName() );
             ps.setString(2, client_id);
             ps.setString(3, request.getParameter("can"));
             ps.setString(4, request.getParameter("month"));
@@ -430,7 +430,7 @@ if(!finalize_on_pay || Double.parseDouble(fakharTotal) == 0.00) { // set report_
             ps.setInt(3, noteseq); //noteseq
             ps.setString(4, preNote); //note Monthly Sales Report for March 2015 finalized on March 2015 
             ps.setString(5, "MSG"); //msgcode = MSG
-            ps.setString(6, sitUser.getUserName()); //opercode = user name
+            ps.setString(6, "WEB-"+sitUser.getUserName()); //opercode = user name
 
             if( ps.executeUpdate() > 0){
              // SITLog.info("inserted note\r\n");

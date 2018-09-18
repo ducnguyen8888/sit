@@ -6,11 +6,13 @@
         #sideBar{ top:152px; right:1px; background: #e6e6e6; width: 200px; border-left: 1px solid grey; }
         footer  { height: 15px; left:0px; right: 0px; bottom: 0px; overflow:hidden; font-size: 9px; text-align: right; padding-top: 1px; background: #165983; color: white; position: absolute; }
         /**********************************************************/
-        #hdrImg { float: left; margin: 5px;  width: 115px; height: 111px; background-image: url("../../images/HARRIS-LOGO.png"); 
+        #hdrImg { float: left; margin: 5px;  width: 115px; height: 111px; background-image: url("../../images/HARRIS-LOGO.png");
                   background-repeat: no-repeat; background-position: left; border: 1px solid black; }
+        #hdrImg.seal-2000 { background-color: white; width: 551px; border: none;}
         #hdrTitle { margin-top:17px; margin-bottom: 17px; margin-left: 135px; color: white; font-weight: bold; font-size: 24px; }
+        #hdrTitle.seal-2000 { margin-left: 571px; }
         .hdrDiv   { margin-top: 5px; padding-bottom: 3px; margin-left: 125px; color: black; background: white; }
-        
+        .hdrDiv.seal-2000 {margin-left: 561px;}
         #user-name, #system-date, #system-time { float:left; margin-left:5px; font-size:11px; padding-top:3px; }
         #system-date, #system-time, #command-logout, #command-help  {margin-left: 29px;}
         

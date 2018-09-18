@@ -181,7 +181,10 @@ app.controller("VerifyController",
 	// User interaction methods
 	$scope.newSearch          = function() { window.location.href = $scope.config.accountSearchUrl; }
 	$scope.reenterInformation = function() { $location.path($scope.pages.ENTRY); }
-	$scope.processPayment     = function() { $location.path($scope.pages.PROCESS); }
+	$scope.processPayment     = function() {
+        $rootScope.paymentProcessingStart = Date.now();
+        $location.path($scope.pages.PROCESS); 
+    }
 	//$scope.processPayment     = function() { $location.path($scope.pages.SUCCESS); }
     $scope.clearPaymentWarning = function()
     {

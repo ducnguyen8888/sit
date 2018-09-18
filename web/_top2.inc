@@ -1,9 +1,9 @@
 </head>
 <body>
     <header>
-        <div id="hdrImg" style="background-image: url('images/logo-<%= nvl(session.getAttribute("imageName"), "act") %>.png');"></div>
-        <div id="hdrTitle">Special Inventory Tax System</div>    
-        <div class="hdrDiv">
+        <div id="hdrImg" class="seal-<%= sitAccount.getClientId() %>" style="background-image: url('images/logo-<%= nvl(session.getAttribute("imageName"), "act") %>.png');"></div>
+        <div id="hdrTitle" class="seal-<%= sitAccount.getClientId() %>">Special Inventory Tax System</div>
+        <div class="hdrDiv seal-<%= sitAccount.getClientId() %>" >
             <div id="user-summary" > 
                 <div id="user-name"><%= nvl(session.getAttribute("username"), "") %></div>
                 <div id="system-date">&nbsp;</div>
@@ -11,7 +11,7 @@
                 <div id="connected-system-name">&nbsp;</div>
             </div>
         </div>  
-        <div class="hdrDiv">
+        <div class="hdrDiv seal-<%= sitAccount.getClientId()%>">
             <% if ( !viewOnly) {%>
             <div id="dealers"><i class="fa fa-car"></i><a href="dealerships.jsp">Dealerships</a></div>
             <div id="payments"><i class="fa fa-bank"></i><a href="paymentsDue.jsp">Payments Due</a></div>

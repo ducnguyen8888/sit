@@ -28,13 +28,11 @@
             "method": { "type":"vendor",
                         "displayName": "Cadence Bank",
                         "rates": [
-                                {  "name": "E-Check",       "amount": "1.00",
+                                {  "name": "eCheck",       "amount": "0.00",
                                             "xnote": "Maximum E-Check payment (incl fees): $999,999.00" },
-                                {  "name": "Credit Card",   "rate":   "0.0235", "minimum": "1.00",  "maximum": "", 
+                                {  "name": "credit/debit card",   "rate":   "0.0235", "minimum": "1.00",  "maximum": "", 
                                             "xnote": "Maximum Credit Card payment (incl fees): $99,999.00" },
-                                {  "name": "Debit Cards",   "rate":   "0.0235", "minimum": "1.00",  "maximum": "", 
-                                            "xnote": "Maximum Debit Card payment (incl fees): $99,999.00" },
-                                {  "name": "Visa Debit Card",    "amount": "3.95", 
+                                {  "name": "Visa consumer debit card",    "amount": "3.95", 
                                             "xnote": "Maximum Visa Debit Card payment (incl fees): $99,999.00" }
                                 ]
                     },

@@ -1,6 +1,8 @@
 <%--
     DN - 08/07/2018 - PRC 198408
-        -Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
+        - Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
+    DN - 09/12/2018 - PRC 197579
+        - Updated code, all of insert, delete and update requests won't be executed if the users have the "view only" right
 --%><%@ include file="_configuration.inc"%>
 <%
  can =  "";
@@ -49,7 +51,7 @@ tax_amount      = nvl(request.getParameter("tax_amount"));
 client_id       = nvl(request.getParameter("client_id"));
 year            = nvl(request.getParameter("year"));
 month           = nvl(request.getParameter("month"));
-report_sequence      = nvl(request.getParameter("report_seq"));
+report_sequence = nvl(request.getParameter("report_seq"));
 sales_seq       = nvl(request.getParameter("sales_seq"));
 status          = nvl(request.getParameter("status"));
 form_name       = nvl(request.getParameter("form_name"));
@@ -82,7 +84,9 @@ action = "new"; // new or edit
 dealer_type = "3";
 */
 month = month.length() == 1 ? "0" + month : month; // makes 7 = 07
-if(isDefined(can)){
+// PRC 197579 - Updated code, all of insert, delete and update requests won't be executed if the users have the "view only" right
+if( isDefined(can)
+        && !viewOnly ){
     Connection connection = null;
     PreparedStatement ps = null;
     ResultSet rs = null;

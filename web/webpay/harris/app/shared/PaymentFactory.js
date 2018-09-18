@@ -164,6 +164,7 @@ app.factory (
                                 + " - Payment: " + (sourcePayment.paymentAmount ? sourcePayment.paymentAmount : sourcePayment.amountDue)
                                 );
                     paymentData.accounts[paymentData.accounts.length] = { "account":          sourceDealer.can,
+                                                        "aprdistacc": sourceDealer.aprdistacc,
                                                         "owner":{
                                                                 "name":     sourceDealer.nameline1,
                                                                 "address1": sourceDealer.nameline2,

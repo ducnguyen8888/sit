@@ -37,6 +37,9 @@
                 sitAccount.loadDealerships(criteria);
                 viewDealerships = (Dealership[]) sitAccount.dealerships.toArray(new Dealership[0]);
                 out.println(" {\"searchDealershipsRequest\":\"success\",\"data\":{\"searchDealerships\":\"success\",\"dealerships\":"+toJson(viewDealerships)+"}}");
+                Dealerships _dealerships = new Dealerships();
+                _dealerships.addAll(sitAccount.dealerships);
+                session.setAttribute("dealerships",_dealerships);
             } catch (Exception e){
                 String error = e.toString().replaceAll("\\\\n","").replaceAll("\\\\\"","\\\"");
                 out.println(String.format( "{\"searchDealershipsRequest\":\"success\",\"data\":{\"searchDealerships\":\"failure\",\"detail\":"+ error+"}}"));

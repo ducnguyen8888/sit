@@ -427,7 +427,7 @@
             ps.setInt(3, noteseq); //noteseq
             ps.setString(4, preNote); //note Monthly Sales Report for March 2015 finalized on March 2015 
             ps.setString(5, "MSG"); //msgcode = MSG
-            ps.setString(6, sitUser.getUserName() ); //opercode = Login user name
+            ps.setString(6,"WEB-"+sitUser.getUserName() ); //opercode = Login user name
 
             if( ps.executeUpdate() > 0){
              // SITLog.info("inserted note\r\n");

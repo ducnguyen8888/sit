@@ -417,6 +417,11 @@
                 $("#harrisPinRequirements").hide();
 
                 var image = $("#hdrImg");
+
+                image.removeClass("seal-2000");
+                $("#hdrTitle").removeClass("seal-2000");
+                $(".hdrDiv").removeClass("seal-2000");
+
                 switch ( $(this).val() )
                 {
                     case  "7580"        :   image.css("background-image", "url('images/logo-dallas.png')");
@@ -430,6 +435,9 @@
                                             break;
                     case  "2000"        :   image.css("background-image", "url('images/logo-harris.png')");
                                             $("#defaultPinRequirements,#harrisPinRequirements").toggle();
+                                            image.addClass("seal-2000");
+                                            $("#hdrTitle").addClass("seal-2000");
+                                            $(".hdrDiv").addClass("seal-2000");
                                             break;
                     default             :   image.css("background-image", "url('images/logo-act.png')");
                                             break;

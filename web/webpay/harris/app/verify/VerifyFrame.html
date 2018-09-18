@@ -11,23 +11,6 @@
 			<h3 style="margin-top:0px;"> Please review the payment information below </h3>
 		</div>
 		<br>
-
-			<!--
-			Please review the information below, you will see the amount of taxes that you have 
-			chosen to pay.
-			<br> <br> 
-			-->
-			<div class="user_instructions">
-				If the payment information and amount is correct, click the 
-				<span class="ref-button">Make My Payment</span> button at the bottom of the page.
-				<br> <br>
-                <div ng-if="payment.method.type=='VENDOR'">
-                    You will be redirected to the {{vendor}} website where you will enter your payment method information.
-                </div>
-                <div ng-if="payment.method.type!='VENDOR'">
-                    You will receive a confirmation screen after your information has been submitted.
-                </div>
-			</div>
 	</div>
 
 	<style>
@@ -49,13 +32,16 @@
 				<div class="entry">
 						<div class="owner">
 							<div ng-if="config.accountDetailUrl">
-								<a href="{{config.accountDetailUrl}}{{account.account}}"> {{account.account}} </a> <br>
+								<a href="{{config.accountDetailUrl}}{{account.account}}"> {{account.account}} </a> 
+                                <br>
 							</div>
 							<div ng-if="!config.accountDetailUrl" style="color:darkblue;font-weight:bold;margin-bottom:5px;">
-								{{account.account}} <br>
+								{{account.account}} 
+                                <div style="display:inline-block;margin-left: 40px;">CAD No: {{account.aprdistacc}} </div>
+                                <br>
 							</div>
 
-                            <div style="color:darkgrey;margin-bottom: 5px;">
+                            <div style="color:black;margin-bottom: 5px;">
                                 <span ng-if="account.owner.name.length > 0">{{account.owner.name}}<br></span>
                                 <span ng-if="account.owner.address1.length > 0">{{account.owner.address1}}<br></span>
                                 <span ng-if="account.owner.address2.length > 0">{{account.owner.address2}}<br></span>
@@ -94,24 +80,36 @@
 
 			<div ng-if="payment.amount.fee > 0">
 				<table class="payment-metadata amount" border=0>
-					<caption> This is the amount you are paying </caption>
-					<tr> <th> Tax Amount: </th> <td> {{payment.amount.tax | currency}} </td> </tr>
-					<tr> <th> Fee Amount: </th> <td> {{payment.amount.fee | currency}} </td> </tr>
+					<caption> This is your total payment amount:<br>(exluding convenience fees if applicable) </caption>
 				</table>
 				<table class="payment-metadata amount" border=0 style="margin-top:5px;">
 					<tr> <th> Total Payment Amount: </th> 
-						<td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> 
+						<td style="font-weight: bold;font-size:18px;"> {{payment.amount.total | currency}} </td> 
 					</tr>
 				</table>
 			</div>
 
 			<div ng-if="payment.amount.fee == 0">
 				<table class="payment_metadata amount" border=0>
-					<caption> This is the tax amount you are paying </caption>
-					<tr> <th> Total Tax Payment Amount: </th> <td style="font-weight: bold;"> {{payment.amount.total | currency}} </td> </tr>
+					<caption style="color:darkblue;"> This is your total payment amount:<br>(exluding convenience fees if applicable) </caption>
+					<tr> <th style="width:60px;"> </th> <td style="font-weight: bold;font-size:18px;width:260px;text-align:left;"> {{payment.amount.total | currency}} </td> </tr>
 				</table>
 			</div>
 		</div>
+                    <div style="margin:15px 0px 25px 0px;">
+                        <div style="margin-top:15px;font-size:13px;font-weight:bold;color:darkblue;">
+                            Estimated convenience fee for your payment amount:
+                        </div>
+                        <div ng-repeat="rate in payment.fees">
+                            <div style="display:inline-block;width:275px; text-align:left;font-weight:bold;margin-left:25px;margin-top:10px;">
+                                <span style='font-weight:normal;font-style:italic;padding-right:5px;color:red;'>If paying by</span>
+                                <span style='color:red;'>{{rate.name}}:</span>
+                            </div> 
+                            <div style="display:inline-block; width:75px; text-align:right;font-weight:normal;color:red;">
+                                {{rate.fee | currency}}
+                            </div>
+                        </div>
+                    </div>
 	</div>
 
 
@@ -140,8 +138,7 @@
                     </div>
                 </div>
                 <div id="option-block" style="margin-top:30px;">
-                    <button ng-click="reenterInformation()"> Change Payment<br>Information </button>
-                    <button ng-if="config.accountSearchUrl" ng-click="newSearch()"> I've Changed<br>My Mind </button>
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
                     <br><br>
                 </div>
             </div>
@@ -170,8 +167,8 @@
                     </div>
                 </div>
                 <div id="option-block" style="margin-top:30px;">
-                    <button ng-click="reenterInformation()"> Change Payment<br>Information </button>
-                    <button ng-click="clearPaymentWarning()"> Verify<br>Payment </button>
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Verify Payment </button>
                 </div>
             </div>
         </div>
@@ -185,50 +182,45 @@
 
 	<div style="width: 450px; float:left;">
 		<div class="payment-summary-block method">
-			<div class="section-header"> PAYMENT METHOD </div>
+			<div class="section-header"> IMPORTANT PAYMENT INFORMATION </div>
 			<div ng-if="payment.method.type=='vendor'">
-                <div class="user-notification" style="font-weight: normal;margin-top:0px;padding:0px 5px;color: red; font-size: 1.1em; text-align: left;"> 
-                    Your payment will be processed by {{payment.method.displayName}}
-                    <div style="margin-top:15px;font-size:13px;font-weight:bold;color:darkblue;">{{payment.method.displayName}} charges a convenience fee for this service</div>
-                    <div ng-repeat="rate in payment.fees">
-                        <div style="margin-top:8px;font-size:13px;font-weight:bold;xcolor:darkblue;">
-                            <span ng-if="rate.amount">
-                                <span ng-if="rate.amount > 0">
-                                {{rate.name}} convenience fee is {{rate.amount | currency}} 
-                                </span>
-                                <span ng-if="rate.amount == 0">
-                                {{rate.name}} payments are not charged a convenience fee
-                                </span>
-                            </span>
-                            <span ng-if="rate.rate">
-                            {{rate.name}} convenience fee is {{rate.rate*100 | number:2}}% of your tax payment amount 
-                            </span>
-                        </div>
-                        <div ng-if="rate.note" style="display:inline-block; text-align:right;font-weight:normal;font-style:italic; color:darkblue;font-size:11px;">
-                            {{rate.note}}
-                        </div>
-                    </div>
-                    <div style="margin:15px 0px 25px 0px;">
-                        <div style="margin-top:15px;font-size:13px;font-weight:bold;color:darkblue;">
-                            Estimated Fee Amounts for your payment:
-                        </div>
-                        <div ng-repeat="rate in payment.fees">
-                            <div style="display:inline-block;width:215px; text-align:left;font-weight:bold;margin-left:25px;margin-top:10px;">
-                                <span style='font-weight:normal;font-style:italic;padding-right:5px;'>If paying by</span>
-                                {{rate.name}}:
-                            </div> 
-                            <div style="display:inline-block; width:75px; text-align:right;font-weight:normal;">
-                                {{rate.fee | currency}}
-                            </div>
-                        </div>
-                    </div>
-                    <div style="color:darkblue;">
-                        Press the 
-                        <span ng-if="payment.method.type!='PDS'" class="ref-button">Make My Payment</span> 
-                        button at the bottom of the page to select your method of payment.
-                    </div>
-                </div>
+                <style>
+                    .method table { margin-top: 10px; }
+                    .method table th { width: 80px; color: darkblue; text-decoration: underline; font-weight: bold; vertical-align:top; }
+                    .method table td { width: 350px; color: darkblue; }
+                    .method table tr:first-child td { width: 350px; color: darkblue; margin-bottom: 25px; }
+                </style>
+                <table>
+                    <tr>
+                        <th> eCheck </th>
+                        <td>
+                            <li> No additional fee. </li>
+                            <li> Minimum transaction amount of $1.00. </li>
+                            <li> Only checking accounts accepted. </li>
+                            <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th> Card </th>
+                        <td>
+                            Credit/Debit card payments will be assessed a separate, non-refundable convenience fee.
+                            This convenience fee is a service charge assessed by the third-party banks and service providers.
+                            <br><br>
+                            The convenience fee assessed for credit cards or certain Visa debit cards will be 2.35% ($1.00 minimum)
+                            of your total payment amount. The Visa consumer debit card charges a flat fee of $3.95 per transaction.
+                            The exact convenience fee amount to be charged is determined solely by the credit card companies.
+                        </td>
+                    </tr>
+                </table>
 			</div>
+        </div>
+		<div class="payment-summary-block method">
+			<div class="section-header" style="border: none;"> IMPORTANT POSTING INFORMATION </div>
+			<div style="color:red;">
+            Online payment transactions must be completed by 11:59 PM Central Standard Time on or before the due date in order to
+            avoid penalties.
+			</div>
+
 
 			<div ng-if="payment.method.type=='EC'">
 				<!--<div class="section-header"> BANK ACCOUNT INFORMATION </div>-->
@@ -301,12 +293,14 @@
 	</div>
 
 	<div class="user-notification">
-		To avoid multiple payments please click only once
+		Only click once to avoid multiple payments.
 	</div>
 	<div id="option-block">
-		<button ng-click="processPayment()"> Make My<br>Payment </button>
-		<button ng-click="reenterInformation()"> Change Payment<br>Information </button>
-		<button ng-if="config.accountSearchUrl" ng-click="newSearch()"> I've Changed<br>My Mind </button>
+        <style>
+            #option-block button { color: white; }
+        </style>
+		<button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
+		<button class="btn btn-primary" ng-click="processPayment()"> Make Payment </button>
 		<br><br>
 	</div>
 	<br><br><br>

@@ -128,6 +128,7 @@ public class Payments {
                         recordCounter++;
                         sb.append("  {\r\n");
                         sb.append("    \"can\" : \"" + d.can + "\",\r\n");
+                        sb.append("    \"aprdistacc\" : \"" + d.aprdistacc + "\",\r\n");
                         sb.append("    \"nameline1\" : \"" + d.nameline1 + "\",\r\n");
                         sb.append("    \"nameline2\" : \"" + d.nameline2 + "\",\r\n");
                         sb.append("    \"nameline3\" : \"" + d.nameline3 + "\",\r\n");

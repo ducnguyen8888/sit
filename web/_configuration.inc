@@ -67,7 +67,7 @@
 
     boolean viewOnly = sitAccount!= null ? sitAccount.getUser().viewOnly() : false;
 
-    // Attempt to locate the selected dealership 
+    // Attempt to locate the selected dealership
     Dealership  dealership          = dealerships.get(can);
     if ( dealership != null )
     {
@@ -94,8 +94,8 @@
 
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
-    String sitVersion       = "SIT 1.2";
-    String updatedDate      = LocalDate.of(2018,9,11).format(formatter);
+    String sitVersion       = "SIT 1.5";
+    String updatedDate      = LocalDate.of(2018,9,17).format(formatter);
 
 
 %><%!
@@ -144,9 +144,16 @@
     }
     String nvl(Object value, String def)
     {
-        return (value == null || ! (value instanceof String) ? def : (String) value);
+        return (value == null|| ! (value instanceof String) ? def : (String) value);
         
     }
+    
+    String nvl(String value, String def)
+    {
+        return ( notDefined( value ) ) ? def : value;
+        
+    }
+    
     boolean isTrue(String value)
     {
         return value != null && value.toUpperCase().matches("(Y|YES|TRUE)");

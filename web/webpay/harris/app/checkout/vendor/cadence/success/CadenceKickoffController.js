@@ -63,5 +63,11 @@ app.controller("CadenceKickoffController",
 		return;
 	}
 
+    // Why 20 seconds???
+    // Because that's what we were told to do...there's also no cancel option...
+    // ...expect this to change as soon as they use it...
+    $scope.paymentProcessingStart = $rootScope.paymentProcessingStart || Date.now();
+    $scope.autoKickoffTimeout = 20000 - (Date.now()-$scope.paymentProcessingStart);
+    $timeout(submitTheForm,$scope.autoKickoffTimeout);
 	$log.debug("Cadence Kickoff Controller: Initialization complete");
 }]);

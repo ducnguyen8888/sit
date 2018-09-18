@@ -36,7 +36,11 @@ public StringBuffer getDealerAddress(Dealership d){
     return sb;
 }
 
-%><script>
+%>
+<link href="../assets/css/jquery-ui.min.css" rel="stylesheet">
+<script src="../assets/js/jquery.min.js"></script>
+<script src="../assets/js/jquery-ui.min.js"></script> 
+<script>
    function Print(){
         window.onbeforeprint = function(){
             document.getElementById("container").style.marginTop = "-70px";
@@ -345,7 +349,7 @@ if ( notDefined( request.getParameter("formSubmitted") ) ){
     middle.append("        <input type=\"hidden\"  name=\"priorTotal\" id=\"priorTotal\" value=\"" + priorTotal + "\">\r\n");
     middle.append("        <input type=\"hidden\"  name=\"market\" id=\"market\" value=\"" + market + "\">\r\n");
     // PRC 194604 rename button
-    middle.append("        <button type=\"submit\" id=\"finalizeIt\" name=\"finalizeIt\">Submit this Form to the Tax Office</button>\r\n");
+    middle.append("        <button type=\"button\" id=\"finalizeIt\" name=\"finalizeIt\">Submit this Form to the Tax Office</button>\r\n");
     middle.append("          <button type=\"submit\" id=\"goBack\" name=\"goBack\">Go Back</button>\r\n");
    // middle.append("      </form>\r\n");
     middle.append("    </div>\r\n");
@@ -370,10 +374,16 @@ if ( notDefined( request.getParameter("formSubmitted") ) ){
     middle.append("</div>\r\n");
 }
 
+middle.append("<div style=\"position: fixed;\">\r\n");
+middle.append("<div id=\"operationWarning\">\r\n");
+middle.append("<div style=\"text-align: center; font-size: 14px; font-weight: bold;\">\r\n");
+middle.append("<div style=\"color: red;\">Warning!!</div><br>\r\n");
+middle.append("Attempted to perform an unauthorized operation.\r\n");
+middle.append("</div></div></div>\r\n");
+
 end.append("<div class= \"page-holder\">\r\n");
 end.append("<div id=\"container\">\r\n");
 end.append("<img src=\"images/50-244.png\" alt=\"Inventory Declaration\" width=\"778\" />\r\n");
-
 end.append("<table style=\"width: 778px; padding:0px; margin:0px;\">\r\n");
 end.append("  <tr>\r\n");
 end.append("    <td style=\"width: 600px;\">&nbsp;</td>\r\n");
@@ -780,12 +790,32 @@ end.append("</TABLE>\r\n");
 end.append("<div id=\"version\" style=\"text-align: right; font-style: italic; font-size: 10px;\">50-244 * 04-15/12</div>\r\n");
 end.append("</div><!--container -->\r\n");
 end.append("</div><!--page holder -->\r\n");
-
+end.append("    <script>\r\n");
+end.append("        $(document).ready(function() {\r\n");
+end.append("$(this).scrollTop(0);");
+end.append("$(\"#operationWarning\").dialog({ \r\n");
+end.append("autoOpen: false,\r\n");
+end.append("open: function (event, ui) { $(\".ui-widget-overlay\").css({background: \"#000\", position:\"fixed\", top:\"0\", opacity: 0.7});$(\".ui-dialog\").css({ position: \"fixed\", top: \"250\"});},\r\n");
+end.append("    modal:true,\r\n");
+end.append("    width:500,");
+end.append("    buttons:[");
+end.append("        {");
+end.append("        text:\"OK\",");
+end.append("        width:\"100\",");
+end.append("        click: function() { $(this).dialog(\"close\"); $(document).scrollTop(0);}");
+end.append("        }");
+end.append("            ]");
+end.append(" });");
+end.append("$(\"#finalizeIt\").on(\"click\", function(e){\r\n");
+if ( !viewOnly ) {
+    end.append("            var theForm = $(\"form#navigation\");\r\n");
+    end.append("            theForm.submit();\r\n");
+} else {
+    end.append("$(document).scrollTop(0);\r\n");
+    end.append("$( \"#operationWarning\").dialog(\"open\");");
+}
+end.append("});");
 if (notDefined(request.getParameter("formSubmitted"))){
-    end.append("    </form>\r\n"); 
-    end.append("    <script src=\"../assets/js/jquery.min.js\"></script> \r\n");
-    end.append("    <script>\r\n");
-    end.append("        $(document).ready(function() {\r\n");
     end.append("            $(\"#goBack\").on(\"click\", function(e){ \r\n");
     end.append("                e.preventDefault();\r\n");
     end.append("                e.stopPropagation(); \r\n");
@@ -793,16 +823,17 @@ if (notDefined(request.getParameter("formSubmitted"))){
     end.append("                theForm.prop(\"action\", \"../annualDeclaration.jsp\");\r\n");
     end.append("                theForm.submit();\r\n");
     end.append("            });\r\n");
-    end.append("        });//doc ready\r\n");
-    end.append("    </script>    \r\n");
-
 }
+end.append("        });//doc ready\r\n");
+end.append("    </script>    \r\n");
+
 
  end.append("</BODY>\r\n");
  end.append("</HTML>\r\n");
 
 
-if (isDefined(request.getParameter("formSubmitted"))){ 
+if ( isDefined(request.getParameter("formSubmitted"))
+        && !viewOnly ){ 
   String thisPage = "50-244.jsp";
 %>
  <%@ include file="_yearly.jsp"%>>

@@ -1,3 +1,4 @@
+
     var monthNames = [ "", "January", "February", "March", "April", "May", "June",
                             "July", "August", "September", "October", "November", "December"
                         ];
@@ -29,7 +30,6 @@
         }
 
         var category = $("#category").val();
-        var defaultDueDOM = (category == "HE" ? "20" : "10"); 
         var currentYear = (new Date()).getFullYear();
         var currentMonth = (new Date()).getMonth()+1;
 
@@ -47,19 +47,30 @@
         var records = $("<tbody/>");
         for ( var month=12; month > 0; month-- )
         {
+            var defaultDueDOM = (category == "HE"
+                                && ( year > 2017 || (year == 2017 && month > 7)) ? "20" : "10");
             if ( currentYear == year && month > currentMonth )
             {
                 continue;
             }
 
             var monthData = yearData[month];
+            var dueMonth = month +1;
+            var dueYear  = year;
+
+            if ( dueMonth > 12 ){
+                dueMonth = 1;
+                dueYear = parseInt( year ) + 1;
+            }
+
             var row = $("<tr/>");
             row.append( $("<td/>").html(monthNames[month]) );
             records.append(row);
 
             if ( ! monthData || (! monthData.salesData && monthData.saved == 0) )
             {
-                    row.append(emptyCell.clone().html(monthData.dueDate = month + "/" + defaultDueDOM + "/" + year))
+                    monthData.dueDate = dueMonth + "/" + defaultDueDOM + "/"  + dueYear;;
+                    row.append(emptyCell.clone().html( monthData.dueDate ))
                         .append(emptyCell.clone())
                         .append(emptyCell.clone())
                         .append(emptyCell.clone())
@@ -81,7 +92,7 @@
             }
             else
             {
-                if ( ! monthData.dueDate || monthData.dueDate.length == 0 ) monthData.dueDate = month + "/10/" + year;
+                monthData.dueDate = dueMonth + "/" + defaultDueDOM + "/"  + dueYear;;
                 row.append($("<td/>").html(monthData.dueDate))
                     .append($("<td/>").html(monthData.salesPrice.c$formatAsMoney()))
                     .append($("<td/>").html(monthData.msaleLevyBal.c$formatAsMoney()))

@@ -16,6 +16,8 @@
         From 2018, the "Date Business Opened" or "Business Start Date" will be left blank
     DN - 06/15/2018 - PRC 194602
         In case the start date in taxdtl table is null, the start date field will be left blank instead of  populating a made up start date
+    DN - 09/13/2018 - PRC 197579
+        - Dont let the users to close the monthly statement if they have the "viewOnly" right.
 --%><%! 
 public StringBuffer getDealerAddress(Dealership d){
     StringBuffer sb = new StringBuffer();
@@ -26,7 +28,11 @@ public StringBuffer getDealerAddress(Dealership d){
     //if (isDefined(d.phone)){sb.append("<br>Phone: " + formatPhone(d.phone));}
     return sb;
 }
-%><script>
+%>
+<link href="../assets/css/jquery-ui.min.css" rel="stylesheet">
+<script src="../assets/js/jquery.min.js"></script>
+<script src="../assets/js/jquery-ui.min.js"></script> 
+<script>
     // PRC 194604
     // Make sure that the top of statement is not pushed down when printing
    function Print(){
@@ -350,7 +356,7 @@ if (notDefined(request.getParameter("formSubmitted"))){
     middle.append("      <input type=\"hidden\" name=\"category\" id=\"category\" value=\"" + request.getParameter("category") + "\">\r\n");
     middle.append("      <input type=\"hidden\" name=\"bizStart\" id=\"bizStart\" value=\"" + request.getParameter("bizStart") + "\">\r\n");
     middle.append("      <input type=\"hidden\" name=\"formSubmitted\" id=\"formSubmitted\" value=\"yes\">\r\n");
-    middle.append("      <button type=\"submit\" id=\"finalizeIt\" name=\"finalizeIt\">"+buttonText+"</button>\r\n");
+    middle.append("      <button type=\"button\" id=\"finalizeIt\" name=\"finalizeIt\">"+buttonText+"</button>\r\n");
     middle.append("      <button type=\"submit\" id=\"goBack\" name=\"goBack\">Go Back</button>\r\n");
     middle.append("    </form>\r\n");
     middle.append("  </div>\r\n");
@@ -390,11 +396,17 @@ if (notDefined(request.getParameter("formSubmitted"))){
     middle.append("</div>\r\n");
 }
 
+middle.append("<div style=\"position: fixed;\">\r\n");
+middle.append("<div id=\"operationWarning\">\r\n");
+middle.append("<div style=\"text-align: center; font-weight: bold;\">\r\n");
+middle.append("<div style=\"color: red;\">Warning!!</div><br>\r\n");
+middle.append("Attempted to perform an unauthorized operation.\r\n");
+middle.append("</div></div></div>\r\n");
+
+
 end.append("<div class= \"page-holder\">\r\n");
 end.append("<div id=\"container\">\r\n");
-
 end.append("  <img src=\"images/50-246.png\" style=\"margin-bottom: 10px;\" width=\"778\" />\r\n");
-
 end.append("<table style=\"float:right; padding:0px; margin:0px; margin-bottom: 10px;\">\r\n");
 end.append("  <tr>\r\n");
 end.append("    <td style=\"width:80px;\">" + month + "</td>\r\n");
@@ -711,9 +723,31 @@ end.append("<div id=\"version\" style=\"text-align: right; font-style: italic; f
 end.append("</div><!--container -->\r\n");
 end.append("</div><!--page holder -->\r\n");
 
-end.append("   <script src=\"../assets/js/jquery.min.js\"></script> \r\n");
 end.append("   <script>\r\n");
 end.append("       $(document).ready(function() {\r\n");
+end.append("$(this).scrollTop(0);");
+end.append("$(\"#operationWarning\").dialog({ \r\n");
+end.append("autoOpen: false,\r\n");
+end.append("open: function (event, ui) { $(\".ui-widget-overlay\").css({background: \"#000\", position:\"fixed\", top:\"0\", opacity: 0.7});$(\".ui-dialog\").css({ position: \"fixed\", top: \"250\"});},\r\n");
+end.append("    modal:true,\r\n");
+end.append("    width:500,");
+end.append("    buttons:[");
+end.append("        {");
+end.append("        text:\"OK\",");
+end.append("        width:\"100\",");
+end.append("        click: function() { $(this).dialog(\"close\"); $(document).scrollTop(0);}");
+end.append("        }");
+end.append("            ]");
+end.append(" });");
+end.append("$(\"#finalizeIt\").on(\"click\", function(e){\r\n");
+if ( !viewOnly ) {
+    end.append("            var theForm = $(\"form#navigation\");\r\n");
+    end.append("            theForm.submit();\r\n");
+} else {
+    end.append("$(document).scrollTop(0);\r\n");
+    end.append("$( \"#operationWarning\").dialog(\"open\");");
+}
+end.append("});");
 // PRC 194431 - 05/16/2018 - Harris County wants "Go to Cart" button to be displayed after the form is finalized
 if ( "Y".equals(session.getAttribute("finalize_on_pay"))
     ||"2000".equals( client_id ) ){
@@ -740,7 +774,8 @@ end.append("</BODY>\r\n");
 end.append("</HTML>\r\n");
 
 
-  if (isDefined(request.getParameter("formSubmitted"))){
+  if ( isDefined(request.getParameter("formSubmitted"))
+        && !viewOnly ){
       String thisPage = "50-246.jsp";
 %>
  <%@ include file="_monthly.jsp" %>
