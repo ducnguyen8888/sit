@@ -78,6 +78,11 @@
     .dealerWidget:hover{background:#e6e6e6; cursor: pointer;}
 
     .warning{ text-align: center; color: red; font-size:15px; }
+    .searching{ text-align: center; font-size: 15px; }
+
+    #footer{
+        position: fixed;
+    }
 
 
 
@@ -94,11 +99,13 @@
                 e.stopPropagation();
                 if (isAtLeastOneSpecified()) {
                     $("#dealersContainer").empty();
+                    $("#dealersContainer").html("<div class='searching'>Searching, please wait...</div>");
                     $.ajax({
                         type:'POST',
                         url:'search_ws.jsp',
                         data: $("#searchDealers").serialize(),
                         success: function(res){
+                            $(".searching").remove();
                             var dealerContainer = JSON.parse(res);
                             if (dealerContainer.searchDealershipsRequest=="success") {
                                 if (dealerContainer.data.searchDealerships == "success") {
@@ -115,6 +122,7 @@
                             }
                         },
                         error: function(){
+                            $(".searching").remove();
                             $("#dealersContainer").html("<div class='warning'>An error just occurred. Please try again</div>");
                         }
 

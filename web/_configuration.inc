@@ -94,8 +94,8 @@
 
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
-    String sitVersion       = "SIT 1.5";
-    String updatedDate      = LocalDate.of(2018,9,17).format(formatter);
+    String sitVersion       = "SIT 1.6";
+    String updatedDate      = LocalDate.of(2018,9,21).format(formatter);
 
 
 %><%!

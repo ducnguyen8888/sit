@@ -151,7 +151,7 @@ public class SITAccount
                               + "         group by "
                               + "                ownership.client_id, ownership.userid, sit_users.username, ownership.can "
                               + "        ) "
-                              + "select  owner.can, taxdtl.dealer_type, taxdtl.aprdistacc, "
+                              + "select distinct owner.can, taxdtl.dealer_type, taxdtl.aprdistacc, "
                               + "        owner.city, owner.state, owner.zipcode, owner.country, "
                               + "        owner.nameline1, owner.nameline2, owner.nameline3, owner.nameline4, "
                               + "        owner.phone, owner.email, "
