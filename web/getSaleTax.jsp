@@ -4,15 +4,15 @@
     response.addHeader("Cache-Control", "no-cache") ;
     response.addDateHeader("Expires", 0);
     
-    boolean         isSameServer    = nvl( request.getHeader("Referer")).indexOf(request.getHeader("Host")) > 0;
+    //boolean         isSameServer    = nvl( request.getHeader("Referer")).indexOf(request.getHeader("Host")) > 0;
     boolean         wasPosted       = "POST".equals(request.getMethod());
     
     String          clientId        = nvl(request.getParameter("clientId"));
     double          sales           = nvl(request.getParameter("sales"),0.00);
     String          salesType       = nvl(request.getParameter("type"));
     
-    if ( isSameServer
-        && wasPosted ) {
+    if ( wasPosted
+            && sitAccount.isValid() ) {
           
           if ( isDefined( clientId)
             && isDefined(can)

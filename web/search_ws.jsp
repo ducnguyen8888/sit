@@ -8,10 +8,8 @@
 
 <%@ page import="java.lang.reflect.*,java.time.*,java.time.format.*" %><%@ include file="_configuration.inc"
 %><%
-    boolean         isSameServer         = nvl( request.getHeader("Referer")).indexOf(request.getHeader("Host")) > 0;
+    //boolean         isSameServer         = nvl( request.getHeader("Referer")).indexOf(request.getHeader("Host")) > 0;
     boolean         wasPosted            = "POST".equals(request.getMethod());
-
-    String          clientId             = sitAccount.getClientId();
 
     String          dealershipNo         = nvl(request.getParameter("no"));
     String          dealershipName       = nvl(request.getParameter("name"));
@@ -21,8 +19,7 @@
 
     Dealership[]    viewDealerships      = null;
 
-    if( isSameServer
-            && wasPosted
+    if( wasPosted
             && sitAccount.getUser().viewOnly()
             && sitAccount.isValid()
             ){

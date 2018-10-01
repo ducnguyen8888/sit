@@ -94,8 +94,8 @@
 
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
-    String sitVersion       = "SIT 1.6";
-    String updatedDate      = LocalDate.of(2018,9,21).format(formatter);
+    String sitVersion       = "SIT 1.10";
+    String updatedDate      = LocalDate.of(2018,10,1).format(formatter);
 
 
 %><%!
@@ -188,7 +188,8 @@
     }
     public String formatMoney(double amount)
     {
-       return  NumberFormat.getCurrencyInstance().format(amount) ;
+        Locale locale = new Locale("en", "US");
+       return  NumberFormat.getCurrencyInstance( locale ).format(amount) ;
     }
     
     // PRC 190602 - 06/14/2018 retrieve the startDate, startDate's month, startDate's year

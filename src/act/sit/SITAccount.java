@@ -34,8 +34,9 @@ public class SITAccount
         user.login();
         if ( user.isValid() )
         {   dealerships     = new ArrayList<Dealership>();
-            loadDealerships();
-
+            if (!user.viewOnly() ){
+                loadDealerships();
+            }
             preferences = new Hashtable<String,String>();
             loadPreferences();
         }
@@ -116,7 +117,7 @@ public class SITAccount
             ps.setString(2, user.getUserId());
 
             try ( ResultSet rs = ps.executeQuery(); )
-            {   if ( ! rs.next() )
+            {   if (  !rs.next() )
                 {   throw new Exception("No dealerships were found for the user");
                 }
 

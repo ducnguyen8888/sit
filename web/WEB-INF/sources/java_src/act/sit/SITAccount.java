@@ -34,8 +34,9 @@ public class SITAccount
         user.login();
         if ( user.isValid() )
         {   dealerships     = new ArrayList<Dealership>();
-            loadDealerships();
-
+            if (!user.viewOnly() ){
+                loadDealerships();
+            }
             preferences = new Hashtable<String,String>();
             loadPreferences();
         }
@@ -116,7 +117,7 @@ public class SITAccount
             ps.setString(2, user.getUserId());
 
             try ( ResultSet rs = ps.executeQuery(); )
-            {   if ( ! rs.next() )
+            {   if (  !rs.next() )
                 {   throw new Exception("No dealerships were found for the user");
                 }
 
@@ -151,7 +152,7 @@ public class SITAccount
                               + "         group by "
                               + "                ownership.client_id, ownership.userid, sit_users.username, ownership.can "
                               + "        ) "
-                              + "select  owner.can, taxdtl.dealer_type, taxdtl.aprdistacc, "
+                              + "select distinct owner.can, taxdtl.dealer_type, taxdtl.aprdistacc, "
                               + "        owner.city, owner.state, owner.zipcode, owner.country, "
                               + "        owner.nameline1, owner.nameline2, owner.nameline3, owner.nameline4, "
                               + "        owner.phone, owner.email, "

@@ -341,10 +341,11 @@
         <div class=panel>
             <div>Please wait a moment while you are being redirected to the Cadence Bank website.</div>
             <form id="paymentForm" action="{{processorParam.url}}" method="post">
-                <input  type="hidden" name="FORM_NUMBER" value="{{processorParam.form_number}}">
-                <input  type="hidden" name="DEFENDANT"   value="{{payment.reference.account | limitTo:35}}"> 
-                <input  type="hidden" name="TOTAL"       value="{{payment.amount.total}}">
-                <input  type="hidden" name="CAN"         value="{{payment.reference.tid}}">
+                <input type="hidden" name="form" value="{{processorParam.form_number}}" />
+                <input type="hidden" name="language" value="en" />
+                <input type="hidden" name="defendant" value="{{payment.reference.account | limitTo:35}}" />
+                <input type="hidden" name="case" value="{{payment.reference.tid}}" />
+                <input type="hidden" name="amount" value="{{payment.amount.total}}" />
              </form>
         </div>
     <div>
