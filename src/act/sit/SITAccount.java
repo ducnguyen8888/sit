@@ -50,14 +50,16 @@ public class SITAccount
 
     public      Map<String,String>      preferences         = null;
     public      String[][]              sitPreferences      = new String[][] {
-                                                                    { "SIT_FINALIZE_ON_PAY", "N" }
+                                                                        { "SIT_FINALIZE_ON_PAY", "N" },
+                                                                        {"SHOW_CAD_NO_IN_SIT_PORTAL","N"}
                                                                     };
     public String getPreference(String preferenceName)
     {
         return preferences.get(preferenceName);
     }
 
-    public      boolean                 SIT_FINALIZE_ON_PAY = false;
+    public      boolean                 SIT_FINALIZE_ON_PAY         = false;
+    public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL   = false;
 
 
     public boolean isValid()
@@ -203,7 +205,8 @@ public class SITAccount
 
     public void setPreferences()
     {
-        SIT_FINALIZE_ON_PAY = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
+        SIT_FINALIZE_ON_PAY         = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
+        SHOW_CAD_NO_IN_SIT_PORTAL   = "Y".equalsIgnoreCase(getPreference("SHOW_CAD_NO_IN_SIT_PORTAL"));
 
     }
     public void loadPreferences() throws Exception
