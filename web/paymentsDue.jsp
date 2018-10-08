@@ -1,6 +1,9 @@
 <%--
     DN - 05/30/2018
         - Split payment processing into each client own payment directory
+    DN - 10/02/2018 - PRC 205088
+        - Added CAD No
+        - Display "CAD No" controlled by codeset "SHOW_CAD_NO_IN_SIT_PORTAL"
 --%><%@ include file="_configuration.inc" %><%! 
     public StringBuffer getDealerAddress(Dealership d){
         StringBuffer sb = new StringBuffer();
@@ -230,8 +233,8 @@
     <form id="tabNav" action="yearlySummary.jsp" method="post">
         <input type="hidden" id="can" name="can" value="<%= can %>" />
         <input type="hidden" id="category" name="category" value="" />      
-        <input type="hidden" id="year" name="year" value="" />  
-
+        <input type="hidden" id="year" name="year" value="" />
+        <input type="hidden" id="showCad" name="showCad" value="<%= sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL %>">
     </form>
     <div id="helpDiv"></div>
         <form id="navigation" action="yearlySummary.jsp" method="post">

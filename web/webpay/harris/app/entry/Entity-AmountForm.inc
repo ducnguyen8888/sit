@@ -47,10 +47,12 @@ input.ngMax + .input-help div.ngMax { display: block; color: green; }
 				<div class="pe">
 					<div class="ownerSection">
 						<div ng-if="clientRoot">
-							<a tabindex="-1" href="{{clientRoot}}showdetail2.jsp?can={{account.account}}"> {{account.account}} </a> 
+							<a tabindex="-1" href="{{clientRoot}}showdetail2.jsp?can={{account.account}}"> {{account.account}} </a>
+							<div>CAD No: </div>
 						</div>
-						<div ng-if="!clientRoot" style="color:darkblue;font-weight:bold;margin-bottom:5px;">
-							{{account.account}}
+						<div ng-if="!clientRoot" style="color:darkblue;font-weight:bold;margin-bottom:5px; display: flex;">
+							<div style="margin-right:15px;">{{account.account}}</div>
+							<div ng-if="showCad">CAD No: {{account.aprdistacc}} </div>
 						</div>
 
                         <div ng-if="false && account.ownerAddress" ng-bind-html="renderHtml(account.ownerAddress)" style="color:darkgrey;margin-bottom: 5px;"> </div>

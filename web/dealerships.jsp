@@ -1,3 +1,8 @@
+<%--
+     DN - 10/02/2018 - PRC 205088
+            - Added CAD No
+            - Display "CAD No" controlled by codeset "SHOW_CAD_NO_IN_SIT_PORTAL"
+--%>
 <%@ include file="_configuration.inc" %>
 <%! 
     public StringBuffer getDealerAddress(Dealership d){
@@ -57,6 +62,14 @@
             -moz-border-radius:4px; 
             border-radius:4px; 
             border-bottom: solid 1px #165983;
+            overflow:hidden;
+            text-overflow: clip;
+            text-overflow: ellipsis;
+            text-overflow: "…";
+        }
+        .dealerWidget div.wtitle span {
+            float: right;
+            margin-right: 10px;
         }
         .dealerWidget div.wbody { 
             padding: 0px 10px 10px 10px;
@@ -84,7 +97,7 @@
               for (int i = 0 ; i < ds.size() ; i++){
                   d = (Dealership) ds.get(i);
                   out.println("<div id= '"+ d.can +"|" + d.dealerType +"|"+ d.nameline1 +"' class='dealerWidget'>");
-                  out.println("  <div class='wtitle'>" + nvl(d.can) + "</div>");
+                  out.println("  <div class='wtitle'>" + nvl(d.can) +( sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL ? ("<span>CAD No: "+d.aprdistacc+"</span>") : "") + "</div>");
                   out.println("  <div class='wbody'>" + getDealerAddress(d) + "</div>");
                   out.println("</div>");
               }

@@ -1,6 +1,9 @@
 <%--
         DN - 01/30/2018 - PRC 194603 
             - Changed "Finalized" to "Submitted" and "Filed" to "PYMT Posted"
+        DN - 10/02/2018 - PRC 205088
+            - Added CAD No
+            - Display "CAD No" controlled by codeset "SHOW_CAD_NO_IN_SIT_PORTAL"
 --%>
     <div id="bodyTop" style="width:6">
         <div class="widgetWrangler" style="width: 900px;">
@@ -11,7 +14,7 @@
                 <div class="widget1" <% if (finalize_on_pay && "sales.jsp".equals(current_page)) out.print("style='margin-left: 175px;'"); %>>
                     <div class="wtitle"  style="text-align: left; padding-left: 10px;">Account Information</div>
                     <div id="account" style="padding: 0px 5px;max-width:250px;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">
-                        <%= getAddress(dealership) %>
+                        <%= getAddress(dealership, sitAccount) %>
                     </div>
                 </div>
                 <%

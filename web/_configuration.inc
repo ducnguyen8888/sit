@@ -32,6 +32,10 @@
         response.sendRedirect(loginPage);
         return;
     }
+    if (sitAccount != null && sitAccount.isValid() ) {
+        session.setAttribute("showCad", sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL);
+    }
+
 
 
     String pdfConverterURL = "http://apollo:100/convert2PDF.php";
@@ -170,6 +174,24 @@
         if (isDefined(d.phone)){sb.append("<br>Phone: " + formatPhone(d.phone));}
         sb.append("<br>Dealer#: " + d.can);
         //sb.append("<br>Account: " + d.aprdistacc);
+        return sb;
+    }
+
+    public StringBuffer getAddress(Dealership d, SITAccount sitAccount){
+        StringBuffer sb = new StringBuffer();
+        if (isDefined(d.nameline1)){sb.append("<strong>" + d.nameline1 + "</strong>");}
+        //if (isDefined(d.nameline1)){sb.append("<strong>" + d.nameline1 + "</strong> - " + d.can);}
+        if (isDefined(d.nameline2)){sb.append("<br>" + d.nameline2);}
+        if (isDefined(d.nameline3)){sb.append("<br>" + d.nameline3);}
+        if (isDefined(d.nameline4)){sb.append("<br>" + d.nameline4);}
+        sb.append("<br>" + nvl(d.city) + ", " + nvl(d.state) + " " + formatZip(d.zipcode));
+        if (isDefined(d.phone)){sb.append("<br>Phone: " + formatPhone(d.phone));}
+        sb.append("<br>Dealer#: " + d.can);
+        if (sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL ){
+            sb.append("<br>CAD No: " + d.aprdistacc);
+        } else {
+            sb.append("");
+        }
         return sb;
     }
 

@@ -36,6 +36,7 @@ boolean notDefined(String value) { return value == null || value.length() == 0; 
     }
 
     boolean     isTestTransaction   = "true".equals(configuration.getProperty("payment_isTest"));
+    boolean     showCad             = (Boolean) session.getAttribute("showCad");
 
 
 
@@ -50,6 +51,7 @@ boolean notDefined(String value) { return value == null || value.length() == 0; 
      "config": {
                 "isTest":           <%= isTestTransaction %>,
                 "clientId":         "<%= clientId %>",
+                "showCad":          <%= showCad%>,
                 "processor": {  "type": "vendor",
                                 "id":     "Cadence",
                                 "name":   "Cadence Bank",

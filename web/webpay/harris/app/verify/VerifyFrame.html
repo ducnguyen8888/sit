@@ -37,7 +37,7 @@
 							</div>
 							<div ng-if="!config.accountDetailUrl" style="color:darkblue;font-weight:bold;margin-bottom:5px;">
 								{{account.account}} 
-                                <div style="display:inline-block;margin-left: 40px;">CAD No: {{account.aprdistacc}} </div>
+                                <div ng-if="showCad" style="display:inline-block;margin-left: 40px;">CAD No: {{account.aprdistacc}} </div>
                                 <br>
 							</div>
 

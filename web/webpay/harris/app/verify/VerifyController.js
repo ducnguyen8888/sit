@@ -18,6 +18,7 @@ app.controller("VerifyController",
 
 	$log.debug("Verify Controller: Payment data loading");
 	$scope.payment = paymentFactory.get();
+	$scope.showCad = $rootScope.config.showCad;
 	if ( ! $scope.payment ) {
 		$log.error("Verify Controller: Failed to find payment data");
 		errorManager.raiseDataError();

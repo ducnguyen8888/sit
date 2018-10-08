@@ -1,3 +1,6 @@
+    // DN - 10/02/2018 - PRC 205088
+    //  - Added CAD No
+    //  - Display "CAD No" controlled by codeset "SHOW_CAD_NO_IN_SIT_PORTAL"
     var monthNames = [ "", "January", "February", "March", "April", "May", "June",
                             "July", "August", "September", "October", "November", "December"
                         ];
@@ -9,6 +12,8 @@
     function displayPaymentsDue()
     {
         var paymentsDue = window.paymentsDue;
+        var showCad     = "true" == $("#showCad").val();
+
         if ( ! paymentsDue ) 
         {
             console.log("Failed to locate payment due data");
@@ -42,7 +47,9 @@
         for ( var idx=0; idx < paymentsDue.length; idx++ )
         {
             var dealer = paymentsDue[idx].dealer;
+
             var yearsDue = paymentsDue[idx].paymentsDue;
+            var cad     = showCad ? " - " + "CAD No: " + dealer.aprdistacc :"";
 
 
             // Add the Dealer ID row, name - can
@@ -50,7 +57,7 @@
             var row = $("<tr/>");
             row.append( $("<td/>").attr("colspan","9")
                                   .attr("style","background-color: #b0b0b0;")
-                                  .html(dealer.nameline1 + " - " + dealer.can));
+                                  .html(dealer.nameline1 + " - " + dealer.can + cad ) );
             records.append(row);
 
             // Add descriptive header row

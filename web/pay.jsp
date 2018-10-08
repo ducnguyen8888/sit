@@ -127,13 +127,16 @@
     if(payments.size() > 0){
         ArrayList<Payment> al = new ArrayList<Payment>();
         d = new Dealership();
+        int accountColSpan = sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL ? 6 : 5;
+        int totalPayColSpan = accountColSpan -2;
         out.print("<table class='dataTable' id='payments'>");
             for (int i = 0 ; i < ds.size() ; i++){
                 d = (Dealership) ds.get(i);
                 if(payments.doesExist(d)){
-                    out.print("<tr><td colspan='5' style='font-weight: bold;background:#BBC7CE;'>" + d.nameline1 + " - " + d.can + "</td></tr>");
+                    out.print("<tr><td colspan='"+ accountColSpan +"' style='font-weight: bold;background:#BBC7CE;'>" + d.nameline1 + " - " + d.can + "</td></tr>");
                     out.print("      <tr>");
                     out.print("          <td>Account</td>");
+                    out.print(           sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL ? ("<td>CAD No</td>"):"");
                     out.print("          <td>Year</td>");
                     out.print("          <td>Month</td>");
                     out.print("          <td>Balance</td>");
@@ -143,6 +146,7 @@
                     for (Payment str : al) {
                         out.print("<tr>");
                         out.print("    <td class='can'>"+str.getCan()+"</td>");
+                        out.print(     sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL ? ("<td>" + d.aprdistacc + "</td>"):"");
                         out.print("    <td class='year'>"+str.getYear()+"</td>");
                         out.print("    <td class='month'>"+str.getMonth()+"</td>");
                         out.print("    <td class='amountDue'>"+df.format(Double.parseDouble(str.getAmountDue()))+"</td>");
@@ -155,12 +159,12 @@
 %>
 
         <tr>
-            <td colspan='3' align="right" style="border-right:none;"><div style='font-weight: bold; padding-right:3px;width: 400px;text-align:right;'>Total to pay: </div></td>
+            <td colspan='<%= totalPayColSpan %>' align="right" style="border-right:none;"><div style='font-weight: bold; padding-right:3px;width: 400px;text-align:right;'>Total to pay: </div></td>
             <td style='font-weight:bold;border-right:none;border-left:none;'><span id='total_to_pay'></span></td>
             <td style='border-left:none;'>&nbsp;</td>
         </tr>
         <tr>
-            <td colspan='3' align="right" style='background:none; border:none;'><div style='font-weight: bold; padding-right:3px;width: 400px;text-align:right;'>&nbsp;</div></td>
+            <td colspan='<%= totalPayColSpan %>' align="right" style='background:none; border:none;'><div style='font-weight: bold; padding-right:3px;width: 400px;text-align:right;'>&nbsp;</div></td>
             <td style='background:none; border:none;'><button type='submit' id='paynow'>Pay Now</button></td>
             <td style='background:none; border:none;'>&nbsp;</td>
         </tr>

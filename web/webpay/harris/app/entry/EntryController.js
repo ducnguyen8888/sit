@@ -6,9 +6,11 @@ app.controller("EntryController",['$scope','$rootScope','$log',
     delete $rootScope.config.accountSearchUrl;
 
     $scope.clientRoot       = $rootScope.config.clientRoot;
-    $scope.accountSearchUrl = $rootScope.config.accountSearchUrl;
+    $scope.accountSearchUrl = $rootScope.config.accountSearchUrl;$scope.showCad = true;
+    $scope.showCad          = $rootScope.config.showCad;
 
-    $scope.payment = paymentFactory.get();
+
+        $scope.payment = paymentFactory.get();
     if ( ! $scope.payment ) {
         $log.error("Entry Controller: Failed to find payment data");
         errorManager.raiseDataError();
