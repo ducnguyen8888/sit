@@ -473,7 +473,6 @@ if(!finalize_on_pay || Double.parseDouble(fakharTotal) == 0.00) { // set report_
   } catch (Exception e) {
     SITLog.error(e, "\r\nProblem in outer try for " + thisPage + " in _monthly.jsp\r\n");
     ts.append("The exception: " + e.toString()+"\r\n");
-    act.util.EMail.sendHtml( "trace@lgbs.com","duc.nguyen@lgbs.com","Finalizing the monthly statement", ts.toString() );
   } finally {
       try { rs.close(); } catch (Exception e) { }
       rs = null;

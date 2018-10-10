@@ -51,15 +51,17 @@ public class SITAccount
     public      Map<String,String>      preferences         = null;
     public      String[][]              sitPreferences      = new String[][] {
                                                                         { "SIT_FINALIZE_ON_PAY", "N" },
-                                                                        {"SHOW_CAD_NO_IN_SIT_PORTAL","N"}
+                                                                        {"SHOW_CAD_NO_IN_SIT_PORTAL","N"},
+                                                                        {"SIT_SHOW_PRINT_PAY_FORM_BUTTON","N"}
                                                                     };
     public String getPreference(String preferenceName)
     {
         return preferences.get(preferenceName);
     }
 
-    public      boolean                 SIT_FINALIZE_ON_PAY         = false;
-    public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL   = false;
+    public      boolean                 SIT_FINALIZE_ON_PAY             = false;
+    public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL       = false;
+    public      boolean                 SIT_SHOW_PRINT_PAY_FORM_BUTTON  = false;
 
 
     public boolean isValid()
@@ -205,9 +207,9 @@ public class SITAccount
 
     public void setPreferences()
     {
-        SIT_FINALIZE_ON_PAY         = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
-        SHOW_CAD_NO_IN_SIT_PORTAL   = "Y".equalsIgnoreCase(getPreference("SHOW_CAD_NO_IN_SIT_PORTAL"));
-
+        SIT_FINALIZE_ON_PAY             = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
+        SHOW_CAD_NO_IN_SIT_PORTAL       = "Y".equalsIgnoreCase(getPreference("SHOW_CAD_NO_IN_SIT_PORTAL"));
+        SIT_SHOW_PRINT_PAY_FORM_BUTTON  = "Y".equalsIgnoreCase(getPreference("SIT_SHOW_PRINT_PAY_FORM_BUTTON"));
     }
     public void loadPreferences() throws Exception
     {

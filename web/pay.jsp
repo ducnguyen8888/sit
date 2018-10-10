@@ -1,59 +1,14 @@
-<%--
-    DN - PRC 194602 -  05/30/2018 ( This requirement will be moved with this PRC)
-        - Split payment processing into each client own payment directory
---%><%@ include file="_configuration.inc" %><%! 
-    public StringBuffer getDealerAddress(Dealership d){
-        StringBuffer sb = new StringBuffer();
-        if (isDefined(d.nameline1)){sb.append("<a id = \"" + d.can + "\" class = \"" + d.dealerType + "\" href=\"#\">" + d.nameline1 + "</a>");}
-        if (isDefined(d.nameline2)){sb.append("<br>" + d.nameline2);}
-        if (isDefined(d.nameline3)){sb.append("<br>" + d.nameline3);}
-        if (isDefined(d.nameline4)){sb.append("<br>" + d.nameline4);}
-        sb.append("<br>" + nvl(d.city) + ", " + nvl(d.state) + " " + formatZip(d.zipcode));
-        if (isDefined(d.phone)){sb.append("<br>Phone: " + formatPhone(d.phone));}
-        sb.append("<br>Acct: " + d.aprdistacc);
-        return sb;
-    }
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-    
-%><%
-    PreparedStatement ps         = null;
-    CallableStatement cs         = null;
-    ResultSet         rs         = null;
-    Connection        conn       = null;
-    ResultSetMetaData rsmd       = null;
-    java.text.DecimalFormat df = new java.text.DecimalFormat("$###,###,##0.00");
-
-    String [] monthsText           = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    
-    // PRC 194602 Split payment processing into each client own payment directory
-    String              client_id           = (String) session.getAttribute("client_id");
-    String              cfgName             = "";
-    
-    if ( "2000".equals( client_id ) ) {
-        cfgName = "sitHarris";
-    } else if ( "7580".equals( client_id ) ) {
-        cfgName = "sitDallas";
-    } else if ( "79000000".equals( client_id ) ) {
-        cfgName = "sitFbc";
-    } else if ( "94000000".equals( client_id ) ) {
-        cfgName = "sitElpaso";
-    } else if ( "98000000".equals( client_id ) ) {
-        cfgName = "sitGalveston";
-    }
-    
-    AppConfiguration    configuration           = new AppConfiguration(pageContext, cfgName);
-    String              webPaymentDirectory     = configuration.getProperty("webPaymentDirectory");
-    //conn = act.util.Connect.open("jdbc/sit_dev");
-    StringBuffer sb = new StringBuffer();
+<%@ include file="_configuration.inc" %><%
     String pageTitle = "Shopping Cart";
-   // if (isDefined(request.getParameter("can"))){
-   //     recents.add(request.getParameter("can"), request.getParameter("name"));
-   // }
-  
+
+
+    String client_id = (String)session.getAttribute("client_id");
+    String webPaymentDirectory = getPaymentDirectory(pageContext,client_id);
+
+
+    // Do we show the [Pay by Mail] button?
+    boolean displayPayByMail = sitAccount.SIT_SHOW_PRINT_PAY_FORM_BUTTON;
+
 %><%@ include file="_top1.inc" %>
 <style>
     #main table {margin-left:60px;}
@@ -66,7 +21,9 @@
     .dataTable tr:nth-child(odd) td { background: white; }
     .dataTable tr:nth-child(even) td { background: #edf3fe; }
     .aLeft { text-align: left !important; }
-    .aRight { text-align: right !important; }    
+    .aRight { text-align: right !important; }  
+
+        #paybymail { float:right; }
 </style>
 <%@ include file="_top2.inc" %>
 <%= recents %><!-- include here for "recents" sidebar -->
@@ -90,40 +47,8 @@
 
             <a style="margin: 30px; " id="btnBack" name="btnBack" class="btn btn-primary" href="paymentsDue.jsp">Back to <%= goToPage %></a>
 
-<form action="webpay/<%= webPaymentDirectory %>/payment.jsp">
+<form id="paymentForm" action="webpay/<%= webPaymentDirectory %>/payment.jsp">
 <%
-
-
-//if(isDefined(request.getParameter("addToCart"))){
-//    String [] cartStuff = request.getParameterValues("toPay[]");
-//    String [] tempItem = new String[3];
-//    String description = "";
-//    for(String c : cartStuff){
-//        tempItem=c.split("\\|");
-//        description =  (monthsText[Integer.parseInt(tempItem[2])] + " " + tempItem[1]);
-//        payments.add(new Payment(tempItem[0], tempItem[1], tempItem[2], description, tempItem[3], "0.0", tempItem[3], tempItem[3], "0.00"));
-//
-//    }
-//    //out.print(s[0]);
-//}
-
-    // receives and adds to cart from yearlyStatement page
-    //if(isDefined(request.getParameter("can"))){
-    //    String theCan = request.getParameter("can");
-    //    String theYear = request.getParameter("year");
-    //    String description = "";        
-    //    List<String> months = Arrays.asList(request.getParameter("month").split("\\s*,\\s*")); 
-    //    List<String> totals = Arrays.asList(request.getParameter("totals").split("\\s*,\\s*")); 
-    //    try{
-    //        String tempTotal = "";
-    //        // Capture incoming items to add to cart
-    //        for (int i = 0; i < months.size(); i++){
-    //            tempTotal = totals.get(i);
-    //            description =  (monthsText[Integer.parseInt(months.get(i))] + " " + theYear);
-    //            payments.add(new Payment(theCan, theYear, months.get(i), description, tempTotal, "0.0", tempTotal, tempTotal, "0.00"));
-    //        }
-    //    } catch(Exception e){out.print("Exception: " + e.toString());}
-    //}
     if(payments.size() > 0){
         ArrayList<Payment> al = new ArrayList<Payment>();
         d = new Dealership();
@@ -164,8 +89,12 @@
             <td style='border-left:none;'>&nbsp;</td>
         </tr>
         <tr>
-            <td colspan='<%= totalPayColSpan %>' align="right" style='background:none; border:none;'><div style='font-weight: bold; padding-right:3px;width: 400px;text-align:right;'>&nbsp;</div></td>
-            <td style='background:none; border:none;'><button type='submit' id='paynow'>Pay Now</button></td>
+            <td colspan='<%= totalPayColSpan %>' align="right" style='background:none; border:none;'>
+                <button type='button' id='paybymail' style="display:none;">
+                    Pay by Mail
+                </button>
+            </td>
+            <td style='background:none; border:none;'><button type='submit' id='paynow'>Pay Online</button></td>
             <td style='background:none; border:none;'>&nbsp;</td>
         </tr>
     </table>
@@ -205,6 +134,23 @@
 <!-- include scripts here -->
 <script src="assets/js/jquery.tablesorter.min.js"></script> 
     <script>
+        $(function()
+        {
+            <% if ( displayPayByMail ) { %>
+                $("#paybymail").click(function(e) 
+                                        {
+                                            var form = $("#paymentForm");
+                                            var url = form.prop("action").replace(/webpay/,"paybymail");
+                                            form.prop("action",url);
+                                            console.log("Form URL: " + url);
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            form.submit();
+                                            return false;
+                                        })
+                                .show();
+            <% } %>
+        });
         $(document).ready(function() {
             //function calcTotal(){
             //    var total=0.0;
@@ -306,6 +252,29 @@
     </script>
 </body>
 </html>
-<% 
-//    conn.close(); conn = null; 
+<%!
+java.text.DecimalFormat df = new java.text.DecimalFormat("$###,###,##0.00");
+
+public String getPaymentDirectory(javax.servlet.jsp.PageContext pageContext, String clientId) throws Exception
+{
+    String configurationName = null;
+    switch ( clientId )
+    {
+        case  "2000":       configurationName = "sitHarris";
+                            break;
+        case  "7580":       configurationName = "sitDallas";
+                            break;
+        case  "79000000":   configurationName = "sitFbc";
+                            break;
+        case  "94000000":   configurationName = "sitElpaso";
+                            break;
+        case  "98000000":   configurationName = "sitGalveston";
+                            break;
+
+        default: throw new Exception("Unable to identify payment directory");
+    }
+    AppConfiguration configuration = new AppConfiguration(pageContext, configurationName);
+    return configuration.getProperty("webPaymentDirectory");
+}
+
 %>
