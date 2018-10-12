@@ -9,13 +9,11 @@
 <script src="assets/js/jquery.min.js"></script>
 <div>
     <form id="paymentForm">
-        <label>TID:</label>
-        <input id="tid" name ="tid"/>
+        <input id="tid" name ="tid" namespace="TID"/>
         <input type="button" id="generate" value="Generate"/>
     </form>
 </div>
-<div id="result">
-</div>
+<div id="result"></div>
 <script>
     $(document).ready(function(){
         generateForm();
