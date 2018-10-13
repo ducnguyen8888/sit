@@ -11,6 +11,7 @@
     <form id="paymentForm">
         <input id="tid" name ="tid" namespace="TID"/>
         <input type="button" id="generate" value="Generate"/>
+        <input type="button" id="reset" value="Reset"/>
     </form>
 </div>
 <div id="result"></div>
