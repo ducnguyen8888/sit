@@ -9,15 +9,16 @@
 <script src="assets/js/jquery.min.js"></script>
 <div>
     <form id="paymentForm">
-        <input id="tid" name ="tid" namespace="TID"/>
-        <input type="button" id="generate" value="Generate"/>
-        <input type="button" id="reset" value="Reset"/>
+        <input id="tid" name ="tid" type="number" namespace="TID"/>
     </form>
+    <input type="button" id="generate" value="Generate"/>
+    <input type="button" id="reset" value="Reset"/>
 </div>
 <div id="result"></div>
 <script>
     $(document).ready(function(){
         generateForm();
+        reset();
     })
 
     function generateForm(){
@@ -38,6 +39,7 @@
                         $("#result").append("<div>Tid: " + result.data.tid+"</div>");
                         $("#result").append("<div>Host: " + result.data.host+"</div>");
                         $("#result").append("<div>System report: " + result.data.systemReport+"</div>");
+                        $("#result").append("<div>Text response: " + result.data.response+"</div>");
                         $("#result").append("<div>Form exists: " + result.data.formExists+"</div>");
                         if ( result.data.formExists == "false"){
                             $("#result").append("<div>Failure reason: "+result.data.failureReason+"</div>");
@@ -50,6 +52,15 @@
 
                 }
             })
+            $("#paymentForm")[0].reset();
+        })
+    }
+
+
+    function reset(){
+        $("#reset").click(function(){
+            $("#paymentForm")[0].reset();
+            $("#result").html("");
         })
     }
 </script>
