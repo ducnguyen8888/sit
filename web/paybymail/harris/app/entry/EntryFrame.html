@@ -1,0 +1,294 @@
+<div class="payment-summary" style="padding-left: 100px;">
+	<h2> Enter Your Payment Information </h2>
+	<div class="no-print">
+		<center ng-if="accountSearchUrl">
+			<a href="{{accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<!--
+	<button ng-click="setOwnerAsContact()"> Set Owner as Contact </button>
+	-->
+	<!--
+	<div class="user-notification">
+		<div class="summary-text">
+			<h3 style="color:red;font-style:italic;margin-top:0px;"> Enter your payment information </h3>
+		</div>
+		<br>
+		<div class="user_instructions">
+			Depending on payment volume your payment may take longer than normal to complete.
+			<br> <br>
+			Once your processing has completed you will receive a payment confirmation screen.
+		</div>
+	</div>
+	-->
+	<br><br>
+	<script>
+		$(function() {
+				$("#wizard").smartWizard({	selected: 0,
+									//enableAllSteps: false,
+									//transitionEffect: "none",
+									//enableFinishButton: false,
+									//errorSteps: [],
+									//onLeaveStep: verifyTabCompletion,
+									// onShowStep: function(obj) { alert("Enter Step: " + obj.prop("rel") ); return true; },
+									//onFinish: verifyTabCompletion//verifyFormCompletion //angular.element(document).scope().verify
+
+									// Properties
+									selected: 0,  // Selected Step, 0 = first step   
+									keyNavigation: true, // Enable/Disable key navigation(left and right keys are used if enabled)
+									enableAllSteps: false,  // Enable/Disable all steps on first load
+									transitionEffect: 'none', // Effect on navigation, none/fade/slide/slideleft
+									contentURL:null, // specifying content url enables ajax content loading
+									contentURLData:null, // override ajax query parameters
+									contentCache:true, // cache step contents, if false content is fetched always from ajax url
+									cycleSteps: false, // cycle step navigation
+									enableFinishButton: false, // makes finish button enabled always
+									hideButtonsOnDisabled: false, // when the previous/next/finish buttons are disabled, hide them instead
+									errorSteps:[],    // array of step numbers to highlighting as error steps
+									labelNext:'Next', // label for Next button
+									labelPrevious:'Previous', // label for Previous button
+									labelFinish:'Finish',  // label for Finish button        
+									noForwardJumping:false, // if true disables all subsequent enabled tabs
+									ajaxType: 'POST',
+									// Events
+									onLeaveStep: verifyTabCompletion, // triggers when leaving a step
+									onShowStep: null,  // triggers when showing a step
+									onFinish: verifyWizardCompletion,  // triggers when Finish button is clicked
+									includeFinishButton : true   // Add the finish button
+									});
+			setTimeout(function() { checkForErrors(); },1); // delay long enough for Angular to complete 
+
+		});
+		function checkForErrors() {
+			// Use this access our angularjs $scope methods and fields
+			var controller = null;
+			try {
+				controller = angular.element(document.getElementById('viewBlock')).scope();
+			} catch (err) {
+				// If we can't get to our validation methods allow the user to continue.
+				// We should be validating on the next page anyway.
+				console.log("Failed to locate application controller.\n" + err);
+				return true;
+			}
+
+			// Field defined in the entry controller. If it doesn't exist there's no
+			// sense continuing
+			if ( ! controller.isEntryController ) return;
+
+			if ( controller.isEntryController == true && ! controller.payment.newdata ) {
+				console.log("Frame-Entry: checking payment data for errors");
+				try {
+					if ( controller.payment.options.enableAll ) {
+						$('#wizard').smartWizard('enableStep',2);
+					}
+				} catch (err) {
+					// Not a critical issue
+					console.warn("Failed options check (payment.options.enableAll).\n" + err);
+				}
+
+				// Flag or clear error indication for this step
+				try {
+					var contactErrors = controller.hasContactErrors();
+					$('#wizard').smartWizard('setError',{stepnum:2,iserror:contactErrors});
+					if ( contactErrors ) {
+						$('#wizard').smartWizard('enableStep',2);
+						$('#wizard').smartWizard('goToStep',2);
+					}
+				} catch (err) {
+					// Not a critical issue
+					console.warn("Failed error status check (hasContactErrors).\n" + err);
+				}
+
+				try {
+					var amountErrors = controller.hasPaymentAccountErrors();
+					$('#wizard').smartWizard('setError',{stepnum:1,iserror:amountErrors});
+					if ( amountErrors ) $('#wizard').smartWizard('goToStep',1);
+				} catch (err) {
+					// Not a critical issue
+					console.warn("Failed error status check (hasPaymentAccountErrors).\n" + err);
+				}
+			}
+			controller.payment.newdata = false;
+		}
+		function verifyTabCompletion(obj, context) {
+			// Enable to allow access to prior steps w/o current step validation
+			// if ( context.toStep < context.fromStep ) return true;
+
+			var isValid = false;
+
+			// Use this access our angularjs $scope methods and fields
+			var controller = null;
+			try {
+				controller = angular.element(document.getElementById('viewBlock')).scope();
+			} catch (err) {
+				// If we can't get to our validation methods allow the user to continue.
+				// We should be validating on the next page anyway.
+				console.log("Failed to locate ng* application controller.\n" + err);
+				return true;
+			}
+
+
+			// Payment amounts
+			if ( context.fromStep == 1 ) isValid = controller.verifyAccounts();
+
+			// Contact information
+			if ( context.fromStep == 2 ) isValid = controller.verifyContact();
+
+			console.log("Verified step. Step " + context.fromStep + " is " + (isValid ? "Valid" : "Invalid"));
+
+			// Flag or clear error indication for this step 
+			$('#wizard').smartWizard('setError',{stepnum:context.fromStep,iserror:!isValid});
+
+			// Return our validity status - allow user to access prior steps
+			return isValid || context.toStep < context.fromStep;
+		}
+		function verifyWizardCompletion(obj, context) {
+			var isValid = false;
+
+			// Use this access our angularjs $scope methods and fields
+			var controller = null;
+			try {
+				controller = angular.element(document.getElementById('viewBlock')).scope();
+			} catch (err) {
+				// If we can't get to our validation methods allow the user to continue.
+				// We should be validating on the next page anyway.
+				console.log("Failed to locate ng* application controller.\n" + err);
+				return true;
+			}
+
+			// Validate contact
+			var isContactValid = controller.verifyContact();
+			$('#wizard').smartWizard('setError',{stepnum:2,iserror:!isContactValid});
+			if ( ! isContactValid ) $('#wizard').smartWizard('goToStep',2);
+
+			// Validate payment amounts
+			var isAmountValid = true; //controller.verifyContact();
+			$('#wizard').smartWizard('setError',{stepnum:1,iserror:!isAmountValid});
+			if ( ! isAmountValid ) $('#wizard').smartWizard('goToStep',1);
+
+
+			var isFormValid = isAmountValid && isContactValid;
+			console.log("Form validation. Form is " + (isFormValid ? "Valid" : "Invalid"));
+			if ( obj && isFormValid ) controller.gotoVerifyPayment();
+			if ( ! obj ) console.log("No OBJ");
+
+			// Return our validity status
+			return isFormValid;
+		}
+
+		function gotoVerifyPayment() {
+			// Use this access our angularjs $scope methods and fields
+			var controller = null;
+			try {
+				controller = angular.element(document.getElementById('viewBlock')).scope();
+				controller.gotoVerifyPayment();
+			} catch (err) {
+				// If we can't get to our validation methods allow the user to continue.
+				// We should be validating on the next page anyway.
+				console.log("Failed to locate ng* application controller.\n" + err);
+				return true;
+			}
+				return true;
+		}
+
+		function verifyFormCompletion() {
+			// No event is passed in
+			//e.stopPropagation();
+			//e.preventDefault();
+return false;
+			// Use this to call the $rootScope
+			//try {
+			//	angular.element(document).scope().verify();
+			//} catch (err) {
+			//	console.debug(err);
+			//}
+
+			// Use this to call the ngView $scope, if controller defined on route
+			try {
+				angular.element(document.getElementById('viewBlock')).scope().verify();
+			} catch (err) {
+				console.debug(err);
+			}
+
+			return false;
+
+
+			//alert( "Name: " + scope.payment.contact.name);
+			//$("#wizard").smartWizard({ errorSteps: [1] });
+//$('#wizard').smartWizard('setError',{stepnum:1,iserror:false});
+//$('#wizard').smartWizard('setError',{stepnum:2,iserror:false});
+//$('#wizard').smartWizard('goToStep',1);
+//$('#wizard').smartWizard('showError',"And then there were none"); 
+//currentStep <- returns current step number
+// showMessage  hideMessage <- sets/hides "total" message
+// setError hideError showError <- button "color"
+// goToStep enableStep disableStep <- button enable/disable
+// goForward goBackward
+
+
+			scope.verify();
+//$("#vb").click();
+return false;
+			//$("#verify").submit(); 
+		}
+	</script>
+	<style>
+		#wizard h2.StepTitle { width: 787px; }
+		#wizard li:first-child { margin-left: 5px; }
+		#wizard label.stepNumber { margin-right: 10px; }
+		#wizard span.stepDesc { margin-top: 4px; }
+	</style>
+	<div style="width: 820px; padding-left: 10px; margin-left:auto; margin-right:auto;">
+	<div id="wizard" class="swMain" style="border: 1px solid #e0e0e0; border:none; width: 800px; border-radius: 6px;">
+		<ul>
+			<li>	<a href="#step-1">
+					<label class="stepNumber">1</label>
+					<span class="stepDesc">
+						Amount To Pay
+						<small> Enter payment amount </small>
+					</span>
+				</a>
+			</li>
+
+            <!--
+			<li>	<a href="#step-2">
+					<label class="stepNumber">2</label>
+					<span class="stepDesc">
+						How to Pay
+						<small> Enter bank information</small>
+					</span>
+				</a>
+			</li>
+            -->
+
+			<li>	<a href="#step-4">
+					<label class="stepNumber">2</label>
+					<span class="stepDesc">
+						Contact Info
+						<small> How do we contact you </small>
+					</span>
+				</a>
+			</li>
+		</ul>
+
+
+		<div id="step-1" style="background-color: transparent; border-bottom:none;border:none;">   
+			<payment-amounts></payment-amounts>
+		</div><!-- end step-1 -->
+
+        <!--
+		<div id="step-2" style="background-color: transparent;border:none;">   
+				<payment-method></payment-method>
+		</div><!-- end step-2 -->
+
+
+		<input type="hidden" id="payment-when-now" name="payment-when" value="now"> 
+
+
+		<div id="step-4" style="background-color: transparent;border:none;">
+			<payment-contact></payment-contact>
+		</div><!-- end step-4 -->
+		<br><br><br>
+	</div><!-- end wizard -->
+	</div>
+</div>

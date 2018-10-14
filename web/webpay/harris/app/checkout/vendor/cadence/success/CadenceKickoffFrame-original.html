@@ -1,0 +1,47 @@
+<div class="payment-summary success">
+	<h2> Payment Method </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">
+                Begin a New Search
+            </a> 
+		</center>
+	</div>
+	<div class="user-notification">
+        <div class="summary-text">
+            <h3 style="margin-top:0px;"> 
+            You are now leaving this site<br><br>
+            You are being taken to the {{payment.method.displayName}} website to complete your payment
+            </h3>
+        </div>
+        <br>
+        <hr>
+        <div>
+            <script>
+                function submitTheForm()
+                {
+                    $("#paymentForm").submit();
+                };
+            </script>
+            <form id="paymentForm" action="{{processorParam.url}}" method="post">
+                <input  type="hidden" name="FORM_NUMBER" value="{{processorParam.form_number}}">
+                <input  type="hidden" name="DEFENDANT"   value="{{payment.reference.account | limitTo:35}}"> 
+                <input  type="hidden" name="TOTAL"       value="{{payment.amount.total}}">
+                <input  type="hidden" name="CAN"         value="{{payment.reference.tid}}">
+                <button type="submit">Select Payment Method</button>
+             </form>
+        </div>
+        <br>
+
+        <div ng-if="payment.isTest">
+            <div class="user-notification notice">
+                <span class="standout">Test Transaction:</span>
+                This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+            </div>
+        </div>
+	</div>
+
+
+	<br><br><br>
+</div>
+

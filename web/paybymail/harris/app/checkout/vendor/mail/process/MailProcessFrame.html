@@ -1,0 +1,308 @@
+
+<div class="payment-summary">
+	<h2> Payment Verification </h2>
+	<div class="no-print">
+		<center ng-if="config.accountSearchUrl">
+			<a href="{{config.accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+	<div class="user-notification">
+		<div class="summary-text">
+			<h3 style="margin-top:0px;"> Please review the payment information below </h3>
+		</div>
+		<br>
+	</div>
+
+	<style>
+	</style>
+
+
+	<center>
+	<div style="width:920px;text-align:left;">
+
+	<div style="clear:both;"></div>
+	<div style="width: 920px; float:left;">
+	<div class="payment-summary-block account">
+		<div class="section-header"> PROPERTY PAYMENT INFORMATION </div>
+
+		<div style="margin-bottom: 30px;font-size:13px;">
+			<div class="row" ng-repeat="account in payment.accounts | filter:{showOnSummary: true}">
+				<div ng-if="$index > 0" class="separator"></div>
+
+				<div class="entry">
+						<div class="owner">
+							<div ng-if="config.accountDetailUrl">
+								<a href="{{config.accountDetailUrl}}{{account.account}}"> {{account.account}} </a> 
+                                <br>
+							</div>
+							<div ng-if="!config.accountDetailUrl" style="color:darkblue;font-weight:bold;margin-bottom:5px;">
+								{{account.account}} 
+                                <div ng-if="application.showAprdistacc" style="display:inline-block;margin-left: 40px;">CAD No: {{account.aprdistacc}} </div>
+                                <br>
+							</div>
+
+                            <div style="color:black;margin-bottom: 5px;">
+                                <span ng-if="account.owner.name.length > 0">{{account.owner.name}}<br></span>
+                                <span ng-if="account.owner.address1.length > 0">{{account.owner.address1}}<br></span>
+                                <span ng-if="account.owner.address2.length > 0">{{account.owner.address2}}<br></span>
+                                <span ng-if="account.owner.address3.length > 0">{{account.owner.address3}}<br></span>
+                                <span ng-if="account.owner.city.length > 0">{{account.owner.city}}</span>
+                                <span ng-if="account.owner.city.length > 0 && account.owner.state.length > 0">, </span>
+                                <span ng-if="account.owner.state.length > 0">{{account.owner.state}}</span>
+                                <span ng-if="account.owner.city.length > 0 || account.owner.state.length > 0"> &nbsp; </span>
+                                <span ng-if="account.owner.zipcode.length > 0">{{account.owner.zipcode}}</span>
+                            </div>
+
+                            <div ng-if="account.description" style="color:darkblue;font-weight:bold;">
+                                {{account.description}}
+                            </div>
+						</div>
+						<div class="account-payment">
+							<table class="payment-account" border=0>
+							<tr>  <th> This is the amount you owe: </th> <td> {{account.amountDue | currency}} </td> </tr>
+							<tr div ng-if="account.paymentYear.length > 0">  <th> Apply payment to year: </th> <td style="font-weight: bold;"> {{account.paymentYear}} </td> </tr>
+							<tr ng-if="!account.lienPayment">  <th> Payment Amount: </th> <td style="font-weight: bold;"> {{account.paymentAmount | currency}} </td> </tr>
+							<tr ng-if="account.lienPayment">  <th> Lien Payment Amount</th> <td style="font-weight: bold;"> {{account.paymentAmount | currency}} </td> </tr>
+							<tr ng-hide="true">  <th> Payment Type </th> <td style="font-weight: bold;"> {{account.paymentType}} </td> </tr>
+							</table>
+						</div>
+				</div>
+			</div>
+		</div>
+		<div style="clear:both;"></div>
+	</div>
+	</div>
+
+	<div style="clear:both;"></div>
+	<div style="width: 450px; margin-right:20px; float:left;">
+		<div class="payment-summary-block amount">
+			<div class="section-header"> PAYMENT SUMMARY </div>
+
+			<div ng-if="payment.amount.fee > 0">
+				<table class="payment-metadata amount" border=0>
+					<caption> This is your total payment amount:</caption>
+				</table>
+				<table class="payment-metadata amount" border=0 style="margin-top:5px;">
+					<tr> <th> Total Payment Amount: </th> 
+						<td style="font-weight: bold;font-size:18px;"> {{payment.amount.total | currency}} </td> 
+					</tr>
+				</table>
+			</div>
+
+			<div ng-if="payment.amount.fee == 0">
+				<table class="payment_metadata amount" border=0>
+					<caption style="color:darkblue;"> This is your total payment amount: </caption>
+					<tr> <th style="width:60px;"> </th> <td style="font-weight: bold;font-size:18px;width:260px;text-align:left;"> {{payment.amount.total | currency}} </td> </tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
+    <div id="paymentWarning" ng-if="payment.estimatedMaxAmount > 999999"
+        style="position:fixed; z-index:1000; top:0px; left: 0px; bottom: 0px; right: 0px; background: transparent;"
+            >
+        <div style="position:absolute; z-index:-1; top:0px; left: 0px; bottom: 0px; right: 0px; background: rgba(0, 0, 0, 0.4);"></div>
+        <div ng-if="payment.estimatedMinAmount > 999999">
+            <div style="position:fixed; top:0px; left: 0px; bottom: 0px; right: 0px; margin:auto; width: 500px; height: 500px; border-radius:8px; 
+                        background-color: #f4f4f4;padding:15px;"> 
+                <h3 style='color:red;margin-bottom:20px;'> Warning </h3>
+                <div>
+                    <div style="margin-top:8px;font-size:13px;font-weight:bold;color:darkblue;">
+                            {{payment.method.displayName}} limits the maximum payment amount to $999,999.00:<br>
+
+                        <div ng-repeat="rate in payment.fees" style="margin-left:35px;margin-top:15px;">
+                            <div style="display:inline-block; text-align:right;font-weight:normal;font-style:italic; color:red; font-size:11px;">
+                                Estimated {{rate.name}} Payment Amount: {{rate.totalPaymentAmount | currency}}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:18px;font-size:13px;font-weight:normal;color:darkblue;">
+                            Your payment amount will exceed the maximum amount allowed.<br><br>Please adjust your total payment amount to
+                            be less than the payment maximum.
+                            <br><br>
+                    </div>
+                </div>
+                <div id="option-block" style="margin-top:30px;">
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
+                    <br><br>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="payment.estimatedMinAmount <= 999999">
+            <div style="position:fixed; top:0px; left: 0px; bottom: 0px; right: 0px; margin:auto; width: 500px; height: 550px; border-radius:8px; 
+                        background-color: #f4f4f4;padding:15px;"> 
+                <h3 style='color:red;margin-bottom:20px;'> Warning </h3>
+                <div>
+                    <div style="margin-top:8px;font-size:13px;font-weight:bold;color:darkblue;">
+                            {{payment.method.displayName}} limits the maximum payment amount to $999,999.00:<br>
+
+                        <div ng-repeat="rate in payment.fees" style="margin-left:35px;margin-top:15px;">
+                            <div style="display:inline-block; text-align:right;font-weight:normal;font-style:italic; color:red; font-size:11px;">
+                                Estimated {{rate.name}} Payment Amount: {{rate.totalPaymentAmount | currency}}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:18px;font-size:13px;font-weight:normal;color:darkblue;">
+                            Your payment amount will exceed the maximum allowed for one or more of the allowed methods of payment.<br><br>
+                            If your total payment amount exceeds the maximum allowed for the payment method you wish to use please adjust your payment amount
+                            so the total is less than the maximum.
+                            <br><br>
+                            If you wish to continue please select "Verify Payment".
+                    </div>
+                </div>
+                <div id="option-block" style="margin-top:30px;">
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
+                    <button class="btn btn-primary" ng-click="reenterInformation()"> Verify Payment </button>
+                </div>
+            </div>
+        </div>
+        <script>
+        function clearPaymentWarning()
+        {
+            $("#paymentWarning").remove();
+        }
+        </script>
+    </div>
+
+	<div style="width: 450px; float:left;">
+		<div class="payment-summary-block method">
+			<div class="section-header"> IMPORTANT PAYMENT INSTRUCTIONS </div>
+			<div style="margin-top:10px;color:darkblue;">
+                Once you have verified the payment information, click the Print Payment Form button below and follow the instructions on the form. 
+                Although you may have submitted your monthly statement(s) online with the tax office, you are also required to submit each corresponding payment 
+                before the due date. Your check or money order must match the total amount on your payment form. If necessary, you may create a separate payment 
+                form with a unique Payment Reference ID for each separate payment. Payments postmarked after the due date will incur penalties.
+                <br><br>
+                Do not forget to send a copy of your monthly statement to the appraisal district. Do not send the appraisal district your payment or your payment 
+                form. This could delay the posting of your payment.
+			</div>
+        </div>
+		<div class="payment-summary-block method">
+			<div class="section-header" style="border: none;"> IMPORTANT NOTICE REGARDING PENALTIES </div>
+			<div style="color:red;margin-top:10px;">
+                A dealer who fails to file a statement as required commits a misdemeanor offense punishable by a fine not to exceed $100. 
+                Each day during which a dealer fails to comply is a separate violation. In addition to other penalites provided by law, a 
+                dealer who fails to file or timely file a statement must forfeit a penalty of $500 for each month or part of a month in 
+                which a statement is not filed or timely filed after it is due. A tax lien attaches to the dealer's business personal 
+                property to secure payment of the penalty. In addition to other penalties provided by law, an owner who fails to remit 
+                unit property tax due must pay a penalty of 5 percent of the amount due. If the amount due is not paid within 10 days after 
+                the due date, the owner must pay an additional 5 percent of the amount due. Unit property taxes paid on or before Jan 31 of 
+                the year following the date on which they are due are not delinquent.
+			</div>
+
+
+			<div ng-if="payment.method.type=='EC'">
+				<!--<div class="section-header"> BANK ACCOUNT INFORMATION </div>-->
+
+				<table class="payment-metadata" border=0>
+					<caption> Payment will be charged to this Bank Account </caption>
+					<tr>  <th> Payment Method: </th> <td> ECheck </td> </tr>
+					<tr>  <th> Bank Name: </th> <td> Bank of America </td> </tr>
+					<tr>  <th> Routing&nbsp;Number: </th> <td> {{payment.method.routingNumber}} </td> </tr>
+					<tr>  <th> Checking&nbsp;Account&nbsp;Number: </th> <td> {{payment.method.accountNumber}} </td> </tr>
+				</table>
+			</div>
+
+			<div ng-if="payment.method.type=='CC'">
+				<!--<div class="section-header"> CREDIT CARD INFORMATION </div>-->
+
+				<table class="payment-metadata" border=0>
+					<caption> Payment will be charged to this Credit Card </caption>
+					<tr>  <th> Payment Method: </th> <td> Credit Card </td> </tr>
+					<tr ng-if="payment.method.cardType">  <th> Card Type: </th> <td> {{payment.method.cardType}} </td> </tr>
+					<tr>  <th> Account&nbsp;Number: </th> <td> {{payment.method.cardNumber}} </td> </tr>
+					<tr>  <th> CVC/CVV: </th> <td> {{payment.method.cvc}} </td> </tr>
+					<tr>  <th> Expiration: </th> 
+							<td> {{payment.method.expiryMonth}}  /  {{payment.method.expiryYear}} </td> 
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div style="clear:both;"></div>
+
+
+
+	<div style="clear:both;"></div>
+	<div style="width: 920px;float:left;">
+	<div class="payment-summary-block contact">
+		<div class="section-header"> CONTACT INFORMATION </div>
+		<table class="payment-metadata" border=0>
+		<tr> <th> Name: </th> <td> {{payment.contact.name}} </td> </tr>
+		<tr> <th> Address: </th> <td> {{payment.contact.street}} </td> </tr>
+		<tr> <th> City: </th> <td> {{payment.contact.city}} </td> </tr>
+
+		<tr ng-if="payment.contact.state.length > 0"> <th> State: </th> <td> {{payment.contact.state}} </td> </tr>
+		<tr ng-if="payment.contact.zipcode.length > 0"> <th> Zip Code: </th> <td> {{payment.contact.zipcode}} </td> </tr>
+		<tr ng-if="payment.contact.country.length > 0"> <th> Country: </th> 
+			<td> <div ng-if="payment.contact.country.length == 0">United States</div>
+				<div ng-if="payment.contact.country.length > 0">{{payment.contact.country}}</div>
+			</td> 
+		</tr>
+
+		<tr> <td>&nbsp;</td></tr>
+		<tr ng-if="payment.contact.email.length > 0"> <th> Email&nbsp;Address: </th> <td> {{payment.contact.email}} </td> </tr>
+		<tr ng-if="payment.contact.phone.length > 0"> <th> Phone&nbsp;Number: </th> <td> {{payment.contact.phone}} </td> </tr>
+		<tr> <td style="height:4px;line-height:4px;">&nbsp;</td></tr>
+
+		</table>
+	</div>
+	</div>
+	<div style="clear:both;"></div>
+
+	</div>
+	</center>
+
+	<div ng-if="payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+		</div>
+	</div>
+
+	<div class="user-notification">
+	</div>
+	<div id="option-block">
+        <style>
+            #option-block button { color: white; }
+        </style>
+		<button class="btn btn-primary" ng-click="reenterInformation()"> Go Back </button>
+		<button class="btn btn-primary" style="width:150px;" ng-click="processPayment()"> Print Payment Form </button>
+		<br><br>
+	</div>
+	<br><br><br>
+
+
+
+    <style>
+        .overlay { 
+                    position: fixed; z-index: 100; left: 0px; right: 0px; top: 0px; bottom: 0px;
+                    vertical-align: top; 
+                }
+        .overlay .backdrop { 
+                    position: absolute; z-index: -1; left: 0px; right: 0px; top:0px; bottom: 0px; 
+                    background: rgba(12, 12, 12, 0.4); 
+                }
+
+        .overlay .panel { 
+                    position: absolute; width: 720px; height: 100px;
+                    left: 50%; top: 30%; -webkit-transform: translate(-50%,-30%); transform: translate(-50%,-30%);
+                    vertical-align: middle; border-radius: 6px; padding: 10px 10px 10px 10px; 
+                    font-family: Arial, Helvetica, sans-serif; font-size: 18px;
+                    border: 1px solid black; background-color: #f2f2f2; border-radius: 4px;
+                }
+        .overlay .panel div { 
+                    display: inline-block; margin-left: 15px; margin-right: auto; margin-top: 25px;
+                }
+    </style>
+    <div class=overlay>
+        <div class=backdrop></div>
+        <div class=panel>
+            <div>Please wait a moment while your payment form is created.</div>
+        </div>
+    <div>
+
+</div>

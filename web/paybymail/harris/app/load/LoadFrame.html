@@ -1,0 +1,71 @@
+
+<div class="payment-summary">
+	<h2> Retrieving Current Account Information </h2>
+	<div class="no-print">
+		<center ng-if="accountSearchUrl">
+			<a href="{{accountSearchUrl}}">Begin a New Search</a> 
+		</center>
+	</div>
+
+	<div class="user-notification">
+		<div class="summary-text">
+			<h3 style="color:red;font-style:italic;margin-top:0px;"> Please wait while your account information is retrieved... </h3>
+		</div>
+		<center>
+		<div style="width:300px; margin-top: 20px; margin-bottom: 30px;">
+			<div class="statusbar"></div>
+		</div>
+		</center>
+		<br>
+
+			<!--
+			<div class="user_instructions">
+				Depending on payment volume your payment may take longer than normal to complete.
+				<br> <br>
+				Once your processing has completed you will receive a payment confirmation screen.
+			</div>
+			-->
+	</div>
+
+	<style>
+		@-webkit-keyframes statusbar {
+			0% { width: 0px; margin-right: 100%; background-color: white; }
+			45% { width: 100%; margin-right: 0px; }
+			51% { width: 100%; margin-left: 0px; background-color: red; }
+			100% { width: 0px; margin-left: 100%; background-color: white; }
+		}
+		@-moz-keyframes statusbar {
+			0% { width: 0px; margin-right: 100%; background-color: white; }
+			45% { width: 100%; margin-right: 0px; }
+			51% { width: 100%; margin-left: 0px; background-color: red; }
+			100% { width: 0px; margin-left: 100%; background-color: white; }
+		}
+		@-o-keyframes statusbar {
+			0% { width: 0px; margin-right: 100%; background-color: white; }
+			45% { width: 100%; margin-right: 0px; }
+			51% { width: 100%; margin-left: 0px; background-color: red; }
+			100% { width: 0px; margin-left: 100%; background-color: white; }
+		}
+		@keyframes statusbar {
+			0% { width: 0px; margin-right: 100%; background-color: white; }
+			40% { width: 100%; margin-right: 0px; }
+			55% { width: 100%; margin-left: 0px; background-color: red; }
+			100% { width: 0px; margin-left: 100%; background-color: white; }
+		}
+		.statusbar { border-radius: 2px;
+					width: 0px; height: 3px; background-color: darkblue; 
+					-webkit-animation: statusbar 4s infinite;
+					-moz-animation: statusbar 4s infinite;
+					-o-animation: statusbar 4s infinite;
+					animation: statusbar 4s infinite;
+		}
+	</style>
+	<div ng-if="payment.isTest">
+		<div class="user-notification notice">
+			<span class="standout">Test Transaction:</span>
+			This is a test transaction. Your account will <span class="standout">NOT</span> be credited for any payments made.
+		</div>
+	</div>
+
+	<br><br><br>
+</div>

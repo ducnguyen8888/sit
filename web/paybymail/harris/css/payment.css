@@ -1,0 +1,148 @@
+		.background-opaque {
+			position: fixed; z-index: 100;
+			top: 0px; left: 0px; 	bottom: 0px; right: 0px;
+			opacity: 0.4; filter: alpha(opacity=40);
+			background-color: black;
+		}
+
+		.modal-dialog {
+			position: fixed; z-index: 101;
+			top: 10%; left: 10%; 
+			width: 950px; 
+			min-height: 100px; max-height: 600px; 
+
+			background-color: #eeefef; 
+			border-radius: 8px;
+			border: 3px solid #000066; 
+
+			padding-top: 10px; padding-bottom: 6px;
+			text-align: center;
+			font-size: 14px; font-family: Arial, Helvetica;
+			color: #000066; 
+		}
+		.modal-dialog p { margin-bottom: 0px; }
+		body { font-size: 14px; font-family: "Arial", helvetica; overflow: auto; }
+		.content { padding-left: 20px; width: 90%; margin: 0 auto; }
+		.stepDesc small { display: block; }
+		.StepSummary { display: block; font-size: 12px; color: red;  font-family: arial, helvetica, sans-serif; }
+		#report div { border-top: 1px solid grey; }
+
+
+		.payment-summary h2 { text-align: center; color: darkblue; }
+		.payment-summary a { text-decoration: underline; }
+
+
+		.user-notification { clear: both; font-size: 15px; font-weight: bold; color: black; margin: 20px 0px; text-align: center; padding: 10px; }
+		.notice { font-size: 15px; color: red; text-align: center; border-top: 2px solid red; border-bottom: 2px solid red; }
+		.notice .standout { font-weight: bold; font-style: italic; }
+		.user-notification .ref-button { border: 1px solid darkgrey; background-color: #f2f2f2; font-weight: normal;  color: darkblue; font-size: 11px;
+								border-radius: 3px; margin: 0px 5px; padding: 3px 7px; white-space: nowrap; font-style: italic;
+								}
+
+		#option-block  { text-align: center; }
+		#option-block button { width: 130px; margin: 0px 25px; color: darkblue; }
+		#option-block button:disabled { color: lightgrey; }
+
+
+
+		.payment-summary-block { margin-bottom: 20px; }
+		.payment-summary-block .required-indicator { color: red; font-weight: bold; font-size: 13px; }
+		.payment-summary-block .section-header { margin-bottom: 0px; font-size: 15px; color: darkblue; border-top: 2px solid darkblue; text-transform: uppercase; font-weight: bold; }
+		.payment-summary-block .separator { clear:both; margin: 5px 15px; border-bottom: 1px solid red; }
+		.payment-summary-block .entry { clear:both; padding: 5px 30px; }
+
+		.payment-summary-block .owner { float:left; width:350px; text-align:left; color: black; font-size: 13px; }
+		.payment-summary-block .owner a { }
+
+		.payment-summary-block table.payment-account { margin-left: 40px; border-collapse: separate; border-spacing: 0; caption-side: top; }
+		.payment-summary-block table.payment-account caption { font-size: 14px; color: darkblue; font-weight: bold; text-align: left; }
+		.payment-summary-block table.payment-account th { width: 220px; text-align: right; padding-right: 20px; vertical-align: top; font-size: 14px; color: black; }
+		.payment-summary-block table.payment-account td { text-align: right; vertical-align: top; font-size: 14px; width: 90px; vertical-align: top; color: black; }
+
+		.payment-summary-block table.payment-metadata { margin-left: 25px; border-collapse: separate; border-spacing: 0 5px; caption-side: top; }
+		.payment-summary-block table.payment-metadata caption { font-size: 14px; color: darkblue; font-weight: bold; text-align: left; padding:0px; }
+		.payment-summary-block table.payment-metadata th { width: 190px; text-align: right; padding-right: 15px; vertical-align: top; font-size: 14px; }
+		.payment-summary-block table.payment-metadata th label { font-size: 13px; font-weight: normal; }
+		.payment-summary-block table.payment-metadata td { width: 230px; text-align: left; vertical-align: top; font-size: 14px; }
+		.payment-summary-block table.amount td { width: 90px; text-align: right; vertical-align: top; }
+
+		.payment-summary-block table.payment-metadata caption { font-size: 14px; color: darkblue; font-weight: bold; text-align: left; padding:0px; }
+
+
+
+		/* Custom colors by client */
+		.payment-summary h2 { color: darkblue; }
+
+		.payment-summary-block .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block .separator { border-color: darkblue; }
+		.payment-summary-block .required-indicator { color: red; }
+
+		.payment-summary-block .owner { color: black; }
+		.payment-summary-block .owner a { }
+
+		.payment-summary-block table.payment-account caption { color: darkblue; }
+		.payment-summary-block table.payment-account th { color: black; }
+		.payment-summary-block table.payment-account td { color: black; }
+
+		.payment-summary-block table.payment-metadata caption { color: darkblue; }
+		.payment-summary-block table.payment-metadata th { color: black; }
+		.payment-summary-block table.payment-metadata td { color: black; }
+
+		.user-notification             { color: black; }
+		.user-notification .ref-button { color: darkblue; }
+		.notice                        { color: red; }
+		#option-block button           { color: darkblue; }
+		#option-block button:disabled  { color: grey; }
+
+
+
+		/* Custom colors by client and section */
+		.payment-summary h2 { color: darkblue; }
+
+		.payment-summary.success  .summary-text { color: green; }
+		.payment-summary.failure  .summary-text { color: red; }
+
+		.payment-summary-block.account .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block.account .separator { border-color: darkblue; }
+		.payment-summary-block .required-indicator { color: red; }
+
+		.payment-summary-block.account .owner { color: black; }
+		.payment-summary-block.account .owner a { }
+
+		.payment-summary-block.account table.payment-account caption { color: darkblue; }
+		.payment-summary-block.account table.payment-account th { color: black; }
+		.payment-summary-block.account table.payment-account td { color: black; }
+
+		.payment-summary-block.amount  .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block.amount  table.payment-metadata caption { color: red; font-style: italic; }
+		.success .payment-summary-block.amount  table.payment-metadata caption { color: darkblue; font-style: italic; }
+		.payment-summary-block.amount  table.payment-metadata th { color: black; }
+		.payment-summary-block.amount  table.payment-metadata td { color: black; }
+
+		.payment-summary-block.reference  .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block.reference  table.payment-metadata caption { color: darkblue; font-style: italic; }
+		.payment-summary-block.reference  table.payment-metadata th { color: black; }
+		.payment-summary-block.reference  table.payment-metadata td { color: black; }
+
+		.payment-summary-block.method  .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block.method  table.payment-metadata caption { color: red; font-style: italic; }
+		.success .payment-summary-block.method  table.payment-metadata caption { color: darkblue; font-style: italic; }
+		.payment-summary-block.method  table.payment-metadata th { color: black; }
+		.payment-summary-block.method  table.payment-metadata td { color: black; }
+
+		.payment-summary-block.contact .section-header { color: darkblue; border-color: darkblue; }
+		.payment-summary-block.contact table.payment-metadata caption { color: darkblue; }
+		.payment-summary-block.contact table.payment-metadata th { color: black; }
+		.payment-summary-block.contact table.payment-metadata td { color: black; }
+
+
+		.user-notification             { color: black; }
+		.user-notification .ref-button { color: darkblue; }
+		.notice                        { color: red; background-color: #f3f3f3; }
+		#option-block button           { color: darkblue; }
+		#option-block button:disabled  { color: grey; }
+
+		@media print {
+			.no-print { display: none; }
+		}
+        
