@@ -7,7 +7,7 @@
 --%>
 <%@ include file="_configuration.inc"%>
 <%
-    boolean         wasPosted            = true;// "POST".equals(request.getMethod());
+    boolean         wasPosted            = "POST".equals(request.getMethod());
     String          tid                  = nvl( request.getParameter("tid"),"");
     Report          payByMail            = null;
     String          host                 = InetAddress.getLocalHost().getHostAddress()+"/"+InetAddress.getLocalHost().getHostName();
