@@ -633,7 +633,7 @@
 
                 if ("true" != viewOnly){
                     if ( $(".error").length == 0 ) {
-                        $("#frmImport").attr("action","import.jsp");
+                        $("#frmImport").attr("action","import_ws.jsp");
                         $("#frmImport").submit();
                     } else {
                         $("#submitError").html("Please correct the problems above in red (you do not need to change the tax values)");

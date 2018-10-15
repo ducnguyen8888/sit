@@ -27,9 +27,10 @@ app.factory(
 			error.detail      = detail      || defaults.detail;
 
 			last.lognote    = lognote;
-			last.source     = Function.caller || arguments.callee.caller.toString();
+			//last.source     = Function.caller || arguments.callee.caller.toString();
 
 			if ( lognote ) $log.debug(lognote);
+            $log.error("ErrorManager: Redirecting to error page");
 			$location.path($rootScope.pages.ERROR);
 		}
 

@@ -2,6 +2,7 @@ package act.sit;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import act.util.Connect;
 
@@ -12,65 +13,96 @@ import act.util.Connect;
 public class SITSale {
     public SITSale(){}
 
-    public SITSale(String dataSource, String can, String saleDate,
-                   String modelYear, String make,
-                   String vinNo, String saleType,
-                   String buyerName, String salesPrice,
-                   String taxAmount, String clientId,
-                   String year, String month,
-                   String salesSeq, String status,
-                   String reportSeq, String uptv,
-                   String pendingPayment, String inputDate,
-                   String opercode){
-        this.set(dataSource, can, saleDate,
-                modelYear, make,
-                vinNo, saleType,
-                buyerName, salesPrice,
-                taxAmount, clientId,
-                year, month,
-                salesSeq, status,
-                reportSeq, uptv,
-                pendingPayment, inputDate,
-                opercode);
+    public static  void main(String [] args){
+        try {
+            Connection conn = Connect.open("jdbc:oracle:thin:@ares:1521/actd","sit_inq","texas1");
+            System.out.println("Connected successfully");
+            //SITSale sitSale = SITSale.initialContext().;
+            //sitSale.addSale(conn);
+            SITSale sitSale = SITSale.initialContext().set("P138386","09.1.2018","2019","Lexus","1234567890","MV","test","25000","55","2000","2018","08","O","1","Y","10.15.2018","Claude")
+                                     .addSale(conn);
+          //  System.out.println(sitSale.salesSeq);
+          //  System.out.println(sitSale.uptv);
+          //  System.out.println(sitSale.saleDate);
+         //   SITSale sitSale = SITSale.initialContext()
+                                   // .setSaleDate("10.02.2018")
+                                   // .setSaleType("MV")
+                                   // .setModelYear("2019")
+                                   // .setMake("BMW")
+                                   // .setVinNo("9876543210")
+                                   // .setSalesPrice("45000")
+                                   // .setTaxAmount("123.36")
+                                   // .setBuyerName("TEST")
+                                   // .setInputDate("10.15.2018")
+                                   // .setMonth("08")
+                                   // .setYear("2018")
+                                   // .setClientId("2000")
+                                   // .setCan("P138386")
+                                   // .setSalesSeq("1463")
+                                   // .setOpercode("Claude").updateSale(conn);
+
+
+
+        } catch ( Exception e){
+            System.out.println( e.toString());
+        }
 
     }
 
-    public void set(String dataSource, String can, String saleDate,
+    public SITSale set(String can, String saleDate,
                     String modelYear, String make,
                     String vinNo, String saleType,
                     String buyerName, String salesPrice,
                     String taxAmount, String clientId,
                     String year, String month,
-                    String salesSeq, String status,
-                    String reportSeq, String uptv,
-                    String pendingPayment, String inputDate,
+                    String status, String reportSeq, String pendingPayment,
+                    String inputDate,
                     String opercode) {
-        this.dataSource     = dataSource;
-        this.can            = can;
-        this.saleDate       = saleDate;
-        this.modelYear      = modelYear;
-        this.make           = make;
-        this.vinNo          = vinNo;
-        this.saleType       = saleType;
-        this.buyerName      = buyerName;
-        this.salesPrice     = salesPrice;
-        this.taxAmount      = taxAmount;
-        this.clientId       = clientId;
-        this.year           = year;
-        this.month          = month;
-        this.salesSeq       = salesSeq;
-        this.status         = status;
-        this.reportSeq      = reportSeq;
-        this.uptv           = uptv;
-        this.pendingPayment = pendingPayment;
-        this.inputDate      = inputDate;
-        this.opercode       = opercode;
+        this.setCan(can)
+                .setSaleDate(saleDate)
+                .setModelYear(modelYear)
+                .setMake(make)
+                .setVinNo(vinNo)
+                .setSaleType(saleType)
+                .setBuyerName(buyerName)
+                .setSalesPrice(salesPrice)
+                .setTaxAmount(taxAmount)
+                .setClientId(clientId)
+                .setYear(year)
+                .setMonth(month)
+                .setStatus(status)
+                .setReportSeq(reportSeq)
+                .setPendingPayment(pendingPayment)
+                .setInputDate(inputDate)
+                .setOpercode(opercode);
+
+        return this;
     }
 
-    public void addSale() throws Exception{
-        try ( Connection conn = Connect.open( dataSource );
+    public static SITSale initialContext(){
+        return new SITSale();
+    }
+
+    public SITSale addSale(String datasource,
+                            String username,
+                            String password
+                            ) throws Exception{
+        try ( Connection conn = Connect.open(datasource, username, password);){
+            return addSale(conn);
+        }
+    }
+
+    public SITSale addSale(String datasource) throws  Exception{
+        try (Connection conn = Connect.open(datasource);){
+            return addSale(conn);
+        }
+    }
+    public SITSale addSale(Connection conn) throws Exception{
+        getSalesSeq(conn);
+        getUptv(conn);
+        try (
               PreparedStatement ps = conn.prepareStatement(
-                                          " Insert into sit_sales( "
+                                          " INSERT into sit_sales( "
                                         + "    can, date_of_sale,"
                                         + "    model_year, make,"
                                         + "    vin_serial_no,"
@@ -88,7 +120,7 @@ public class SITSale {
                                         + "    input_date,"
                                         + "    opercode,"
                                         + "    chngdate )"
-                                        + "  Values (?,TO_DATE(?, 'mm/dd/yyyy'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,TO_DATE(?, 'mm/dd/yyyy'), UPPER(?) , CURRENT_TIMESTAMP) ");
+                                        + "  VALUES (?,TO_DATE(?, 'mm/dd/yyyy'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,TO_DATE(?, 'mm/dd/yyyy'), UPPER(?) , CURRENT_TIMESTAMP) ");
         ){
             ps.setString( 1, can );
             ps.setString( 2, saleDate );
@@ -116,29 +148,293 @@ public class SITSale {
         } catch(Exception e){
             throw e;
         }
+
+        return this;
     }
 
-    private String      dataSource          = null;
-    private String      can                 = null;
-    private String      saleDate            = null;
-    private String      modelYear           = null;
-    private String      make                = null;
-    private String      vinNo               = null;
-    private String      saleType            = null;
-    private String      buyerName           = null;
-    private String      salesPrice          = null;
-    private String      taxAmount           = null;
-    private String      clientId            = null;
-    private String      year                = null;
-    private String      month               = null;
-    private String      salesSeq            = null;
-    private String      status              = null;
-    private String      reportSeq           = null;
-    private String      uptv                = null;
-    private String      pendingPayment      = null;
-    private String      inputDate           = null;
-    private String      opercode            = null;
-    private String      chngDate            = null;
+    public SITSale updateSale(String datasource,
+                                String username,
+                                String password
+                                ) throws Exception{
+        try ( Connection conn = Connect.open(datasource, username, password);){
+            return updateSale(conn);
+        }
+    }
+
+    public SITSale updateSale(String datasource) throws  Exception{
+        try ( Connection conn = Connect.open(datasource); ){
+            return updateSale(conn);
+        }
+    }
+
+    public SITSale updateSale(Connection conn) throws  Exception{
+        try (
+                PreparedStatement ps = conn.prepareStatement(
+                                                "UPDATE sit_sales"
+                                              + "  SET date_of_sale = TO_DATE(?, 'mm/dd/yyyy'),"
+                                              + "        model_year = ?,"
+                                              + "        make = ?,"
+                                              + "        vin_serial_no = ?, "
+                                              + "        sale_type = ?,"
+                                              + "        purchaser_name = ?,"
+                                              + "        sales_price = ?,"
+                                              + "        tax_amount = ?,"
+                                              + "        input_date = TO_DATE(?, 'mm/dd/yyyy'),"
+                                              + "        chngdate = sysdate,"
+                                              + "        opercode = decode(opercode,'LOAD','LOAD',UPPER(?))"
+                                              + "  WHERE year = ?"
+                                              + "        and month = ?"
+                                              + "        and client_id = ?"
+                                              + "        and can = ?"
+                                              + "        and sales_seq = ?");
+
+        ){
+            ps.setString(1, saleDate);
+            ps.setString(2, modelYear);
+            ps.setString(3, make);
+            ps.setString(4, vinNo);
+            ps.setString(5, saleType);
+            ps.setString(6, buyerName);
+            ps.setString(7, salesPrice);
+            ps.setString(8, taxAmount);
+            ps.setString(9, inputDate);
+            ps.setString(10, opercode);
+            ps.setString(11, year);
+            ps.setString(12, month);
+            ps.setString(13, clientId);
+            ps.setString(14, can);
+            ps.setString(15, salesSeq);
+
+            if ( !(ps.executeUpdate() >0 )) {
+                throw  new Exception("Failed to update the sales record");
+            }
+
+
+        } catch (Exception e){
+            throw e;
+        }
+
+        return this;
+    }
+
+    public SITSale removeSale(String datasource,
+                                String username,
+                                String password
+                                ) throws  Exception{
+        try ( Connection conn = Connect.open(datasource, username, password) ){
+            return removeSale(conn);
+        }
+    }
+
+    public  SITSale removeSale(String datasource)throws  Exception{
+        try ( Connection conn = Connect.open(datasource) ) {
+            return this.removeSale(conn);
+        }
+    }
+    public SITSale removeSale(Connection conn) throws  Exception{
+        try(
+             PreparedStatement ps = conn.prepareStatement(
+                                            " DELETE from sit_sales"
+                                          + "  WHERE year = ?"
+                                          + "   and month = ?"
+                                          + "   and client_id = ?"
+                                          + "   and can = ?"
+                                          + "   and sales_seq =?");
+        ){
+
+            ps.setString(1, year);
+            ps.setString(2, month);
+            ps.setString(3, clientId);
+            ps.setString(4, can);
+            ps.setString(5, salesSeq);
+
+            if ( !(ps.executeUpdate() > 0) ) {
+                throw new Exception("Failed to delete the sales record");
+            }
+
+        } catch (Exception e){
+            throw  e;
+        }
+
+        return  this;
+    }
+
+    public SITSale getSalesSeq(String datasource) throws  Exception{
+        try (Connection conn = Connect.open(datasource);){
+            return getSalesSeq(conn);
+        }
+    }
+
+    public SITSale getSalesSeq(Connection conn) throws  Exception{
+        try (
+                PreparedStatement ps = conn.prepareStatement("SELECT sit_sales_seq.nextval FROM dual");
+
+        ){
+            ResultSet rs  = ps.executeQuery();
+            if (!rs.isBeforeFirst()) throw  new Exception("Failed to retrieve the sales sequence");
+            if ( rs.next() ) {
+                this.salesSeq = rs.getString(1);
+            }
+        } catch (Exception e){
+            throw e;
+        }
+
+        return this;
+    }
+
+    public SITSale getUptv(String datasource) throws  Exception {
+        try (Connection conn = Connect.open( datasource );){
+            return getUptv(conn);
+        }
+    }
+
+    public SITSale getUptv(Connection conn) throws  Exception{
+        try (
+                PreparedStatement ps = conn.prepareStatement("SELECT act_subsystems.taxunit_monthly_rate(?,?,?) FROM DUAL")
+        ){
+            ps.setString(1, can);
+            ps.setString(2, year);
+            ps.setString(3, clientId);
+
+            ResultSet rs = ps.executeQuery();
+            if (!( rs.isBeforeFirst( ))) { throw  new Exception("Failed to retrieve the uptv"); }
+            if (rs.next()) {
+                this.uptv = rs.getString(1);
+            }
+
+        } catch (Exception e){
+            throw e;
+        }
+
+        return this;
+    }
+
+    public SITSale  setDataSource(String dataSource){
+        this.dataSource = dataSource;
+        return this;
+    }
+
+    public SITSale  setClientId(String clientId){
+        this.clientId = clientId;
+        return this;
+    }
+
+    public SITSale setCan(String can){
+        this.can = can;
+        return this;
+    }
+
+    public SITSale setSaleDate(String saleDate){
+        this.saleDate = saleDate;
+        return this;
+    }
+
+    public SITSale setModelYear(String modelYear){
+        this.modelYear = modelYear;
+        return this;
+    }
+
+    public SITSale setMake(String make){
+        this.make = make;
+        return this;
+    }
+
+    public SITSale setVinNo(String vinNo){
+        this.vinNo = vinNo;
+        return this;
+    }
+
+    public SITSale setSaleType(String saleType){
+        this.saleType = saleType;
+        return this;
+    }
+
+    public SITSale setBuyerName(String buyerName){
+        this.buyerName = buyerName;
+        return this;
+    }
+
+    public SITSale setSalesPrice(String salesPrice){
+        this.salesPrice = salesPrice;
+        return this;
+    }
+
+    public SITSale setTaxAmount(String taxAmount){
+        this.taxAmount = taxAmount;
+        return this;
+    }
+
+    public SITSale setYear(String year){
+        this.year = year;
+        return  this;
+    }
+
+    public SITSale setMonth(String month){
+        this.month = month;
+        return this;
+    }
+
+    public SITSale setSalesSeq(String salesSeq){
+        this.salesSeq = salesSeq;
+        return this;
+    }
+
+    public SITSale setStatus(String status){
+        this.status = status;
+        return this;
+    }
+
+    public SITSale setReportSeq(String reportSeq){
+        this.reportSeq = reportSeq;
+        return this;
+    }
+
+    public SITSale setUptv(String uptv){
+        this.uptv = uptv;
+        return this;
+    }
+
+    public SITSale setPendingPayment(String pendingPayment){
+        this.pendingPayment = pendingPayment;
+        return this;
+    }
+
+    public SITSale setInputDate(String inputDate){
+        this.inputDate = inputDate;
+        return this;
+    }
+
+    public SITSale setOpercode(String opercode){
+        this.opercode = opercode;
+        return this;
+    }
+
+    public SITSale setChngDate(String chngDate){
+        this.chngDate = chngDate;
+        return this;
+    }
+
+    protected String      dataSource          = null;
+    protected String      clientId            = null;
+    protected String      can                 = null;
+    protected String      saleDate            = null;
+    protected String      modelYear           = null;
+    protected String      make                = null;
+    protected String      vinNo               = null;
+    protected String      saleType            = null;
+    protected String      buyerName           = null;
+    protected String      salesPrice          = null;
+    protected String      taxAmount           = null;
+    protected String      year                = null;
+    protected String      month               = null;
+    protected String      salesSeq            = null;
+    protected String      status              = null;
+    protected String      reportSeq           = null;
+    protected String      uptv                = null;
+    protected String      pendingPayment      = null;
+    protected String      inputDate           = null;
+    protected String      opercode            = null;
+    protected String      chngDate            = null;
 
 
 }

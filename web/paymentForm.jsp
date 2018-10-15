@@ -34,6 +34,7 @@
         $("#generate").click(function(e){
             e.preventDefault();
             e.stopPropagation();
+            $("#result").html("Generating...Please wait");
 
             $.ajax({
                 type:"POST",

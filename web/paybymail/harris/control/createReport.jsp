@@ -11,7 +11,9 @@
     String      datasource          = (String) session.getAttribute("WEBPAY-Payment-dataSource");
     boolean     showInformation     = false;
 
-Report report = null;
+
+
+    Report report = null;
     buffer.setLength(0);
     try {
         Payer payer = identifyPayer(request);

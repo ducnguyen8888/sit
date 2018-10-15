@@ -50,9 +50,11 @@ public class SITAccount
 
     public      Map<String,String>      preferences         = null;
     public      String[][]              sitPreferences      = new String[][] {
-                                                                        { "SIT_FINALIZE_ON_PAY", "N" },
+                                                                        {"SIT_FINALIZE_ON_PAY", "N" },
                                                                         {"SHOW_CAD_NO_IN_SIT_PORTAL","N"},
-                                                                        {"SIT_SHOW_PRINT_PAY_FORM_BUTTON","N"}
+                                                                        {"SIT_SHOW_PRINT_PAY_FORM_BUTTON","N"},
+                                                                        {"CSV_FILE_FORMAT_FOR_SIT_PORTAL","1"}
+
                                                                     };
     public String getPreference(String preferenceName)
     {
@@ -62,6 +64,7 @@ public class SITAccount
     public      boolean                 SIT_FINALIZE_ON_PAY             = false;
     public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL       = false;
     public      boolean                 SIT_SHOW_PRINT_PAY_FORM_BUTTON  = false;
+    public      boolean                 CSV_FILE_FORMAT_FOR_SIT_PORTAL  = true;
 
 
     public boolean isValid()
@@ -210,6 +213,7 @@ public class SITAccount
         SIT_FINALIZE_ON_PAY             = "Y".equalsIgnoreCase(getPreference("SIT_FINALIZE_ON_PAY"));
         SHOW_CAD_NO_IN_SIT_PORTAL       = "Y".equalsIgnoreCase(getPreference("SHOW_CAD_NO_IN_SIT_PORTAL"));
         SIT_SHOW_PRINT_PAY_FORM_BUTTON  = "Y".equalsIgnoreCase(getPreference("SIT_SHOW_PRINT_PAY_FORM_BUTTON"));
+        CSV_FILE_FORMAT_FOR_SIT_PORTAL  = "1".equalsIgnoreCase(getPreference("CSV_FILE_FORMAT_FOR_SIT_PORTAL"));
     }
     public void loadPreferences() throws Exception
     {

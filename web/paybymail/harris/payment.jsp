@@ -130,17 +130,61 @@
 
     <script src="app/success/SuccessController.js?<%= uid %>"></script>
 
-    <script src="app/checkout/vendor/jpmc/process/JPMCProcessController.js?<%= uid %>"></script>
-    <script src="app/checkout/vendor/jpmc/success/JPMCKickoffController.js?<%= uid %>"></script>
-
-    <script src="app/checkout/vendor/cadence/process/CadenceProcessController.js?<%= uid %>"></script>
-    <script src="app/checkout/vendor/cadence/success/CadenceKickoffController.js?<%= uid %>"></script>
-
     <script src="app/checkout/vendor/mail/process/MailProcessController.js?<%= uid %>"></script>
     <script src="app/checkout/vendor/mail/success/MailKickoffController.js?<%= uid %>"></script>
 
 
     <script>
+if (!Array.prototype.includes) {
+  Object.defineProperty(Array.prototype, 'includes', {
+    value: function(searchElement, fromIndex) {
+
+      if (this == null) {
+        throw new TypeError('"this" is null or not defined');
+      }
+
+      // 1. Let O be ? ToObject(this value).
+      var o = Object(this);
+
+      // 2. Let len be ? ToLength(? Get(O, "length")).
+      var len = o.length >>> 0;
+
+      // 3. If len is 0, return false.
+      if (len === 0) {
+        return false;
+      }
+
+      // 4. Let n be ? ToInteger(fromIndex).
+      //    (If fromIndex is undefined, this step produces the value 0.)
+      var n = fromIndex | 0;
+
+      // 5. If n ≥ 0, then
+      //  a. Let k be n.
+      // 6. Else n < 0,
+      //  a. Let k be len + n.
+      //  b. If k < 0, let k be 0.
+      var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+
+      function sameValueZero(x, y) {
+        return x === y || (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+      }
+
+      // 7. Repeat, while k < len
+      while (k < len) {
+        // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+        // b. If SameValueZero(searchElement, elementK) is true, return true.
+        if (sameValueZero(o[k], searchElement)) {
+          return true;
+        }
+        // c. Increase k by 1. 
+        k++;
+      }
+
+      // 8. Return false
+      return false;
+    }
+  });
+}
         app.run( function($rootScope, $location, $log, $injector, errorManager, HeartbeatService, $interval, $http, $timeout) {
             $log.debug("Application Start: " + $("html").attr("ng-app"));
 
@@ -196,14 +240,6 @@
                         $rootScope.accountSearchUrl = configuration.accountSearchUrl;
                 }
 
-                if ( configuration.processor.id == "JPMC" ) {
-                    $rootScope.pages.PROCESS = "/processJPMC";
-                    $rootScope.pages.SUCCESS = "/JPMC";
-                }
-                if ( configuration.processor.id == "Cadence" ) {
-                    $rootScope.pages.PROCESS = "/processCadence";
-                    $rootScope.pages.SUCCESS = "/Cadence";
-                }
                 if ( configuration.processor.id == "Mail" ) {
                     $rootScope.pages.PROCESS = "/paymentByMail";
                     $rootScope.pages.SUCCESS = "/Mail";
@@ -335,22 +371,6 @@ app.config(['$routeProvider','$locationProvider',
                 //.otherwise({
                 //    redirectTo: "/entry"
                 })
-                .when('/processJPMC', {
-                    templateUrl: 'app/checkout/vendor/jpmc/process/JPMCProcessFrame.html?'+Date.now(),
-                    controller: 'JPMCProcessController'
-                })
-                .when('/JPMC', {
-                    templateUrl: 'app/checkout/vendor/jpmc/success/JPMCKickoffFrame.html?'+Date.now(),
-                    controller: 'JPMCKickoffController'
-                })
-                .when('/processCadence', {
-                    templateUrl: 'app/checkout/vendor/cadence/process/CadenceProcessFrame.html?'+Date.now(),
-                    controller: 'CadenceProcessController'
-                })
-                .when('/Cadence', {
-                    templateUrl: 'app/checkout/vendor/cadence/success/CadenceKickoffFrame.html?'+Date.now(),
-                    controller: 'CadenceKickoffController'
-                })
                 .when('/paymentByMail', {
                     templateUrl: 'app/checkout/vendor/mail/process/MailProcessFrame.html?'+Date.now(),
                     controller: 'MailProcessController'
@@ -373,26 +393,26 @@ app.config(function ($provide) {
     });
 });
 
-app.config(['$provide', function ($provide) {
-        $provide.decorator('$log', ['$delegate', function ($delegate) {
-            // Keep track of the original debug method, we'll need it later.
-            var origError = $delegate.error;
-            /*
-             * Intercept the call to $log.debug() so we can add on 
-             * our enhancement. We're going to add on a date and 
-             * time stamp to the message that will be logged.
-             */
-            $delegate.error = function () {
-                var args = [].slice.call(arguments);
-                args[0] = [new Date().toString(), ': ', args[0]].join('');
-
-                // Send on our enhanced message to the original debug method.
-                origError.apply(null, args)
-            };
-
-            return $delegate;
-        }]);
-    }]);
+//app.config(['$provide', function ($provide) {
+//        $provide.decorator('$log', ['$delegate', function ($delegate) {
+//            // Keep track of the original debug method, we'll need it later.
+//            var origError = $delegate.error;
+//            /*
+//             * Intercept the call to $log.debug() so we can add on 
+//             * our enhancement. We're going to add on a date and 
+//             * time stamp to the message that will be logged.
+//             */
+//            $delegate.error = function () {
+//                var args = [].slice.call(arguments);
+//                args[0] = [new Date().toString(), ': ', args[0]].join('');
+//
+//                // Send on our enhanced message to the original debug method.
+//                origError.apply(null, args)
+//            };
+//
+//            return $delegate;
+//        }]);
+//    }]);
 </script>
 
     <style scoped>

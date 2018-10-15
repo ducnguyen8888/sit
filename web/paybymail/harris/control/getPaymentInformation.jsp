@@ -26,7 +26,7 @@
             "status":"Ready",
             "options":{"require":{"phone":true,"email":true},"enableAll":false},
             "method": { "type":"vendor",
-                        "displayName": "Cadence Bank"
+                        "displayName": "Mail"
                     },
             "contact":{
                     "country":"",

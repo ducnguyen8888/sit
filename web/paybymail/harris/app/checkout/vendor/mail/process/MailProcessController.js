@@ -114,7 +114,7 @@ app.controller("MailProcessController",
                         + "information. "
                         + "This delay may be due to unusually high payment volume. "
                         + "Please try again later.",
-                        ""
+                        "", true
                     );
             return;
         }
@@ -241,7 +241,7 @@ app.controller("MailProcessController",
                 }
 
                 $scope.processingStatus = "Processing failure";
-                $scope.payment.reference.detail = "Processing response status: " + response.status;
+
                 errorManager.raiseError("Report Creation Error",
                             "Failed to create payment report",
                             $scope.payment.reference.description,
@@ -269,7 +269,7 @@ app.controller("MailProcessController",
                 }
 
                 $scope.processingStatus = "Processing failure";
-                $scope.payment.reference.detail = "Processing response status: " + response.status;
+
                 errorManager.raiseError("Report Creation Failure",
                             "Failed to create payment report",
                             "Report creation failed due to a processing error, please try again later",
