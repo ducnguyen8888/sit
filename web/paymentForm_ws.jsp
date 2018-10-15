@@ -15,7 +15,7 @@
     if ( sitAccount.isValid()
             && wasPosted
             ){
-        if ( !isDefined( tid ) ) {
+        if ( isDefined( tid ) ) {
             try {
                 payByMail = SITPayByMail.initialContext(sitAccount.getClientId(), tid);
                 payByMail.create(datasource);
