@@ -9,7 +9,7 @@
 <script src="assets/js/jquery.min.js"></script>
 <style>
     .paymentForm{  margin: 15px auto 30px 15px;  }
-    #paymentForm input { height: 26px; border: 1px solid;  border-radius: 3px;}
+    #paymentForm input { height: 25px; border: 1px solid;  border-radius: 3px;}
     #tid { width: 205px; }
     #generate, #reset{  width: 100px; color: white; border: 1px solid; background-color: 2f6299;}
     #result div {  margin: 10px; }
