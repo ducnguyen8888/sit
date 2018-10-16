@@ -7,6 +7,7 @@
 --%>
 <%@ include file="_configuration.inc"
 %><%
+    boolean  wasPosted                 = "POST".equals(request.getMethod());
     String   reportSequence            = nvl(request.getParameter("report_seq"), "1");
 
     String[] dos                       = (isDefined(request.getParameter("sale"))) ? request.getParameterValues("sale")
@@ -41,13 +42,33 @@
 
     SITSale sitSale                    = null;
 
-    try {
+    if ( sitAccount.isValid()
+            && wasPosted ){
+        if ( isDefined(can)
+             && isDefined(year)
+             && isDefined(month)
+             && isDefined(request.getParameter("calculated")) ) {
+            try {
+                for (int i = 0; i < dos.length; i++) {
+                    sitSale = SITSale.initialContext().set(can, dos[i],
+                                                            model[i], make[i],
+                                                            vin[i], type[i],
+                                                            purchaser[i], numberFormat(price[i]),
+                                                            numberFormat(calculated[i]), sitAccount.getClientId(),
+                                                            year, month, "O",
+                                                            reportSequence, "Y",
+                                                            inputDate, sitAccount.getUser().getUserName())
+                                                      .addSale(datasource);
+                }
 
-            sitSale = SITSale.initialContext().set("P138386","10.02.2018","2019","Lexus","1234567890","MV","test","25000","55","2000","2018","08","O",reportSequence,"Y","10.15.2018","Claude").addSale(datasource);
-
-    } catch (Exception e){
-        out.println( e.toString());
+            } catch (Exception e) {
+                out.println(e.toString());
+            }
+        } else {
+            out.println(String.format("{\"importSalesRecordRequest\":\"failure\",\"detail\":\"Not all required information is provided\"}"));
+        }
+    } else {
+        out.println(String.format("{\"importSalesRecordRequest\":\"failure\",\"detail\":\"Request can not be processed\"}"));
     }
-
 
 %>
