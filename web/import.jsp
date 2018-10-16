@@ -32,7 +32,7 @@
     boolean showWyearMonthDisplay    = true;
     boolean showUpload               = false;
     boolean recordInserted           = false;
-    String reportSequence            = nvl(request.getParameter("report_seq"), "0");
+    String reportSequence            = nvl(request.getParameter("report_seq"), "1");
     
     if(request.getParameter("removeMe") != null 
         && "yes".equals(request.getParameter("removeMe"))){
