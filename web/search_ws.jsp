@@ -30,12 +30,12 @@
                                     userId )
                 ){
             try {
-                SearchCriteria criteria = new SearchCriteria(dealershipNo, dealershipName, dealershipAddress, userName, userId);
-                sitAccount.loadDealerships(criteria);
-                viewDealerships = (Dealership[]) sitAccount.dealerships.toArray(new Dealership[0]);
+                Search search = new Search(dealershipNo, dealershipName, dealershipAddress, userName, userId);
+                search.searchDealerships(datasource, sitAccount.getClientId());
+                viewDealerships = (Dealership[]) search.dealerships.toArray(new Dealership[0]);
                 out.println(" {\"searchDealershipsRequest\":\"success\",\"data\":{\"searchDealerships\":\"success\",\"dealerships\":"+toJson(viewDealerships)+"}}");
                 Dealerships searchedDealerships = new Dealerships();
-                searchedDealerships.addAll(sitAccount.dealerships);
+                searchedDealerships.addAll(search.dealerships);
                 session.setAttribute("dealerships",searchedDealerships);
             } catch (Exception e){
                 String error = e.toString().replaceAll("\\\\n","").replaceAll("\\\\\"","\\\"");

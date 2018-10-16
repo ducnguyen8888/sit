@@ -61,6 +61,8 @@
                                                       .addSale(datasource);
                 }
 
+                out.println(" {\"importSalesRecordRequest\":\"success\",\"data\":{\"importSalesRecord\":\"success\",\"detail\":\"The sales record is successfully imported\"}}");
+
             } catch (Exception e) {
                 out.println(e.toString());
             }

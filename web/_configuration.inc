@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"
          import="java.util.*, java.io.*, java.sql.*, java.util.logging.*, oracle.jdbc.*, java.text.*,
-                 act.log.Logs, act.log.SITLog, act.util.Sysutil, act.util.AppConfiguration,  act.sit.*, java.time.*, java.net.*, act.sit.reports.*"
+                 act.log.Logs, act.log.SITLog, act.util.Sysutil, act.util.AppConfiguration,  act.sit.*, java.time.*, java.net.*, act.sit.reports.*, act.util.*"
 %>
 <%@ page import="java.time.format.DateTimeFormatter" %><%--
     DN - 04/30/2018 - PRC 194602
@@ -99,7 +99,7 @@
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
     String sitVersion       = "SIT 1.12";
-    String updatedDate      = LocalDate.of(2018,10,1).format(formatter);
+    String updatedDate      = LocalDate.of(2018,10,16).format(formatter);
 
 
 %><%!

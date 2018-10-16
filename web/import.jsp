@@ -63,185 +63,8 @@
                  break;
     }
 
-
-
-    // database
-    Connection          connection  = null;
-    PreparedStatement   ps          = null;
-    ResultSet           rs          = null;
     String              uptv        = "0.00000";
 
-    // PRC 197579 - the import request won't be executed if the users have the "view only" right
-    if( request.getParameter("can") != null ){
-        connection = connect();
-        try{ // big outer
-             // PRC 194803 use sit codeset "CSV_FILE_FORMAT_FOR_SIT_PORTAL" to control the import format
-            formatType = nvl( getSitClientPref( connection, ps, rs, client_id, "CSV_FILE_FORMAT_FOR_SIT_PORTAL" ), "1");
-
-            try {
-            // note that Dawn and Fakhar said (1/5/2016) to use this function, which returns .002 for H00001 | 2013 | 79000000.
-            // What I was originally pulling was ~.197666 from the get_uptv function.
-            // Not showing up for 2016 yet
-                ps = connection.prepareStatement("SELECT act_subsystems.taxunit_monthly_rate(?,?,?) FROM DUAL");
-                ps.setString(1, can);
-                ps.setString(2, year);
-                ps.setString(3, client_id);
-                rs = ps.executeQuery();
-                if(rs.next()) uptv = rs.getString(1);
-                sb.append("uptv is " + uptv + "<br>");
-            } catch (Exception e) {
-                SITLog.error(e, "\r\nProblem getting tax rate in import.jsp\r\n");
-            } finally {
-                try { rs.close(); } catch (Exception e) { }
-                rs = null;
-                try { ps.close(); } catch (Exception e) { }
-                ps = null;
-            }// try get UPTV
-
-            if(isDefined(request.getParameter("calculated"))){
-                int dealer_type = d.dealerType;
-
-                String[] dos            = (isDefined(request.getParameter("sale"))) ? request.getParameterValues("sale")
-                                                                                    : new String[0];
-
-                String[] model          = (isDefined(request.getParameter("model")))? request.getParameterValues("model")
-                                                                                    : new String[0];
-
-                String[] make           = (isDefined(request.getParameter("make"))) ? request.getParameterValues("make")
-                                                                                    : new String[0];
-
-                String[] vin            = (isDefined(request.getParameter("vin")))  ? request.getParameterValues("vin")
-                                                                                    : new String[0];
-
-                String[] type           = (isDefined(request.getParameter("type"))) ? request.getParameterValues("type")
-                                                                                    : new String[0];
-
-                String[] purchaser      = (isDefined(request.getParameter("name"))) ? request.getParameterValues("name")
-                                                                                    : new String[0];
-
-                String[] price          = (isDefined(request.getParameter("price")))? request.getParameterValues("price")
-                                                                                    : new String[0];
-
-                String[] tax            = (isDefined(request.getParameter("tax")))  ? request.getParameterValues("tax")
-                                                                                    : new String[0];
-
-                String[] calculated     = (isDefined(request.getParameter("calculated")))? request.getParameterValues("calculated")
-                                                                                    : new String[0];
-
-                String inputDate        = (isDefined(request.getParameter("inputDate")))? request.getParameter("inputDate")
-                                                                                    : "01/01/1999";
-                boolean report_seq_exists = false;
-                String salesSeq = "0";
-                // ************** NEW **************
-                /* 
-                    see if report seq is there for month/year/client/can
-                        if not, get new value and create initialized record
-                        if yes, get current value
-                */
-
-
-
-                //loop through each posted record => get new seq, write record
-                for(int i = 0; i < dos.length; i++){
-                    try { // get new salesSeq number
-                        ps = connection.prepareStatement("select sit_sales_seq.nextval from dual");
-                        rs = ps.executeQuery();
-                        rs.next();
-                        salesSeq = rs.getString(1);
-                    } catch (Exception e) { sb.append("<br>Exception in executeUpdate area: " + e.toString() + "<br>");
-                    } finally {
-                        try { if (rs != null) rs.close(); } catch (Exception e) { sb.append("Exception in first rs.close: " + e.toString() + "<br>");}
-                        rs = null;
-                        try {if (ps != null) ps.close(); } catch (Exception e) {sb.append("Exception in first ps.close: " + e.toString() + "<br>"); }
-                        ps = null;
-                    }// try get new salesSeq number
-                    if ( !viewOnly ) {
-                        try {
-                            // PRC 198408 -  Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
-                            ps = connection.prepareStatement("INSERT INTO sit_sales ("
-                                    + "    can, date_of_sale,"
-                                    + "    model_year, make,"
-                                    + "    vin_serial_no,"
-                                    + "    sale_type,"
-                                    + "    purchaser_name,"
-                                    + "    sales_price,"
-                                    + "    tax_amount,"
-                                    + "    client_id, "
-                                    + "    year, month,"
-                                    + "    sales_seq,"
-                                    + "    status,"
-                                    + "    report_seq,"
-                                    + "    uptv_factor,"
-                                    + "    pending_payment,"
-                                    + "    input_date,"
-                                    + "    opercode,"
-                                    + "    chngdate )"
-                                    + "  VALUES (?,TO_DATE(?, 'mm/dd/yyyy'),?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,TO_DATE(?, 'mm/dd/yyyy'), UPPER(?) , CURRENT_TIMESTAMP) ");
-                            ps.setString(1, can);
-                            ps.setString(2, dos[i]);//date_of_sale
-                            ps.setString(3, (model.length > 0) ? model[i] : null);//model_year
-                            ps.setString(4, make[i]);//make
-                            ps.setString(5, vin[i]);//vin_serial_no
-                            ps.setString(6, type[i]);//sale_type
-                            ps.setString(7, purchaser[i]);//purchaser
-                            ps.setString(8, numberFormat(price[i]));//sales_price
-                            ps.setString(9, numberFormat(calculated[i]));//tax_amount
-                            ps.setString(10, client_id);
-                            ps.setString(11, year);
-                            ps.setString(12, month);
-                            ps.setString(13, salesSeq);
-                            ps.setString(14, "O");//status
-                            ps.setString(15, reportSequence);
-                            ps.setString(16, uptv);
-                            ps.setString(17, "Y");//pending_payment
-                            ps.setString(18, inputDate);
-                            ps.setString(19, sitUser.getUserName());
-
-                            if (ps.executeUpdate() > 0) { //ps.executeUpdate()
-                                recordInserted = true;
-                                sb.append("insert success<br>");
-                            } else {
-                                sb.append("insert failure<br>");
-                            }
-
-                        } catch (Exception e) {
-                            sb.append("Exception in executeUpdate area: " + e.toString() + "<br>");
-                        } finally {
-                            try {
-                                if (rs != null) rs.close();
-                            } catch (Exception e) {
-                                sb.append("Exception in first rs.close: " + e.toString() + "<br>");
-                            }
-                            rs = null;
-                            try {
-                                if (ps != null) ps.close();
-                            } catch (Exception e) {
-                                sb.append("Exception in first ps.close: " + e.toString() + "<br>");
-                            }
-                            ps = null;
-                        }// try insert
-                    }
-                    // ************** /NEW **************
-                }//for(dos.length)
-            }//if btnSubmitImported
-
-
-
-
-        } catch (Exception e) {
-          SITLog.error(e, "\r\nProblem in outer try in import.jsp\r\n");
-          sb.append(e.toString() );
-        } finally {
-            try { rs.close(); } catch (Exception e) { }
-            rs = null;
-            try { ps.close(); } catch (Exception e) { }
-            ps = null;
-            if (connection != null) {
-                try { connection.close(); } catch (Exception e) { }
-                connection = null;
-            }
-        }// outer try 
-} // if isDefined(can)
 
 %>
 
@@ -367,7 +190,7 @@
 
         var dealerType      = "<%= category %>";
         var taxRate         = "<%= uptv %>".c$valueOf();
-        var defaultFormat   = "1" == "<%= formatType %>"
+        var defaultFormat   = "1" == "<%= 2 %>"
 
         var firstRowHeader      =  !defaultFormat; // Based on client pref
         var swapSalesTypeColumn =  defaultFormat;    // Based on dealer type, HE dealers have switched columns
@@ -630,11 +453,21 @@
             $("#btnSubmitImported").click(function(e){
                 e.preventDefault();
                 e.stopPropagation();
+                console.log("Hello World");
 
                 if ("true" != viewOnly){
                     if ( $(".error").length == 0 ) {
-                        $("#frmImport").attr("action","import_ws.jsp");
-                        $("#frmImport").submit();
+                        $.ajax({
+                            type:'POST',
+                            url:'import_ws.jsp',
+                            data:$("#frmImport").serialize(),
+                            success: function(res){
+                                console.log(res);
+                            },
+                            error: function(err){
+                                console.log(err);
+                            }
+                        })
                     } else {
                         $("#submitError").html("Please correct the problems above in red (you do not need to change the tax values)");
                     }
