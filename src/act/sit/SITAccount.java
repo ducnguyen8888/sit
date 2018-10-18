@@ -27,7 +27,7 @@ public class SITAccount
     public SITAccount(){}
     public static void main(String [] args) throws  Exception{
         SITAccount account = new SITAccount();
-        for (String [] pref : account.globalPrefrences){
+        for (String [] pref : account.globalPreferences){
             System.out.println(pref[0]);
             System.out.println(pref[1]);
         }
@@ -64,7 +64,7 @@ public class SITAccount
 
                                                                     };
 
-    public      String[][]              globalPrefrences    = new String [][]{
+    public      String[][]              globalPreferences    = new String [][]{
                                                                          {"WEB_DIR","dev60temp"}
                                                                     };
     public String getPreference(String preferenceName)
@@ -197,7 +197,7 @@ public class SITAccount
                                             +"       and sysdate < nvl(obsolete_date,sysdate + 1)"
                                             );
         ){
-            for ( String [] preference : globalPrefrences){
+            for ( String [] preference : globalPreferences){
                 ps.setString(1,preference[1]);// default value
                 ps.setString(2,preference[0]);// preference name
 
