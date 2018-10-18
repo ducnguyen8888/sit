@@ -48,10 +48,11 @@
              && isDefined(year)
              && isDefined(month)
              && isDefined(request.getParameter("calculated")) ) {
+            String importResponse = "{\"importSalesRecordRequest\":\"success\",\"data\":{\"importSalesRecord\":\"%s\",\"detail\":\"%s\"}}";
             try {
                 for (int i = 0; i < dos.length; i++) {
                     sitSale = SITSale.initialContext().set(can, dos[i],
-                                                            model[i], make[i],
+                                                            (model.length>0 ? model[i]: null), make[i],
                                                             vin[i], type[i],
                                                             purchaser[i], numberFormat(price[i]),
                                                             numberFormat(calculated[i]), sitAccount.getClientId(),
@@ -61,10 +62,10 @@
                                                       .addSale(datasource);
                 }
 
-                out.println(" {\"importSalesRecordRequest\":\"success\",\"data\":{\"importSalesRecord\":\"success\",\"detail\":\"The sales record is successfully imported\"}}");
+                out.println(String.format(importResponse,"success","Your records were succesfully inserted. If you are finished, please click the 'back to Sales' button above"));
 
             } catch (Exception e) {
-                out.println(e.toString());
+                out.println(String.format(importResponse,"failure", e.getMessage().toString()));
             }
         } else {
             out.println(String.format("{\"importSalesRecordRequest\":\"failure\",\"detail\":\"Not all required information is provided\"}"));

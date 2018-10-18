@@ -60,9 +60,9 @@
     
     boolean finalize_on_pay = "Y".equals((String)session.getAttribute("finalize_on_pay"));
 
-    String can = nvl(request.getParameter("can"), "");
-    String year = nvl(request.getParameter("year"), "");
-    String month = nvl(request.getParameter("month"), "");
+    String can = nvl(request.getParameter("can"), (String) session.getAttribute( "uCan"));
+    String year = nvl(request.getParameter("year"), (String) session.getAttribute( "uYear"));
+    String month = nvl(request.getParameter("month"), (String) session.getAttribute( "uMonth"));
     String category = nvl(request.getParameter("category"));
     String dealerType = nvl(request.getParameter("dealer_type"));
 

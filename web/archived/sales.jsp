@@ -902,34 +902,30 @@
                                sale_type: sale_type, purchaser_name: purchaser_name, sales_price: sales_price, tax_amount: tax_amount, client_id: client_id, 
                                year: year, month: month, form_name: form_name, sales_seq: sales_seq, uptv_factor: uptv_factor, pending_payment: pending_payment, 
                                input_date: input_date, status: status, action: action, dealer_type: dealer_type,removeMe:removeMe, report_seq:report_seq},
-                        success: function(res) {
-                            var result = JSON.parse(res);
-                            if ( result.saleRecordRequest == "success" ){
-                                if (action == "delete"
-                                        && result.data.deleteSaleRecord == "success"){
-                                    console.log(result.data.detail);
-                                    updateYearly();
-                                    cleanMe();
-                                } else if (action == "edit"
-                                            && result.data.updateSaleRecord == "success" ){
-                                    console.log(result.data.detail);
-                                    updateYearly();
-                                    cleanMe();
-                                } else if (action == "new"
-                                        && result.data.addSaleRecord == "success" ) {
-                                    console.log(result.data.detail);
-                                    updateYearly();
-                                    cleanMe();
-                                } else {
-                                    alert(result.data.detail);
-                                }
-                            } else {
-                                alert(result.detail);
-                            }
+                        complete: function(xhr, textStatus) {
+                          console.log(xhr.status);
+                        },
+                        success: function(data, textStatus, xhr) {
+                          console.log(xhr.status);
+                          console.log("Success: " + data);
+                          updateYearly();
+                          cleanMe();
                           $("form#createSaleForm").children("#removeMe").prop("value", "");
                         },
-                        error:function(err) {
-                          alert(err);
+                        error:function(x,e) {
+                            if (x.status == 0) {
+                                alert('You are offline!!\n Please Check Your Network.');
+                            } else if(x.status == 404) {
+                                alert('Requested URL not found.');
+                            } else if(x.status == 500) {
+                                alert('Internel Server Error.');
+                            } else if(e == 'parsererror') {
+                                alert('Error.\nParsing JSON Request failed.');
+                            } else if(e == 'timeout'){
+                                alert('Request Time out.');
+                            } else {
+                                alert('Unknown Error.\n'+x.responseText);
+                            }
                         }
                     });
                 }

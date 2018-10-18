@@ -417,24 +417,25 @@ public class SITSale {
     protected String      dataSource          = null;
     protected String      clientId            = null;
     protected String      can                 = null;
-    protected String      saleDate            = null;
-    protected String      modelYear           = null;
-    protected String      make                = null;
-    protected String      vinNo               = null;
-    protected String      saleType            = null;
-    protected String      buyerName           = null;
-    protected String      salesPrice          = null;
-    protected String      taxAmount           = null;
-    protected String      year                = null;
-    protected String      month               = null;
-    protected String      salesSeq            = null;
-    protected String      status              = null;
-    protected String      reportSeq           = null;
-    protected String      uptv                = null;
-    protected String      pendingPayment      = null;
-    protected String      inputDate           = null;
-    protected String      opercode            = null;
-    protected String      chngDate            = null;
+
+    public String      saleDate            = null;
+    public String      modelYear           = null;
+    public String      make                = null;
+    public String      vinNo               = null;
+    public String      saleType            = null;
+    public String      buyerName           = null;
+    public String      salesPrice          = null;
+    public String      taxAmount           = null;
+    public String      year                = null;
+    public String      month               = null;
+    public String      salesSeq            = null;
+    public String      status              = null;
+    public String      reportSeq           = null;
+    public String      uptv                = null;
+    public String      pendingPayment      = null;
+    public String      inputDate           = null;
+    public String      opercode            = null;
+    public String      chngDate            = null;
 
 
 }

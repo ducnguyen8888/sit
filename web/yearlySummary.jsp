@@ -107,7 +107,7 @@
             Note: Sales totals for all other sales types are shown on each month's statement page.
         </div>
     </div><!-- /body -->
-    <div id="operationWarning" style="position: relative;">
+    <div id="operationWarning">
         <div style="text-align: center; font-weight: bold;">
             <div style="color: red;">Warning!!</div><br>
             Attempted to perform an unauthorized operation.

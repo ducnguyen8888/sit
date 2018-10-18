@@ -24,6 +24,14 @@ import java.util.Map;
 */
 public class SITAccount
 {
+    public SITAccount(){}
+    public static void main(String [] args) throws  Exception{
+        SITAccount account = new SITAccount();
+        for (String [] pref : account.globalPrefrences){
+            System.out.println(pref[0]);
+            System.out.println(pref[1]);
+        }
+    }
     public SITAccount(String datasource, String clientId, String userName, String pin) throws Exception
     {
         this.datasource = datasource;
@@ -55,6 +63,10 @@ public class SITAccount
                                                                         {"CSV_FILE_FORMAT_FOR_SIT_PORTAL","1"}
 
                                                                     };
+
+    public      String[][]              globalPrefrences    = new String [][]{
+                                                                         {"WEB_DIR","dev60temp"}
+                                                                    };
     public String getPreference(String preferenceName)
     {
         return preferences.get(preferenceName);
@@ -64,6 +76,7 @@ public class SITAccount
     public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL       = false;
     public      boolean                 SIT_SHOW_PRINT_PAY_FORM_BUTTON  = false;
     public      boolean                 CSV_FILE_FORMAT_FOR_SIT_PORTAL  = true;
+    public      String                  WEB_DIR                         = "dev60temp";
 
 
     public boolean isValid()
@@ -144,6 +157,7 @@ public class SITAccount
         SHOW_CAD_NO_IN_SIT_PORTAL       = "Y".equalsIgnoreCase(getPreference("SHOW_CAD_NO_IN_SIT_PORTAL"));
         SIT_SHOW_PRINT_PAY_FORM_BUTTON  = "Y".equalsIgnoreCase(getPreference("SIT_SHOW_PRINT_PAY_FORM_BUTTON"));
         CSV_FILE_FORMAT_FOR_SIT_PORTAL  = "1".equalsIgnoreCase(getPreference("CSV_FILE_FORMAT_FOR_SIT_PORTAL"));
+        WEB_DIR                         = getPreference("WEB_DIR");
     }
     public void loadPreferences() throws Exception
     {
@@ -167,6 +181,25 @@ public class SITAccount
             {
                 ps.setString(2, preference[0]); // preference name
                 ps.setString(3, preference[1]); // default value
+
+                try ( ResultSet rs = ps.executeQuery(); )
+                {
+                    preferences.put(preference[0], (rs.next() ? nvl(rs.getString("value"),preference[1]) : preference[1]));
+                }
+            }
+        }
+
+        try ( Connection        con  = Connect.open(datasource);
+              PreparedStatement  ps  = con.prepareStatement(
+                                            "select nvl(description,?) as \"value\" from global_codeset"
+                                            +" where type_code = 'WEB_REPORTS_LOC' "
+                                            +"       and code = ?"
+                                            +"       and sysdate < nvl(obsolete_date,sysdate + 1)"
+                                            );
+        ){
+            for ( String [] preference : globalPrefrences){
+                ps.setString(1,preference[1]);// default value
+                ps.setString(2,preference[0]);// preference name
 
                 try ( ResultSet rs = ps.executeQuery(); )
                 {

@@ -14,15 +14,10 @@
 --%>
 <%@ include file="_configuration.inc"%>
 <% 
-    String  pageTitle   = "File Import";
-    String  username    = (String) session.getAttribute( "username");
-    String  client_id   = nvl(request.getParameter("client_id"), (String) session.getAttribute( "client_id"));
-    month               = nvl(request.getParameter("month"), (String) session.getAttribute( "uMonth"));
-    year                = nvl(request.getParameter("year"), (String) session.getAttribute( "uYear"));
-    can                 = nvl(request.getParameter("can"), (String) session.getAttribute( "uCan"));
-    StringBuffer sb     = new StringBuffer();
-    String formatType   = "1";
-    SITUser    sitUser  = sitAccount.getUser();
+    String  pageTitle       = "File Import";
+    StringBuffer sb         = new StringBuffer();
+    String formatType       = "1";
+    boolean defautFormat    = sitAccount.CSV_FILE_FORMAT_FOR_SIT_PORTAL;
     
     sb.append("starting<br>");
     
@@ -64,6 +59,17 @@
     }
 
     String              uptv        = "0.00000";
+    SITSale             sitSale     =  SITSale.initialContext() ;
+
+    try {   sitSale.setClientId(sitAccount.getClientId())
+                    .setCan(can)
+                    .setYear(year)
+                    .getUptv(datasource);
+        uptv = sitSale.uptv;
+
+    } catch (Exception e){
+        throw  e;
+    }
 
 
 %>
@@ -111,8 +117,8 @@
     #content table tr td input:read-only { color: #464646; }
 
     #content table.nomodelyear tr td:nth-child(2) { display:none; }
-    #content table.nomodelyear tr th:nth-child(2) { display:none; }    
-    
+    #content table.nomodelyear tr th:nth-child(2) { display:none; }
+
 </style>
         <%@ include file="_top2.inc" %>
         <%= recents %>
@@ -130,18 +136,14 @@
 
     <div id="body" >
         <form id="navigation" method="post">
-            <input type="hidden" name="client_id" id="client_id" value="<%= client_id %>">
+            <input type="hidden" name="client_id" id="client_id" value="<%= sitAccount.getClientId() %>">
             <input type="hidden" name="can" id="can" value="<%= can %>">
             <input type="hidden" name="year" id="year" value="<%= year %>">
             <input type="hidden" name="month" id="month" value="<%= month %>">
             <input type="hidden" name="report_seq" value="<%= reportSequence %>">
             <input type="hidden" name="current_page" id="current_page" value="<%= current_page %>">
-        </form>       
-         <% if (recordInserted){ %>
-        <div style="background: #c4cfdd; height: 25px; padding-top: 3px; text-align: center;">
-            Your records were succesfully inserted. If you are finished, please click the "back to Sales" button above.
-        </div>
-        <% } %>
+        </form>
+        <div id="importNotice" style=" display:none; height: 25px; padding-top: 3px; text-align: center; background-color: #c4cfdd "></div>
         <div id="myTableDiv">
             <h1>SIT Sales Importer</h1>
             <div>Select a comma-separated file:
@@ -152,15 +154,15 @@
                     <pre><div id="content"></div></pre>
                 </div>
                 <div id="myButton">
-                    <button 
-                            id ='btnSubmitImported' 
+                    <button
+                            id ='btnSubmitImported'
                             name='btnSubmitImported'
                             class='btn btn-primary'>
                             Submit Records
                     </button>
                     <span id='submitError'></span>
                 </div>
-                <input type="hidden" name="client_id" value="<%= client_id %>">
+                <input type="hidden" name="client_id" value="<%= sitAccount.getClientId() %>">
                 <input type="hidden" name="month" value="<%= month %>">
                 <input type="hidden" name="year" value="<%= year %>">
                 <input type="hidden" name="can" value="<%= can %>">
@@ -190,7 +192,7 @@
 
         var dealerType      = "<%= category %>";
         var taxRate         = "<%= uptv %>".c$valueOf();
-        var defaultFormat   = "1" == "<%= 2 %>"
+        var defaultFormat   = <%= defautFormat %>;
 
         var firstRowHeader      =  !defaultFormat; // Based on client pref
         var swapSalesTypeColumn =  defaultFormat;    // Based on dealer type, HE dealers have switched columns
@@ -222,21 +224,6 @@
                     records.shift();
                     fields = records[0].split(",");
                 }
-
-
-                // Switch Sales Type and Purchaser Name fields if needed
-                // Heavy Equipment CSV import has Type and Purchaser fields switched.
-               // if ( swapSalesTypeColumn )
-               // {
-                //    var offset = fields.length-8 + fieldPosition.saleType;
-                 //   if (  ! (saleTypes.includes(fields[offset]) && fields[offset+1].indexOf(" ") > 0) )
-                 //   {
-                  //      swapSalesTypeColumn = true;
-                 //   }
-               // }
-
-
-
 
                 // Create the base table and headers
                 var table = $("<table/>")
@@ -444,6 +431,7 @@
             }
 
             $("#content").html("");
+            $("#submitError").html("");
             $("#btnSubmitImported").css("display","inline-block");
             reader.readAsText(document.getElementById("inputfile").files[0]);
         }
@@ -453,7 +441,6 @@
             $("#btnSubmitImported").click(function(e){
                 e.preventDefault();
                 e.stopPropagation();
-                console.log("Hello World");
 
                 if ("true" != viewOnly){
                     if ( $(".error").length == 0 ) {
@@ -463,9 +450,24 @@
                             data:$("#frmImport").serialize(),
                             success: function(res){
                                 console.log(res);
+                                var result = JSON.parse(res);
+                                console.log(result);
+                                if ( result.importSalesRecordRequest == "success" ){
+                                    if( result.data.importSalesRecord == "success" ) {
+                                        $("#content").html("");
+                                        $("#btnSubmitImported").css("display","none");
+                                        $("#inputfile").val("");
+                                    }
+                                    $("#importNotice").css("display","block");
+                                    $("#importNotice").html(result.data.detail);
+                                } else {
+                                    $("#importNotice").css("display","block");
+                                    $("#importNotice").html(result.detail);
+                                }
                             },
                             error: function(err){
-                                console.log(err);
+                                $("#importNotice").css("display","block");
+                                $("#importNotice").html(err);
                             }
                         })
                     } else {
