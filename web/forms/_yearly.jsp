@@ -404,7 +404,7 @@
             try { ps.close(); } catch (Exception e) { }
             ps = null;
         }// try update report_status
-          String preNote= "Yearly Sales Report for %d (%s Sales) finalized on";
+          String preNote= "Yearly Sales Report for %d (%s Sales) finalized on ";
         String user_name = "WEB-" + session.getAttribute("username").toString();
         user_name = user_name.substring(0, Math.min(user_name.length(), 30));
          

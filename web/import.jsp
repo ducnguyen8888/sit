@@ -432,7 +432,11 @@
 
             $("#content").html("");
             $("#submitError").html("");
-            $("#btnSubmitImported").css("display","inline-block");
+            if ( $("#inputfile").get(0).files.length > 0 ){
+                $("#btnSubmitImported").css("display", "inline-block");
+            } else {
+                $("#btnSubmitImported").css("display", "none");
+            }
             reader.readAsText(document.getElementById("inputfile").files[0]);
         }
 
@@ -449,7 +453,6 @@
                             url:'import_ws.jsp',
                             data:$("#frmImport").serialize(),
                             success: function(res){
-                                console.log(res);
                                 var result = JSON.parse(res);
                                 console.log(result);
                                 if ( result.importSalesRecordRequest == "success" ){
