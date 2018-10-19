@@ -404,7 +404,7 @@
             try { ps.close(); } catch (Exception e) { }
             ps = null;
         }// try update report_status
-        String preNote = "Yearly Sales Report for "+declarationYear+" finalized on ";// || to_char(sysdate, 'MM/DD/YYYY')
+          String preNote= "Yearly Sales Report for %d (%s Sales) finalized on";
         String user_name = "WEB-" + session.getAttribute("username").toString();
         user_name = user_name.substring(0, Math.min(user_name.length(), 30));
          
@@ -425,7 +425,7 @@
             ps.setString(1, client_id); //client_id
             ps.setString(2, request.getParameter("can")); //can
             ps.setInt(3, noteseq); //noteseq
-            ps.setString(4, preNote); //note Monthly Sales Report for March 2015 finalized on March 2015 
+            ps.setString(4, String.format(preNote, declarationYear, year)); //note Monthly Sales Report for March 2015 finalized on March 2015
             ps.setString(5, "MSG"); //msgcode = MSG
             ps.setString(6,"WEB-"+sitUser.getUserName() ); //opercode = Login user name
 

@@ -1,4 +1,4 @@
-<%@ page import="java.util.*,java.io.*,java.sql.*,java.math.*,act.util.*,java.text.*,act.sit.reports.*" 
+<%@ page import="java.util.*,java.io.*,java.sql.*,java.math.*,act.util.*,java.text.*,act.sit.reports.*, act.sit.SITAccount"
 %><%!
     StringBuffer buffer = new StringBuffer();
 %><%
@@ -9,6 +9,7 @@
 
     String      clientId            = (String) session.getAttribute("WEBPAY-Payment-clientId");
     String      datasource          = (String) session.getAttribute("WEBPAY-Payment-dataSource");
+    SITAccount  sitAccount          = (SITAccount) session.getAttribute("sitAccount");
     boolean     showInformation     = false;
 
 
@@ -48,6 +49,7 @@
         // Create the pay-by-mail report
         buffer.append(String.format("Creating report: %s  %s  %s\n",clientId, tid, datasource));
         report = SITPayByMail.initialContext(clientId, tid)
+                                    .setReportContextPath("/"+sitAccount.WEB_DIR)
                                     .create(datasource);
         String reportURL = report.getReportURI();
 

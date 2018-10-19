@@ -24,10 +24,12 @@ import java.util.Map;
 */
 public class SITAccount
 {
-    public static void main(String [] args){
+    public SITAccount(){}
+    public static void main(String [] args) throws  Exception{
         SITAccount account = new SITAccount();
-        for (String [] pref : account.globalPrefrences){
-            System.o
+        for (String [] pref : account.globalPreferences){
+            System.out.println(pref[0]);
+            System.out.println(pref[1]);
         }
     }
     public SITAccount(String datasource, String clientId, String userName, String pin) throws Exception
@@ -62,7 +64,7 @@ public class SITAccount
 
                                                                     };
 
-    public      String[][]              globalPrefrences    = new String [][]{
+    public      String[][]              globalPreferences    = new String [][]{
                                                                          {"WEB_DIR","dev60temp"}
                                                                     };
     public String getPreference(String preferenceName)
@@ -190,11 +192,12 @@ public class SITAccount
         try ( Connection        con  = Connect.open(datasource);
               PreparedStatement  ps  = con.prepareStatement(
                                             "select nvl(description,?) as \"value\" from global_codeset"
-                                            " where type_code = 'WEB_REPORTS_LOC' "
-                                            "       and code = ?"
-                                            "       and sysdate < nvl(obsolete_date,sysdate + 1)"
+                                            +" where type_code = 'WEB_REPORTS_LOC' "
+                                            +"       and code = ?"
+                                            +"       and sysdate < nvl(obsolete_date,sysdate + 1)"
                                             );
-              for (String [] preference : globalPrefrences){
+        ){
+            for ( String [] preference : globalPreferences){
                 ps.setString(1,preference[1]);// default value
                 ps.setString(2,preference[0]);// preference name
 
@@ -202,8 +205,8 @@ public class SITAccount
                 {
                     preferences.put(preference[0], (rs.next() ? nvl(rs.getString("value"),preference[1]) : preference[1]));
                 }
-             }
-        )
+            }
+        }
         setPreferences();
 
         return;
