@@ -94,7 +94,7 @@ public abstract class Report {
 
 
     /** The output filename unique ID used when generating an output filename */
-    public      String      uid                     = ""+(new java.util.Date()).getTime();
+    public      String      uid                     = ""+(new Date()).getTime();
 
 
     /** The application server IP address used to contact the report server */
@@ -153,6 +153,15 @@ public abstract class Report {
     public Report setReportName(String reportName) {
         this.reportName = reportName;
         return this;
+    }
+
+    /** Sets the report context path used to retrieve the report
+     * @param reportContextPath path submitted to the report server
+     * @return this object, useful for chaining
+     */
+    public Report setReportContextPath(String reportContextPath){
+        this.reportContextPath = reportContextPath;
+        return  this;
     }
 
     /** Sets a unique ID to use when creating the report output filename.
