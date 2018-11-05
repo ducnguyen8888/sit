@@ -3,6 +3,7 @@ package act.sit;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 import act.util.Connect;
 
@@ -414,10 +415,20 @@ public class SITSale {
         return this;
     }
 
+    public SITSale setTotalSale(String totalSale){
+        this.totalSale = totalSale;
+        return this;
+    }
+
+    public SITSale setTotalAmount(String totalAmount){
+        this.totalAmount = totalAmount;
+        return  this;
+    }
 
     protected String      dataSource          = null;
     protected String      clientId            = null;
     protected String      can                 = null;
+
     public String      saleDate            = null;
     public String      modelYear           = null;
     public String      make                = null;
@@ -436,6 +447,9 @@ public class SITSale {
     public String      inputDate           = null;
     public String      opercode            = null;
     public String      chngDate            = null;
+
+    public String       totalSale          = null;
+    public String       totalAmount        = null;
 
 
 }

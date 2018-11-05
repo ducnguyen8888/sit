@@ -9,6 +9,8 @@
         - Updated sales type from "VTM" to "VM"
     DN - 09/11/2018 - PRC 205229
         - Use client pref "SHOW_FILE_UPLOAD_IN_SIT_PORTAL" to control the display of feature "Upload file"
+    DN - 10/26/2018 - PRC 208710
+        - Updated the functionality "Create New Record" by using web service(add/delete/edit)
 
 --%><%@ include file="_configuration.inc"%><%
     String      pageTitle   = categoryName + " Tax Statement";

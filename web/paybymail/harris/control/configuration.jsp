@@ -36,6 +36,7 @@ boolean notDefined(String value) { return value == null || value.length() == 0; 
     }
 
     boolean     isTestTransaction   = "true".equals(configuration.getProperty("payment_isTest"));
+    String      webDir              = configuration.getProperty("WEB_DIR");
 
 
 
@@ -44,6 +45,7 @@ boolean notDefined(String value) { return value == null || value.length() == 0; 
     session.setAttribute("WEBPAY-Payment-testPayment",(isTestTransaction ? "true" : "false"));
     session.setAttribute("WEBPAY-Payment-clientId",clientId);
     session.setAttribute("WEBPAY-Payment-dataSource",dataSource);
+    session.setAttribute("WEB_DIR",webDir);
 
 
 %> { "status":  "OK",

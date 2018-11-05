@@ -23,7 +23,7 @@
         double totalAccountPayments = calculateTotalPayment(accounts);
         double totalPaymentAmount = nvl(request.getParameter("total"),0.0);
 
-        String paymentMethod = nvl(request.getParameter("method"),"CC").toUpperCase();
+        String paymentMethod = nvl(request.getParameter("method"),"").toUpperCase();
 
         if ( showInformation ) {
             %><style>h3 { margin-bottom: 0px; } </style><%

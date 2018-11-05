@@ -3,6 +3,8 @@
         - Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
     DN - 09/12/2018 - PRC 197579
         - Updated code, all of insert, delete and update requests won't be executed if the users have the "view only" right
+    DN - 10/26/2018 - PRC 208710
+        - Updated the functionality "Create New Record" by using web service(add/delete/edit)
 --%><%@ include file="_configuration.inc"%>
 <%
 

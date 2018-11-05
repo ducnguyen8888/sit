@@ -11,6 +11,8 @@
         - Do not calculate tax for sale types FL, DL, SS, RL
     DN - 09/12/2018 - PRC 197579
         - Updated code, the import request won't be executed if the users have the "view only" right
+    DN - 10/26/2018 - PRC 208710
+        - Updated the functionality "Import Records" by using web service
 --%>
 <%@ include file="_configuration.inc"%>
 <% 
@@ -169,13 +171,13 @@
                 <input type="hidden" name="report_seq" value="<%= reportSequence %>">
             </form>
         </div><!-- /myTableDiv -->
-        <div id="operationWarning">
-            <div style="text-align: center; font-weight: bold;">
-                <div style="color: red;">Warning!!</div><br>
-                Attempted to perform an unauthorized operation.
-            </div>
-        </div>
     </div><!-- /body -->
+    <div id="operationWarning">
+        <div style="text-align: center; font-weight: bold;">
+            <div style="color: red;">Warning!!</div><br>
+            Attempted to perform an unauthorized operation.
+        </div>
+    </div>
 
 
  
@@ -459,6 +461,7 @@
                                     if( result.data.importSalesRecord == "success" ) {
                                         $("#content").html("");
                                         $("#btnSubmitImported").css("display","none");
+                                        $("#submitError").css("display","none");
                                         $("#inputfile").val("");
                                     }
                                     $("#importNotice").css("display","block");

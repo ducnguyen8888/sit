@@ -8,6 +8,8 @@
         Moved getClientPref and getSitClientPref function to "_configuation.inc" file
     DN - 08/07/2018 - PRC 198408
         -Updated code, login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
+    DN - 11/05/2018 - PRC 209149
+        Use client prefs JUR_ADDRESS1, JUR_ADDRESS2, JUR_ADDRESS4, JUR_EMAIL_ADDRESS, JUR_PHONE1 to control the tax office information in the confirmation email
 --%><%
 
   java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("MMddyyyyHHmmss");
@@ -392,7 +394,7 @@ if(!finalize_on_pay || Double.parseDouble(fakharTotal) == 0.00) { // set report_
 
 }
         
-        String emailFrom = nvl(getSitClientPref(connection, ps, rs,client_id,"JUR_EMAIL_ADDRESS"),""); 
+        String emailFrom = nvl(configuration.getProperty("JUR_EMAIL_ADDRESS"),sitAccount.JUR_EMAIL_ADDRESS);
         
         int noteseq = 0;
         try{ // get noteseq nextval
@@ -456,10 +458,10 @@ if(!finalize_on_pay || Double.parseDouble(fakharTotal) == 0.00) { // set report_
               //String emailBody = "Your " + emailSubject + " has been finalized for acct: " + request.getParameter("can") + ".";
 			  contactInfo.append("<pre>");
 			  contactInfo.append("Your " + emailSubject + " has been finalized for acct: " + request.getParameter("can")+ "<br/><br/>");
-			  contactInfo.append("<Strong><i>"+nvl(getClientPref(connection, ps, rs, client_id,"JUR_ADDRESS1"),"")+" "+"TAX OFFICE<br/>");
-			  contactInfo.append(nvl(getClientPref(connection, ps, rs, client_id,"JUR_ADDRESS2"),"")+"<br/>");
-			  contactInfo.append(nvl(getClientPref(connection, ps, rs, client_id,"JUR_ADDRESS4"),"")+"<br/>");
-			  contactInfo.append(nvl(getClientPref(connection, ps, rs, client_id,"JUR_PHONE1"),"")+"<br/>");
+			  contactInfo.append("<Strong><i>"+nvl(configuration.getProperty("JUR_ADDRESS1"),sitAccount.JUR_ADDRESS1)+" "+"TAX OFFICE<br/>");
+			  contactInfo.append(nvl(configuration.getProperty("JUR_ADDRESS2"),sitAccount.JUR_ADDRESS2)+"<br/>");
+			  contactInfo.append(nvl(configuration.getProperty("JUR_ADDRESS4"),sitAccount.JUR_ADDRESS4)+"<br/>");
+			  contactInfo.append(nvl(configuration.getProperty("JUR_PHONE1"),sitAccount.JUR_PHONE1)+"<br/>");
 			  contactInfo.append(emailFrom+"</i></Strong>");
 			  contactInfo.append("</pre>");
               //                           from,                          to,                                subject,       body

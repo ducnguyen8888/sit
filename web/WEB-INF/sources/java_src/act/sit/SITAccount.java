@@ -30,6 +30,7 @@ public class SITAccount
         for (String [] pref : account.globalPreferences){
             System.out.println(pref[0]);
             System.out.println(pref[1]);
+            System.out.println(pref[2]);
         }
     }
     public SITAccount(String datasource, String clientId, String userName, String pin) throws Exception
@@ -60,12 +61,17 @@ public class SITAccount
                                                                         {"SIT_FINALIZE_ON_PAY", "N" },
                                                                         {"SHOW_CAD_NO_IN_SIT_PORTAL","N"},
                                                                         {"SIT_SHOW_PRINT_PAY_FORM_BUTTON","N"},
-                                                                        {"CSV_FILE_FORMAT_FOR_SIT_PORTAL","1"}
+                                                                        {"CSV_FILE_FORMAT_FOR_SIT_PORTAL","1"},
+                                                                        {"JUR_EMAIL_ADDRESS",""},
+                                                                        {"JUR_ADDRESS1",""},
+                                                                        {"JUR_ADDRESS2",""},
+                                                                        {"JUR_ADDRESS4",""},
+                                                                        {"JUR_PHONE1",""}
 
                                                                     };
 
-    public      String[][]              globalPreferences    = new String [][]{
-                                                                         {"WEB_DIR","dev60temp"}
+    public      String[][]             globalPreferences    = new String [][]{
+                                                                         {"WEB_REPORTS_LOC","WEB_DIR","dev60temp"}
                                                                     };
     public String getPreference(String preferenceName)
     {
@@ -76,7 +82,13 @@ public class SITAccount
     public      boolean                 SHOW_CAD_NO_IN_SIT_PORTAL       = false;
     public      boolean                 SIT_SHOW_PRINT_PAY_FORM_BUTTON  = false;
     public      boolean                 CSV_FILE_FORMAT_FOR_SIT_PORTAL  = true;
-    public      String                  WEB_DIR                         = "dev60temp";
+    public      String                  WEB_DIR                         = null;
+
+    public      String                  JUR_EMAIL_ADDRESS               = null;
+    public      String                  JUR_ADDRESS1                    = null;
+    public      String                  JUR_ADDRESS2                    = null;
+    public      String                  JUR_ADDRESS4                    = null;
+    public      String                  JUR_PHONE1                      = null;
 
 
     public boolean isValid()
@@ -158,6 +170,11 @@ public class SITAccount
         SIT_SHOW_PRINT_PAY_FORM_BUTTON  = "Y".equalsIgnoreCase(getPreference("SIT_SHOW_PRINT_PAY_FORM_BUTTON"));
         CSV_FILE_FORMAT_FOR_SIT_PORTAL  = "1".equalsIgnoreCase(getPreference("CSV_FILE_FORMAT_FOR_SIT_PORTAL"));
         WEB_DIR                         = getPreference("WEB_DIR");
+        JUR_EMAIL_ADDRESS               = getPreference("JUR_EMAIL_ADDRESS");
+        JUR_ADDRESS1                    = getPreference("JUR_ADDRESS1");
+        JUR_ADDRESS2                    = getPreference("JUR_ADDRESS2");
+        JUR_ADDRESS4                    = getPreference("JUR_ADDRESS4");
+        JUR_PHONE1                      = getPreference("JUR_PHONE1");
     }
     public void loadPreferences() throws Exception
     {
@@ -169,45 +186,45 @@ public class SITAccount
 
         if ( ! this.isValid() ) throw new Exception("SIT user is not valid");
 
-        try ( Connection        con  = Connect.open(datasource);
-              PreparedStatement  ps  = con.prepareStatement(
-                                              "select nvl(sit_get_codeset_value(?,'DESCRIPTION','CLIENT',?),?) as \"value\" from dual"
-                                            );
-            )
-        {
-            ps.setString(1, clientId);
+        try ( Connection        con  = Connect.open(datasource);) {
 
-            for ( String[] preference : sitPreferences )
-            {
-                ps.setString(2, preference[0]); // preference name
-                ps.setString(3, preference[1]); // default value
+            try (
+                    PreparedStatement ps = con.prepareStatement(
+                            "select nvl(sit_get_codeset_value(?,'DESCRIPTION','CLIENT',?),?) as \"value\" from dual"
+                    );
+            ) {
+                ps.setString(1, clientId);
 
-                try ( ResultSet rs = ps.executeQuery(); )
-                {
-                    preferences.put(preference[0], (rs.next() ? nvl(rs.getString("value"),preference[1]) : preference[1]));
+                for (String[] preference : sitPreferences) {
+                    ps.setString(2, preference[0]); // preference name
+                    ps.setString(3, preference[1]); // default value
+
+                    try (ResultSet rs = ps.executeQuery();) {
+                        preferences.put(preference[0], (rs.next() ? nvl(rs.getString("value"), preference[1]) : preference[1]));
+                    }
                 }
             }
-        }
 
-        try ( Connection        con  = Connect.open(datasource);
-              PreparedStatement  ps  = con.prepareStatement(
-                                            "select nvl(description,?) as \"value\" from global_codeset"
-                                            +" where type_code = 'WEB_REPORTS_LOC' "
-                                            +"       and code = ?"
-                                            +"       and sysdate < nvl(obsolete_date,sysdate + 1)"
-                                            );
-        ){
-            for ( String [] preference : globalPreferences){
-                ps.setString(1,preference[1]);// default value
-                ps.setString(2,preference[0]);// preference name
+            try (
+                    PreparedStatement ps = con.prepareStatement(
+                            "select nvl(description,?) as \"value\" from global_codeset"
+                                    + " where type_code = ? "
+                                    + "       and code = ?"
+                                    + "       and sysdate < nvl(obsolete_date,sysdate + 1)"
+                    );
+            ) {
+                for (String[] preference : globalPreferences) {
+                    ps.setString(1, preference[2]);// default value
+                    ps.setString(2, preference[0]);// type-code
+                    ps.setString(3, preference[1]);//code
 
-                try ( ResultSet rs = ps.executeQuery(); )
-                {
-                    preferences.put(preference[0], (rs.next() ? nvl(rs.getString("value"),preference[1]) : preference[1]));
+                    try (ResultSet rs = ps.executeQuery();) {
+                        preferences.put(preference[1], (rs.next() ? nvl(rs.getString("value"), preference[2]) : preference[2]));
+                    }
                 }
             }
+            setPreferences();
         }
-        setPreferences();
 
         return;
     }

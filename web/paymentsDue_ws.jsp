@@ -1,4 +1,6 @@
-<%@ page import="java.lang.reflect.*,java.time.*,java.time.format.*" %><%@ include file="_configuration.inc"
+<%@ page import="java.lang.reflect.*,java.time.*,java.time.format.*" %>
+<%@ page import="java.math.BigDecimal" %>
+<%@ include file="_configuration.inc"
 %><%--
     Need to define/include error handling
 --%><%
@@ -155,7 +157,8 @@
                     } 
                     else if ( fields[i].getType().equals(java.lang.Double.TYPE) ) 
                     {
-                        fieldValue = ""+fields[i].getDouble(obj);
+                        BigDecimal bd = new BigDecimal(fields[i].get(obj).toString()).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                        fieldValue = ""+ bd.doubleValue();
                     } 
                     else if ( fields[i].getType().getName().equals("java.lang.String") ) 
                     {

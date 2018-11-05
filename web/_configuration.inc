@@ -9,6 +9,10 @@
         Default value for getStartDate should be the year of the selected filing year with "-01-01"
     DN - 08/21/2018 - PRC 194803
         Updated the sales type "VTM" to "VM"
+    DN - 10/30/2018 - PRC 208888
+        Use global_codeset to control the tempUrl
+    DN - 11/05/2018 - PRC 209149
+        Use client prefs JUR_ADDRESS1, JUR_ADDRESS2, JUR_ADDRESS4, JUR_EMAIL_ADDRESS, JUR_PHONE1 to control the tax office information in the confirmation email
 
 --%><jsp:useBean    id="dealerships"    class="act.sit.Dealerships"     scope="session"
 /><jsp:useBean      id="payments"       class="act.sit.Payments"        scope="session"
@@ -23,6 +27,10 @@
     String url = request.getServletPath();// used in next variable
     String currentPage = url.substring( url.lastIndexOf('/')+1, url.length() );
 
+    String pdfConverterURL = "http://apollo:100/convert2PDF.php";
+    String tempDirectory = "/usr2/webtemp/";    // Used in pages in /forms/ directory (_monthly, _yearly, _file_upload)
+    String tempURL = "/dev60temp/"; // _getUploadedFiles, _viewForm, _widgets
+    AppConfiguration configuration  = null;
 
     // Has user already logged in?
     SITAccount sitAccount = (SITAccount) session.getAttribute("sitAccount");
@@ -34,13 +42,29 @@
     }
     if (sitAccount != null && sitAccount.isValid() ) {
         session.setAttribute("showCad", sitAccount.SHOW_CAD_NO_IN_SIT_PORTAL);
+
+        switch ( sitAccount.getClientId() )
+        {
+            case "2000"         :   configuration = new AppConfiguration(pageContext,"sitDallas");
+                break;
+            case "7580"         :   configuration = new AppConfiguration(pageContext,"sitDallas");
+                break;
+            case "79000000"     :   configuration = new AppConfiguration(pageContext,"sitFbc");
+                break;
+            case "94000000"     :
+            case "94500000"     :   configuration = new AppConfiguration(pageContext,"sitElpaso");
+                break;
+            case "98000000"     :   configuration = new AppConfiguration(pageContext,"sitGalveston");
+                break;
+            default             :   configuration = new AppConfiguration(pageContext,"sitDallas");
+                break;
+        }
+
+        tempURL = "/"+nvl(configuration.getProperty("WEB_DIR"),sitAccount.WEB_DIR)+"/";
     }
 
 
 
-    String pdfConverterURL = "http://apollo:100/convert2PDF.php";
-    String tempDirectory = "/usr2/webtemp/";    // Used in pages in /forms/ directory (_monthly, _yearly, _file_upload)
-    String tempURL = "/dev60temp/";             // _getUploadedFiles, _viewForm, _widgets
 
     int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
@@ -98,8 +122,10 @@
 
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
-    String sitVersion       = "SIT 1.12";
-    String updatedDate      = LocalDate.of(2018,10,16).format(formatter);
+    String sitVersion       = "SIT 1.18";
+    String updatedDate      = LocalDate.of(2018,11,05).format(formatter);
+
+
 
 
 %><%!

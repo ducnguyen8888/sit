@@ -1,5 +1,8 @@
 <%@ page import="java.util.*,java.io.*,java.sql.*,java.math.*,act.util.*,java.text.*,act.sit.reports.*, act.sit.SITAccount"
-%><%!
+%><%--
+    DN - 10/30/2018 - PRC 208888
+        Use global_codeset to control the tempUrl
+--%><%!
     StringBuffer buffer = new StringBuffer();
 %><%
     response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -11,6 +14,7 @@
     String      datasource          = (String) session.getAttribute("WEBPAY-Payment-dataSource");
     SITAccount  sitAccount          = (SITAccount) session.getAttribute("sitAccount");
     boolean     showInformation     = false;
+    String      webDir              = (String)session.getAttribute("WEB_DIR");
 
 
 
@@ -49,7 +53,7 @@
         // Create the pay-by-mail report
         buffer.append(String.format("Creating report: %s  %s  %s\n",clientId, tid, datasource));
         report = SITPayByMail.initialContext(clientId, tid)
-                                    .setReportContextPath("/"+sitAccount.WEB_DIR)
+                                    .setReportContextPath("/"+((webDir!= null && webDir.length()>0)? webDir:sitAccount.WEB_DIR))
                                     .create(datasource);
         String reportURL = report.getReportURI();
 

@@ -209,7 +209,7 @@ input.ngMax + .input-help div.ngMax { display: block; color: green; }
 														name="pay-{{account.account}}-{{$index}}-type"
 														value="partial"
 														ng-model="account.paymentType"
-														ng-checked="{{account.paymentType == 'partial' 
+														ng-checked="{{account.paymentType == 'partial'
 																	|| (account.paymentType != 'lien' && account.paymentAmount != account.amountDue)}}">
 									<label style="float:right;" for="pay-{{account.account}}-{{$index}}-type-partial">Pay a different amount: </label>
 								</div>
