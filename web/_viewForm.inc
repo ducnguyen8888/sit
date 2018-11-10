@@ -104,14 +104,14 @@ if (isDefined(client_id)){
             try {
 
               InputStream is = blob.getBinaryStream();
-              FileOutputStream fos = new FileOutputStream("/usr2/webtemp/SIT_VIEW_"+file_time+".pdf");
+              FileOutputStream fos = new FileOutputStream( tempDirectory +"SIT_VIEW_"+file_time+".pdf");
                
               int b = 0;
               while ((b = is.read()) != -1)
               {
                   fos.write(b); 
               }
-              Runtime.getRuntime().exec( "/usr/bin/chmod 666 /usr2/webtemp/SIT_VIEW_"+file_time+".pdf" );
+             // Runtime.getRuntime().exec( "/usr/bin/chmod 666 /usr2/webtemp/SIT_VIEW_"+file_time+".pdf" );
             } catch (Exception e) {
                 SITLog.error(e, "\r\ngetting file_blob bytes in viewForm.jsp\r\n");
             } finally {

@@ -13,6 +13,8 @@
         Use global_codeset to control the tempUrl
     DN - 11/05/2018 - PRC 209149
         Use client prefs JUR_ADDRESS1, JUR_ADDRESS2, JUR_ADDRESS4, JUR_EMAIL_ADDRESS, JUR_PHONE1 to control the tax office information in the confirmation email
+    DN - 11/08/2018 - PRC 209069
+        Use global_codeset to control pdfConverterURL(type_code = PHP and code = PHP-SERVER)
 
 --%><jsp:useBean    id="dealerships"    class="act.sit.Dealerships"     scope="session"
 /><jsp:useBean      id="payments"       class="act.sit.Payments"        scope="session"
@@ -45,7 +47,7 @@
 
         switch ( sitAccount.getClientId() )
         {
-            case "2000"         :   configuration = new AppConfiguration(pageContext,"sitDallas");
+            case "2000"         :   configuration = new AppConfiguration(pageContext,"sitHarris");
                 break;
             case "7580"         :   configuration = new AppConfiguration(pageContext,"sitDallas");
                 break;
@@ -60,7 +62,9 @@
                 break;
         }
 
-        tempURL = "/"+nvl(configuration.getProperty("WEB_DIR"),sitAccount.WEB_DIR)+"/";
+        tempURL         = "/"+nvl(configuration.getProperty("WEB_DIR"),sitAccount.WEB_DIR)+"/";
+        pdfConverterURL = nvl(configuration.getProperty("PHP_SERVER"),sitAccount.PHP_SERVER) + "/convert2PDF.php";
+        tempDirectory   = nvl(configuration.getProperty("TEMP_DIR"),"/usr2/webtemp/");
     }
 
 
@@ -122,8 +126,8 @@
 
 
     DateTimeFormatter formatter = DateTimeFormatter.BASIC_ISO_DATE.ofPattern("MMM dd, yyyy");
-    String sitVersion       = "SIT 1.19";
-    String updatedDate      = LocalDate.of(2018,11,06).format(formatter);
+    String sitVersion       = "SIT 1.20";
+    String updatedDate      = LocalDate.of(2018,11,8).format(formatter);
 
 
 

@@ -49,7 +49,7 @@
         } finally {
             bw.close();
         }
-        Runtime.getRuntime().exec( "/usr/bin/chmod 666 " + tempDirectory + "SIT_"+file_time+".html" );
+        //Runtime.getRuntime().exec("/usr/bin/chmod 666" + tempDirectory + "SIT_"+file_time+".html" );
         /* **************** Send file info to PHP page ********************* */
         String USER_AGENT = "Mozilla/5.0";
         //String url2 = "http://apollo/mpdf/examples/jasonTest.php";
@@ -302,7 +302,7 @@ if ( finalize_on_pay
 
     CallableStatement cs         = null;
     try{
-            ((oracle.jdbc.OracleConnection)connection).setSessionTimeZone(TimeZone.getDefault().getID());
+            //((oracle.jdbc.OracleConnection)connection).setSessionTimeZone(TimeZone.getDefault().getID());
             cs = connection.prepareCall("{ ?=call vit_utilities.get_amount_due_by_month(?,?,?,?) }");
             //cs = conn.prepareCall("{ ?=call vit_utilities.get_amount_due_by_month(client_id=>?,can=>?,year=>?) }");
             cs.registerOutParameter(1,oracle.jdbc.OracleTypes.CURSOR);

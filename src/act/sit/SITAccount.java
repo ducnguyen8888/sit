@@ -71,7 +71,8 @@ public class SITAccount
                                                                     };
 
     public      String[][]             globalPreferences    = new String [][]{
-                                                                         {"WEB_REPORTS_LOC","WEB_DIR","dev60temp"}
+                                                                         {"WEB_REPORTS_LOC","WEB_DIR","dev60temp"},
+                                                                         {"PHP","PHP-SERVER","http://apollo:100"}
                                                                     };
     public String getPreference(String preferenceName)
     {
@@ -89,6 +90,8 @@ public class SITAccount
     public      String                  JUR_ADDRESS2                    = null;
     public      String                  JUR_ADDRESS4                    = null;
     public      String                  JUR_PHONE1                      = null;
+
+    public      String                  PHP_SERVER                      = null;
 
 
     public boolean isValid()
@@ -175,6 +178,7 @@ public class SITAccount
         JUR_ADDRESS2                    = getPreference("JUR_ADDRESS2");
         JUR_ADDRESS4                    = getPreference("JUR_ADDRESS4");
         JUR_PHONE1                      = getPreference("JUR_PHONE1");
+        PHP_SERVER                      = getPreference("PHP-SERVER");
     }
     public void loadPreferences() throws Exception
     {
