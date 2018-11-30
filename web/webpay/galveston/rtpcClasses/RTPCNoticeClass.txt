@@ -374,7 +374,8 @@ public class RTPCNotice extends Thread {
                             + "        country=substr(nvl(?,country),1,40), "
                             + "        phone=substr(nvl(?,phone),1,20), "
                             + "        email=substr(nvl(?,email),1,60), "
-                            + "        paymentdate=least(nvl(to_date(replace(?,'T',' '),'YYYY-MM-DD HH24:MI:SS')-1/24,paymentdate),paymentdate) "
+                            + "        paymentdate=least(nvl(to_date(replace(?,'T',' '),'YYYY-MM-DD HH24:MI:SS')-1/24,paymentdate),paymentdate), "
+                            + "        paytype=nvl(?,paytype) "
                             + " where client_id=? and (to_char(tid)=? or 'TID'||tid=?)"
                         );
 
@@ -404,9 +405,11 @@ public class RTPCNotice extends Thread {
 
             ps.setString(14, notice.paymentDate); // Date format is expected to be '2017-03-01T16:07:05' (EST)
 
-            ps.setString(15, notice.clientId);
-            ps.setString(16, tid);
+            ps.setString(15, notice.method);
+
+            ps.setString(16, notice.clientId);
             ps.setString(17, tid);
+            ps.setString(18, tid);
 
             if ( ps.executeUpdate() != 1 ) throw new MustAddressException("Failed to update database, 0 rows reported");
         } catch (Exception exception) {

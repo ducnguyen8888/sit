@@ -42,33 +42,8 @@
 
 
   try{
-        /* **************** Write initial temp html file ********************* */
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(tempDirectory + "SIT_"+file_time+".html"), "UTF-8"));
-        try {
-            bw.write(start.toString() +  end.toString());
-        } finally {
-            bw.close();
-        }
-        //Runtime.getRuntime().exec("/usr/bin/chmod 666" + tempDirectory + "SIT_"+file_time+".html" );
-        /* **************** Send file info to PHP page ********************* */
-        String USER_AGENT = "Mozilla/5.0";
-        //String url2 = "http://apollo/mpdf/examples/jasonTest.php";
-        java.net.URL obj = new java.net.URL(pdfConverterURL);
-        java.net.HttpURLConnection con = (java.net.HttpURLConnection) obj.openConnection();
-        ts.append("file name is " + tempDirectory + "SIT_"+file_time+".html\r\n");
-        ts.append("pdfConverterURL is " + pdfConverterURL + "\r\n");
-        //add reuqest header
-        con.setRequestMethod("POST");
-        con.setRequestProperty("User-Agent", USER_AGENT);
-        con.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        String urlParameters = "file=SIT_"+file_time;
-        // Send post request
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(urlParameters);
-        wr.flush();
-        wr.close();
-        int responseCode = con.getResponseCode();
+        /* **************** Write initial temp html file and convert to pdf ********************* */
+        PDFConverter.convertToPdf( tempDirectory, "/usr/bin/chmod 666 ",file_time, start.toString()+ end.toString(), pdfConverterURL);
   } catch(Exception e){SITLog.error(e, "\r\nProblem doing html/pdf conversion for " + thisPage + " in _monthly.jsp\r\n");}
 
   try{  // big outer try
@@ -302,7 +277,7 @@ if ( finalize_on_pay
 
     CallableStatement cs         = null;
     try{
-            //((oracle.jdbc.OracleConnection)connection).setSessionTimeZone(TimeZone.getDefault().getID());
+            ((oracle.jdbc.OracleConnection)connection).setSessionTimeZone(TimeZone.getDefault().getID());
             cs = connection.prepareCall("{ ?=call vit_utilities.get_amount_due_by_month(?,?,?,?) }");
             //cs = conn.prepareCall("{ ?=call vit_utilities.get_amount_due_by_month(client_id=>?,can=>?,year=>?) }");
             cs.registerOutParameter(1,oracle.jdbc.OracleTypes.CURSOR);

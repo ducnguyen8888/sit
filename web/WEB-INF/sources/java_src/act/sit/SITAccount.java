@@ -66,7 +66,8 @@ public class SITAccount
                                                                         {"JUR_ADDRESS1",""},
                                                                         {"JUR_ADDRESS2",""},
                                                                         {"JUR_ADDRESS4",""},
-                                                                        {"JUR_PHONE1",""}
+                                                                        {"JUR_PHONE1",""},
+                                                                        {"TEMP_DIR","/usr2/webtemp/"}
 
                                                                     };
 
@@ -92,6 +93,7 @@ public class SITAccount
     public      String                  JUR_PHONE1                      = null;
 
     public      String                  PHP_SERVER                      = null;
+    public      String                  TEMP_DIR                        = null;
 
 
     public boolean isValid()
@@ -179,6 +181,7 @@ public class SITAccount
         JUR_ADDRESS4                    = getPreference("JUR_ADDRESS4");
         JUR_PHONE1                      = getPreference("JUR_PHONE1");
         PHP_SERVER                      = getPreference("PHP-SERVER");
+        TEMP_DIR                        = getPreference("TEMP_DIR");
     }
     public void loadPreferences() throws Exception
     {

@@ -111,7 +111,7 @@ if (isDefined(client_id)){
               {
                   fos.write(b); 
               }
-             // Runtime.getRuntime().exec( "/usr/bin/chmod 666 /usr2/webtemp/SIT_VIEW_"+file_time+".pdf" );
+             Runtime.getRuntime().exec( "/usr/bin/chmod 666 /usr2/webtemp/SIT_VIEW_"+file_time+".pdf" );
             } catch (Exception e) {
                 SITLog.error(e, "\r\ngetting file_blob bytes in viewForm.jsp\r\n");
             } finally {
