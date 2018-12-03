@@ -23,7 +23,8 @@ public class SITStatement {
             //statement.verifyStatement(conn, "7580", "59460");
             //System.out.println(statement.statementExists + " " + statement.isStatementImageSaved);
             //statement.updateStatementStatus(conn, "7580", "test","99B03996000000000","05","2018","2");
-            statement.writeToSitNotes(conn, "7580","99B03507000000000", "23777","Test 12/02/2018","DN");ds
+            //statement.writeToSitNotes(conn, "7580","99B03507000000000", "23777","Test 12/02/2018","DN");
+            //statement.writeToSitDocumentImages(conn, true,"7580","DN","M-59306-20181203.pdf","C:\\Users\\Duc.Nguyen\\IdeaProjects\\sit\\out\\artifacts\\sit_war_exploded\\temp\\SIT_11282018154532.pdf","59306");
 
 
 
@@ -41,7 +42,16 @@ public class SITStatement {
                             String type,
                             String seq,
                             String description,
-                            String preNote
+                            String preNote,
+                            String tempDir,
+                            String htmlContent,
+                            String emailSubject,
+                            String emailFrom,
+                            String emailTo,
+                            String jurAddress1,
+                            String jurAddress2,
+                            String jurAddress4,
+                            String jurPhone1
                             ){
         this.setDataSource( dataSource )
                 .setClientId( clientId )
@@ -51,8 +61,17 @@ public class SITStatement {
                 .setUser( user )
                 .setStatementType( type )
                 .setSeq( seq )
-                .setDescription(description)
-                .setPreNote(preNote);
+                .setDescription( description )
+                .setPreNote( preNote )
+                .setTempDir( tempDir )
+                .setHtmlContent( htmlContent )
+                .setContactInfo( emailSubject,
+                                 emailFrom,
+                                 emailTo,
+                                 jurAddress1,
+                                 jurAddress2,
+                                 jurAddress4,
+                                 jurPhone1 );
 
         return this;
     }
@@ -79,7 +98,6 @@ public class SITStatement {
         this.statementType = type;
         return  this;
     }
-
 
     public SITStatement setStatus(String status ) {
         this.status = status;
@@ -131,32 +149,78 @@ public class SITStatement {
         return this;
     }
 
+    public SITStatement setTempDir(String tempDir){
+        this.tempDir = tempDir;
+        return  this;
+    }
+
+    public SITStatement setHtmlContent(String content){
+        this.htmlContent = content;
+        return this;
+    }
+
+    public  SITStatement setPdfConverterUrl(String url){
+        this.pdfConverterUrl = url;
+        return  this;
+    }
+
     public SITStatement setFinalizeOnPay(boolean finalizeOnPay ){
         this.finalizeOnPay = finalizeOnPay;
         return this;
     }
 
+    public SITStatement setContactInfo(String emailSubject,
+                                       String emailFrom,
+                                       String emailTo,
+                                       String jurAddress1,
+                                       String jurAddress2,
+                                       String jurAddress4,
+                                       String jurPhone1 ) {
+        this.emailSubject   = emailSubject;
+        this.emailFrom      = emailFrom;
+        this.emailTo        = emailTo;
+        this.jurAddress1    = jurAddress1;
+        this.jurAddress2    = jurAddress2;
+        this.jurAddress4    = jurAddress4;
+        this.jurPhone1      = jurPhone1;
 
-    public      String   clientId              = null;
-    public      String   user                  = null;
-    public      String   statementType         = null;
-    public      String   status                = null;
-    public      String   can                   = null;
-    public      String   month                 = null;
-    public      String   year                  = null;
-    public      String   seq                   = null;
-    public      String   keySeq                = null;
-    public      String   noteSeq               = null;
-    public      String   description           = null;
-    public      String   preNote               = null;
+        return this;
+    }
 
-    public      String  fileName               = null;
-    public      String  filePath               = null;
 
-    protected   boolean  finalizeOnPay         = false;
-    protected   boolean  isStatementImageSaved = false;
-    protected   boolean  statementExists       = false;
-    protected   String   dataSource            = null;
+    public      String      clientId                = null;
+    public      String      user                    = null;
+    public      String      statementType           = null;
+    public      String      status                  = null;
+    public      String      can                     = null;
+    public      String      month                   = null;
+    public      String      year                    = null;
+    public      String      seq                     = null;
+    public      String      keySeq                  = null;
+    public      String      noteSeq                 = null;
+    public      String      description             = null;
+    public      String      preNote                 = null;
+
+    public      String      fileName                = null;
+    public      String      filePath                = null;
+    public      String      tempDir                 = null;
+    public      String      htmlContent             = null;
+    public      String      pdfConverterUrl         = null;
+
+    public      String      emailSubject            = null;
+    public      String      emailFrom               = null;
+    public      String      emailTo                 = null;
+    public      String      jurAddress1             = null;
+    public      String      jurAddress2             = null;
+    public      String      jurAddress4             = null;
+    public      String      jurPhone1               = null;
+
+
+    protected   boolean     finalizeOnPay           = false;
+    protected   boolean     isStatementImageSaved   = false;
+    protected   boolean     statementExists         = false;
+
+    protected   String      dataSource              = null;
 
 
     public SITStatement retrieveStatementInfo() throws  Exception {
@@ -565,7 +629,7 @@ public class SITStatement {
             ps.setString(5, year);
             ps.setString(6, seq);
 
-            if (!(ps.executeUpdate() >0 )) throw new Exception("Unable to update the statement status");
+            if ( !(ps.executeUpdate() >0 ) ) throw new Exception("Unable to update the statement status");
 
 
         } catch (Exception e){
@@ -575,5 +639,46 @@ public class SITStatement {
         return this;
 
     }
+
+    public SITStatement sendConfirmationEmail() throws Exception {
+        try {
+            return sendConfirmationEmail(emailSubject, emailFrom, emailTo, jurAddress1, jurAddress2, jurAddress4, jurPhone1);
+        } catch (Exception e){
+            throw  e;
+        }
+    }
+
+    public SITStatement sendConfirmationEmail(String emailSubject,
+                                                  String emailFrom,
+                                                  String emailTo,
+                                                  String jurAddress1,
+                                                  String jurAddress2,
+                                                  String jurAddress4,
+                                                  String jurPhone1
+    ) throws  Exception{
+        StringBuffer contactInfo = new StringBuffer();
+        try {
+            if ( emailFrom.length() > 0
+                    && emailFrom != null ) {
+                contactInfo.append("<pre>");
+                contactInfo.append("Your " + emailSubject + " has been finalized for acct: " + can + "<br/><br/>");
+                contactInfo.append("<Strong><i>" + jurAddress1 + " " + "TAX OFFICE<br/>");
+                contactInfo.append(jurAddress2 + "<br/>");
+                contactInfo.append(jurAddress4 + "<br/>");
+                contactInfo.append(jurPhone1 + "<br/>");
+                contactInfo.append(emailFrom + "</i></Strong>");
+                contactInfo.append("</pre>");
+
+                act.util.EMail.sendHtml( emailFrom, emailTo, emailSubject, contactInfo.toString() );
+            }
+        } catch (Exception e){
+            throw e;
+        }
+
+        return this;
+
+    }
+
+
 
 }
