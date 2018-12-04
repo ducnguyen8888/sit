@@ -11,27 +11,33 @@ import act.util.*;
 public class MonthlyStatement extends SITStatement {
 
     public static void main(String [] args) throws  Exception{
-            MonthlyStatement monthlyStatement = new MonthlyStatement();
-            try {
-                Connection conn = Connect.open("jdbc:oracle:thin:@ares:1521/actd", "sit_inq", "texas1");
-                monthlyStatement.retrieveAmountDueByMonth(conn, "7580", "99B03507000000000", "09", "2018");
-                System.out.println(monthlyStatement.fakharTotal+ " " + monthlyStatement.fakharMin);
-            } catch (Exception e){
-                throw  e;
-            }
+        SITStatement monthlyStatement = new MonthlyStatement();
+        try {
+            String month = "08";
+            String year = "2018";
+            String description = MonthlyStatement.months[Integer.parseInt("08")] + " " + "2018" + " SALES REPORT - WEB";
+            String preNote = "Monthly Sales Report for "+ month +"/"+ year +" finalized on ";
+            Payments payments = new Payments();
+            monthlyStatement.set("jdbc:oracle:thin:@ares:1521/actd","7580",
+                    "99B03996000000000",month,year,"DN","MONRPT","1",description,preNote,"11282018154532",
+                    "C:/Users/Duc.Nguyen/IdeaProjects/sit/out/artifacts/sit_war_exploded/temp/","Hello SIT 12.04.2018",
+                    "http://localhost:4430","Test","duc.nguyen@lgbs.com","duc.nguyen@lgbs.com","123","test","Test","1234567890")
+                    .setPayments(payments)
+                    .setFinalizeOnPay(true)
+                    .closeStatement();
+
+            System.out.println(payments.payments.get(0).amountDue);
+
+        } catch (Exception e){
+            throw e;
+        }
 
     }
+
     public MonthlyStatement(){ }
-
-    public MonthlyStatement setPayments(Payments payments){
-        this.payments = payments;
-        return this;
-    }
 
     protected String    fakharTotal    = null;
     protected double    fakharMin      = 0.0;
-    protected Payments  payments       = null;
-
 
     public static String months []        = { null , "JAN" , "FEB" , "MAR" , "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
     public static String [] monthsText    = {"", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
@@ -39,6 +45,7 @@ public class MonthlyStatement extends SITStatement {
     public MonthlyStatement retrieveAmountDueByMonth() throws Exception{
         return retrieveAmountDueByMonth(dataSource, clientId, can, month, year);
     }
+
     public MonthlyStatement retrieveAmountDueByMonth(String dataSource,
                                                      String clientId,
                                                      String can,
@@ -112,7 +119,7 @@ public class MonthlyStatement extends SITStatement {
 
     public MonthlyStatement closeStatement() throws  Exception {
         try {
-            PDFConverter.convertToPdf("/usr/bin/chmod 666 ",tempDir, fileName, htmlContent, pdfConverterUrl);
+            PDFConverter.convertToPdf(rootPath, tempDir, fileTime, htmlContent, pdfConverterUrl);
             retrieveStatementInfo();
             verifyStatement();
 
@@ -131,7 +138,7 @@ public class MonthlyStatement extends SITStatement {
                     updateStatementStatus();
                 }
 
-                writeToSitNote();
+                writeToSitNotes();
             }
 
         } catch (Exception e) {

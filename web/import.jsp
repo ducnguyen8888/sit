@@ -249,49 +249,50 @@
                 var line = 0;
                 records.forEach(function(record)
                 {
-                    line++;
+                    if (record.replace(/[\s,]+/g,"") != ""){
+                        line++;
+                        var fields = record.split(",");
 
-                    var fields = record.split(",");
+                        // Probable blank line if only one field
+                        if ( fields.length < 2 )
+                        {
+                            return;
+                        }
 
-                    // Probable blank line if only one field
-                    if ( fields.length < 2 )
-                    {
-                        return;
+                        // Adjust for Heavy Equipment record set to normalize our data.
+                        // Heavy Equipment records exclude model year.
+                        if ( fields.length == 7 )
+                        {
+                            fields.splice(fieldPosition.modelYear,0,"");
+                        }
+
+                        // Switch Sales Type and Purchaser Name fields if needed
+                        // Heavy Equipment CSV import has Type and Purchaser fields switched.
+                        if ( swapSalesTypeColumn )
+                        {
+                            fields.swap(fieldPosition.saleType,fieldPosition.saleType-1);
+                        }
+
+                        // Ignore records with an invalid number of fields...should we report error?
+                        if ( fields.length != 8 )
+                        {
+                            return;
+                        }
+
+                        var row = $("<tr/>")
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":fields[fieldPosition.saleDate]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model",  "value":fields[fieldPosition.modelYear]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":fields[fieldPosition.modelMake]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":fields[fieldPosition.vin]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":fields[fieldPosition.purchaserName]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":fields[fieldPosition.saleType]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":fields[fieldPosition.salePrice]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":fields[fieldPosition.taxAmount]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"calculated", "value":"0"}).prop("readonly","readonly")))
+                                    ;
+
+                        table.append(row);
                     }
-
-                    // Adjust for Heavy Equipment record set to normalize our data.
-                    // Heavy Equipment records exclude model year.
-                    if ( fields.length == 7 )
-                    {
-                        fields.splice(fieldPosition.modelYear,0,"");
-                    }
-
-                    // Switch Sales Type and Purchaser Name fields if needed
-                    // Heavy Equipment CSV import has Type and Purchaser fields switched.
-                    if ( swapSalesTypeColumn )
-                    {
-                        fields.swap(fieldPosition.saleType,fieldPosition.saleType-1);
-                    }
-
-                    // Ignore records with an invalid number of fields...should we report error?
-                    if ( fields.length != 8 )
-                    {
-                        return;
-                    }
-
-                    var row = $("<tr/>")
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":fields[fieldPosition.saleDate]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model",  "value":fields[fieldPosition.modelYear]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":fields[fieldPosition.modelMake]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":fields[fieldPosition.vin]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":fields[fieldPosition.purchaserName]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":fields[fieldPosition.saleType]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":fields[fieldPosition.salePrice]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":fields[fieldPosition.taxAmount]})))
-                                .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"calculated", "value":"0"}).prop("readonly","readonly")))
-                                ;
-
-                    table.append(row);
                 });
 
 

@@ -11,25 +11,8 @@ import com.sun.org.apache.xml.internal.resolver.readers.ExtendedXMLCatalogReader
 /**
  * Created by Duc.Nguyen on 11/28/2018.
  */
-public class SITStatement {
+public abstract class SITStatement {
 
-    public static void main(String [] args ) throws Exception {
-        try {
-            Connection conn = Connect.open("jdbc:oracle:thin:@ares:1521/actd", "sit_inq", "texas1");
-            SITStatement statement = initialContext();
-            //statement.retrieveStatementInfo(conn,"7580","99B03507000000000","11","2018","1");
-            //System.out.println(statement.status + " " + statement.keySeq + " " + statement.noteSeq );
-            //statement.writeToSitDocuments(conn,true,"7580","Test","99B03507000000000","1","2018","11","59460","NOV 2018 SALES REPORT - WEB","MONRPT");
-            //statement.verifyStatement(conn, "7580", "59460");
-            //System.out.println(statement.statementExists + " " + statement.isStatementImageSaved);
-            //statement.updateStatementStatus(conn, "7580", "test","99B03996000000000","05","2018","2");
-            //statement.writeToSitNotes(conn, "7580","99B03507000000000", "23777","Test 12/02/2018","DN");
-            //statement.writeToSitDocumentImages(conn, true,"7580","DN","M-59306-20181203.pdf","C:\\Users\\Duc.Nguyen\\IdeaProjects\\sit\\out\\artifacts\\sit_war_exploded\\temp\\SIT_11282018154532.pdf","59306");
-
-
-
-        } catch (Exception e){ throw e ; }
-    }
 
     public SITStatement(){}
 
@@ -43,8 +26,10 @@ public class SITStatement {
                             String seq,
                             String description,
                             String preNote,
+                            String fileTime,
                             String tempDir,
                             String htmlContent,
+                            String pdfConverterUrl,
                             String emailSubject,
                             String emailFrom,
                             String emailTo,
@@ -63,20 +48,21 @@ public class SITStatement {
                 .setSeq( seq )
                 .setDescription( description )
                 .setPreNote( preNote )
+                .setFileTime( fileTime )
                 .setTempDir( tempDir )
                 .setHtmlContent( htmlContent )
+                .setPdfConverterUrl( pdfConverterUrl )
                 .setContactInfo( emailSubject,
                                  emailFrom,
                                  emailTo,
                                  jurAddress1,
                                  jurAddress2,
                                  jurAddress4,
-                                 jurPhone1 );
+                                 jurPhone1 )
+                .setFileName()
+                .setFilePath();
 
         return this;
-    }
-    public static SITStatement initialContext(){
-        return new SITStatement();
     }
 
     public SITStatement setDataSource(String dataSource ){
@@ -109,8 +95,8 @@ public class SITStatement {
         return this;
     }
 
-    public SITStatement setKeySeq(String keySeq ){
-        this.keySeq = keySeq;
+    public SITStatement setFileTime(String fileTime) {
+        this.fileTime = fileTime;
         return this;
     }
 
@@ -139,12 +125,17 @@ public class SITStatement {
         return  this;
     }
 
-    public SITStatement setFileName(String type, String keySeq, String fileTime){
-        this.fileName = type + keySeq + "-" + fileTime +".pdf";
+    public SITStatement setRootPath(String rootPath ) {
+        this.rootPath = rootPath;
         return this;
     }
 
-    public SITStatement setFilePath(String tempDir, String fileTime){
+    public SITStatement setFileName(){
+        this.fileName = statementType.charAt(0)+ "-"+ keySeq + "-" + fileTime +".pdf";
+        return this;
+    }
+
+    public SITStatement setFilePath(){
         this.filePath = tempDir + "SIT_" + fileTime + ".pdf";
         return this;
     }
@@ -168,6 +159,12 @@ public class SITStatement {
         this.finalizeOnPay = finalizeOnPay;
         return this;
     }
+
+    public SITStatement setPayments(Payments payments){
+        this.payments = payments;
+        return this;
+    }
+
 
     public SITStatement setContactInfo(String emailSubject,
                                        String emailFrom,
@@ -201,9 +198,11 @@ public class SITStatement {
     public      String      description             = null;
     public      String      preNote                 = null;
 
-    public      String      fileName                = null;
-    public      String      filePath                = null;
     public      String      tempDir                 = null;
+    public      String      fileTime                = null;
+    public      String      filePath                = null;
+    public      String      fileName                = null;
+    public      String      rootPath                = null;
     public      String      htmlContent             = null;
     public      String      pdfConverterUrl         = null;
 
@@ -215,7 +214,7 @@ public class SITStatement {
     public      String      jurAddress4             = null;
     public      String      jurPhone1               = null;
 
-
+    protected   Payments    payments                = null;
     protected   boolean     finalizeOnPay           = false;
     protected   boolean     isStatementImageSaved   = false;
     protected   boolean     statementExists         = false;
@@ -475,11 +474,11 @@ public class SITStatement {
 
     }
 
-    public SITStatement writeToSitNote() throws  Exception {
-        return writeToSitNote(dataSource, clientId,  can, noteSeq, preNote, user);
+    public SITStatement writeToSitNotes() throws  Exception {
+        return writeToSitNotes(dataSource, clientId,  can, noteSeq, preNote, user);
     }
 
-    public SITStatement writeToSitNote(String dataSource,
+    public SITStatement writeToSitNotes(String dataSource,
                                        String  clientId,
                                        String can,
                                        String noteSeq,
@@ -680,5 +679,6 @@ public class SITStatement {
     }
 
 
+    public abstract SITStatement closeStatement() throws Exception;
 
 }
