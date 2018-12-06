@@ -13,6 +13,9 @@
         - Updated code, the import request won't be executed if the users have the "view only" right
     DN - 10/26/2018 - PRC 208710
         - Updated the functionality "Import Records" by using web service
+    DN - 12/06/2018 - PRC 210868
+        - Updated code to ignore the comma if it is in the data
+        - Update code to stop importing the data if encountering a row with null values
 --%>
 <%@ include file="_configuration.inc"%>
 <% 
@@ -87,6 +90,7 @@
     .error, .taxError { background-color: #FED0D0; }
     .errorText { color: red; }
     #myButton button { margin-top: 15px; display: none; }
+    #myButton #btnSubmitImported {display: none;}
     #submitError { display: inline-block; margin-left: 25px; color: #b70a0a; font-weight: bold; }
     th { padding: 8px; }
 
@@ -247,12 +251,21 @@
 
                 // Process each record
                 var line = 0;
-                records.forEach(function(record)
+                // PRC 210868 - 12/06/2018
+                // Used the regular expression "[\s,]+/g,"")" to stop importing the data if encountering a row with null values
+                // Used the regular expression "(".*?"|[^",\s]+)(?=\s*,|\s*$)" to ignore a comma in the data
+                for ( var i=0; i< records.length; i++)
                 {
+                    if ( line === 0 ) {
+                        $("#btnSubmitImported").css("display", "none");
+                    } else {
+                        $("#btnSubmitImported").css("display", "inline-block");
+                    }
+                    var record = records[i];
+                    if (record.replace(/[\s,]+/g,"") == ""){ break;}
                     if (record.replace(/[\s,]+/g,"") != ""){
                         line++;
-                        var fields = record.split(",");
-
+                        var fields = record.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
                         // Probable blank line if only one field
                         if ( fields.length < 2 )
                         {
@@ -280,20 +293,20 @@
                         }
 
                         var row = $("<tr/>")
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":fields[fieldPosition.saleDate]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model",  "value":fields[fieldPosition.modelYear]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":fields[fieldPosition.modelMake]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":fields[fieldPosition.vin]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":fields[fieldPosition.purchaserName]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":fields[fieldPosition.saleType]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":fields[fieldPosition.salePrice]})))
-                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":fields[fieldPosition.taxAmount]})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"sale",  "value":sanitize(fields[fieldPosition.saleDate])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"model", "value":sanitize(fields[fieldPosition.modelYear])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"make",  "value":sanitize(fields[fieldPosition.modelMake])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"vin",   "value":sanitize(fields[fieldPosition.vin])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"name",  "value":sanitize(fields[fieldPosition.purchaserName])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"type",  "value":sanitize(fields[fieldPosition.saleType])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"price", "value":sanitize(fields[fieldPosition.salePrice])})))
+                                    .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"tax",   "value":sanitize(fields[fieldPosition.taxAmount])})))
                                     .append($("<td/>").append($("<input/>").attr({"type":"text", "name":"calculated", "value":"0"}).prop("readonly","readonly")))
                                     ;
 
                         table.append(row);
                     }
-                });
+                };
 
 
                 // //////////////
@@ -555,6 +568,10 @@
             }
 
             return false;
+        }
+
+        function sanitize(value){
+            return value.replace(/[",]+/g,"")
         }
 
         $operationWarning.dialog({
