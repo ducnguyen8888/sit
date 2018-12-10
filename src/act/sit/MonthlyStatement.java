@@ -139,6 +139,7 @@ public class MonthlyStatement extends SITStatement {
                 }
 
                 writeToSitNotes();
+                sendConfirmationEmail();
             }
 
         } catch (Exception e) {

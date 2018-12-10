@@ -251,7 +251,7 @@ public abstract class SITStatement {
         try ( PreparedStatement ps = conn.prepareStatement(
                                             " with statement(clientId, can, month, year, seq ) as (select ?,?,?,?,? from dual)"
                                                     + " select coalesce("
-                                                    + "                 (select key_seq from sit_documents"
+                                                    + "                 (select max(key_seq) from sit_documents"
                                                     + "                     where client_id = statement.clientId"
                                                     + "                             and key_id  = statement.can"
                                                     + "                             and key_year = statement.year"

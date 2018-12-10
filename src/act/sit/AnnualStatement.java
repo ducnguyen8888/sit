@@ -21,11 +21,11 @@ public class AnnualStatement extends SITStatement {
             Payments payments = new Payments();
                 annualStatement.set("jdbc:oracle:thin:@ares:1521/actd","7580",
                                     "99B03507000000000",month,year,"DN","ANNDEC","1",description,preNote,"11282018154532",
-                                    "C:/Users/Duc.Nguyen/IdeaProjects/sit/out/artifacts/sit_war_exploded/temp/","Hello SIT 12.06.2018",
+                                    "C:/Users/Duc.Nguyen/IdeaProjects/sit/out/artifacts/sit_war_exploded/temp/","Hello SIT 12.07.2018",
                                     "http://localhost:4430","Test","duc.nguyen@lgbs.com","duc.nguyen@lgbs.com","123","test","Test","1234567890");
                 annualStatement.setImportedRecords(true)
-                        .setMontlyFormType("50-260")
-                        .setSalesInfo("1","2","3","4","","1000","2000","3000","","4000")
+                        .setMonthlyFormType("50-260")
+                        .setSalesInfo("9","8","7","6","","9000","8000","7000","","6000")
                         .closeStatement();
         } catch (Exception e ){
             throw  e;
@@ -65,7 +65,7 @@ public class AnnualStatement extends SITStatement {
         return this;
     }
 
-    public AnnualStatement setMontlyFormType(String type) {
+    public AnnualStatement setMonthlyFormType(String type) {
         this.monthlyFormType = type;
         return  this;
     }

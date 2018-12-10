@@ -13,14 +13,12 @@
 <%
 
 
-  java.text.DateFormat dateFormat   = new java.text.SimpleDateFormat("MMddyyyyHHmmss");
-  java.util.Calendar cal            = java.util.Calendar.getInstance();
-  String file_time                  = dateFormat.format(cal.getTime()); //a-key_seq-timestamp
-  StringBuffer contactInfo          = new StringBuffer();
+    java.text.DateFormat dateFormat   = new java.text.SimpleDateFormat("MMddyyyyHHmmss");
+    java.util.Calendar cal            = java.util.Calendar.getInstance();
+    String file_time                  = dateFormat.format(cal.getTime()); //a-key_seq-timestamp
+    StringBuffer contactInfo          = new StringBuffer();
   
-  SITUser    sitUser                = sitAccount.getUser();
-
-  
+    SITUser    sitUser                = sitAccount.getUser();
 
   try{
         /* **************** Write initial temp html file ********************* */
@@ -47,7 +45,7 @@
 
         String urlParameters = "file=SIT_"+file_time;
 
-       
+
         // Send post request
         con.setDoOutput(true);
         DataOutputStream wr = new DataOutputStream(con.getOutputStream());
@@ -64,7 +62,7 @@
  report_seq = 1; // sit_sales_master
   int key_seq = 0; // sit_documents
   boolean notStarted = true;
-  
+
   String form_annual = "";
   int dealer_type = 0;
   if ("50-246".equals(form_name)) {form_annual = "50_244"; dealer_type = 1; } else // 1 motor vehicle
@@ -82,14 +80,14 @@
 
 
       try { // check to see if this has been started
-                  
+
           ps = connection.prepareStatement(
                                 "select count(*)"
                               + "   from sit_sales_master "
                               + " where client_id=?"
                               + "       and can=?"
                               + "       and year=?"
-                              + "       and month=13");                                           
+                              + "       and month=13");
           ps.setString(1, client_id);
           ps.setString(2, request.getParameter("can"));
           ps.setString(3, request.getParameter("year"));
@@ -97,7 +95,7 @@
           rs.next();
           notStarted = (rs.getInt(1) == 0);
          // end.append("notStarted is " + notStarted + "<br>");
-      } catch (Exception e) { 
+      } catch (Exception e) {
           SITLog.error(e, "\r\nProblem getting record count for " + thisPage + " in _yearly.jsp\r\n");
       } finally {
           try { rs.close(); } catch (Exception e) { }
@@ -105,7 +103,7 @@
           try { ps.close(); } catch (Exception e) { }
           ps = null;
       } // check to see if this has been started
-      
+
       if(notStarted){
         // get max(report_seq) + 1 and start one
 
@@ -123,7 +121,7 @@
           //    try { ps.close(); } catch (Exception e) { }
           //    ps = null;
           //}// try get report_seq and status
-          
+
           //PRC 198408 - 08/07/2018 - login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
           try { // create new record
                   ps = connection.prepareStatement(
@@ -140,25 +138,25 @@
                                   + "   opercode,"
                                   + "   chngdate) "
                                   + "VALUES (?, ?, ?, ?, ?, 'O', ?, ?, 'N', ?, sysdate) ");
-                                  
+
                   ps.setString  (1, client_id);
                   ps.setString  (2, request.getParameter("can"));
                   ps.setString  (3, request.getParameter("year"));
-                  ps.setInt     (4, 13); // month will be 0 
+                  ps.setInt     (4, 13); // month will be 0
                   ps.setInt     (5, report_seq);
                   ps.setInt     (6, dealer_type);
                   ps.setString  (7, form_annual);
                   ps.setString  (8, sitUser.getUserName());
                   ps.executeUpdate();
                   //end.append("inserted new sales master record");
-          } catch (Exception e) { 
+          } catch (Exception e) {
             SITLog.error(e, "\r\nProblem inserting into sit_sales_master for " + thisPage + " in _yearly.jsp\r\n");
           } finally {
               try { if (rs != null) rs.close(); } catch (Exception e) { sb.append("Exception in first rs.close: " + e.toString() + "<br>");}
               rs = null;
               try {if (ps != null) ps.close(); } catch (Exception e) {sb.append("Exception in first ps.close: " + e.toString() + "<br>"); }
               ps = null;
-          }// try create new record 
+          }// try create new record
 
 
       } else { // if it's already been started
@@ -172,7 +170,7 @@
                               + "       and can=?"
                               + "       and year=?"
                               + "       and month=13 ");
-                              
+
               ps.setString (1, client_id);
               ps.setString (2, request.getParameter("can"));// /request.getParameter("pw")
               ps.setString (3, request.getParameter("year"));
@@ -197,7 +195,7 @@
 
       }
 
-      
+
       if (! "C".equals(report_status) ){
 
         try{ // get sit_documents key_seq max+1
@@ -217,7 +215,7 @@
             try { ps.close(); } catch (Exception e) { }
             ps = null;
         }// try get sit_documents key_seq max+1
- 
+
 
        // PRC 198408 - 08/07/2018 - login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
        try{ // write to sit_document_images
@@ -230,7 +228,7 @@
                               + "   access_count,"
                               + "   opercode)"
                               + " VALUES (?,?,?,?,?,UPPER(?) )" );
-                              
+
             //java.text.DateFormat dateFormat = new java.text.SimpleDateFormat("MMddyyyyHHmmss");
             //java.util.Calendar cal = java.util.Calendar.getInstance();
             String file_name = "A-" + key_seq + "-" + file_time + ".pdf"; //a-key_seq-timestamp
@@ -254,7 +252,7 @@
             } else {
               SITLog.info("\r\nProblem inserting blob for " + thisPage + " in _yearly.jsp\r\n");
             }
-            
+
         } catch (Exception e) {
             SITLog.error(e, "\r\nProblem inserting blob for " + thisPage + " in _yearly.jsp\r\n");
         } finally {
@@ -263,7 +261,7 @@
             try { ps.close(); } catch (Exception e) { }
             ps = null;
         }// try write to sit_document_images
-        
+
        // PRC 198408 - 08/07/2018 - login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
        try{ // write to sit_documents
             ps = connection.prepareStatement(""
@@ -281,7 +279,7 @@
                       + "   opercode)"
                       + " VALUES "
                       + "   (?,'FINALIZED: ' || sysdate,?,?,?,?,?,?,?,?,UPPER(?) )" );
-                      
+
             ps.setString    (1, client_id); //client_id
             ps.setString    (2, description); //description
             ps.setString    (3, "ANNDEC"); //document_type
@@ -307,7 +305,7 @@
             try { ps.close(); } catch (Exception e) { }
             ps = null;
         }// try write to sit_documents
-        
+
        //PRC 198408 - 08/07/2018 - login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
        try{ // update report_status
             // PRC 195488 - Updated query to save the breakdown sales and breakdown sales amounts in sit_sales_master table
@@ -333,21 +331,21 @@
                 ps.setString(3, dsCount);
                 ps.setString(4, ssCount);
                 ps.setString(5, rsCount);
-                
+
                 ps.setString(6, invAmount);
                 ps.setString(7, fsAmount);
                 ps.setString(8, dsAmount);
                 ps.setString(9, ssAmount);
                 ps.setString(10, rsAmount);
-                
+
                 ps.setString(11, sitUser.getUserName() );
-                
+
                 ps.setString(12, client_id);
                 ps.setString(13, request.getParameter("can"));
                 ps.setInt   (14, 13);
                 ps.setString(15, request.getParameter("year"));
-                
-                
+
+
             } else {
                 ps = connection.prepareStatement(
                                     "update sit_sales_master"
@@ -359,14 +357,14 @@
                                   + "       and can=?"
                                   + "       and month=?"
                                   + "       and year=?");
-                                  
+
                 ps.setString    (1, sitUser.getUserName() );
                 ps.setString    (2, client_id);
                 ps.setString    (3, request.getParameter("can"));
                 ps.setInt       (4, 13);
                 ps.setString    (5, request.getParameter("year"));
             }
-            
+
             //ps.setInt(5, report_seq);
 
             //end.append("report_seq: " + report_seq + "<br>");
@@ -376,13 +374,13 @@
             //end.append("month: " + request.getParameter("month") + "<br>");
             //end.append("year: " + request.getParameter("year") + "<br>");
             //end.append("form_name: " + form_name + "<br>");
-            
+
             if( ps.executeUpdate() > 0){
               //end.append("record updated<br>");
             } else {
               //end.append("problem inserting into sit_documents");
             }
-            
+
         } catch (Exception e) {
             SITLog.error(e, "\r\nProblem setting report_status for " + thisPage + " in _yearly.jsp\r\n");
         } finally {
@@ -409,7 +407,7 @@
           String preNote= "Yearly Sales Report for %d (%s Sales) finalized on ";
         String user_name = "WEB-" + session.getAttribute("username").toString();
         user_name = user_name.substring(0, Math.min(user_name.length(), 30));
-         
+
         // PRC 198408 - 08/07/2018 - login useranme will be stored into column 'opercode' for any inserts and updates. If the opercode value is 'LOAD', nothing will change
         try{ // get noteseq nextval
             ps = connection.prepareStatement(
@@ -423,7 +421,7 @@
                               + "   opercode,"
                               + "   chngdate) "
                               + " VALUES (?,?,?,  sysdate, ? || sysdate, ?, UPPER(?), sysdate)");
-                              
+
             ps.setString(1, client_id); //client_id
             ps.setString(2, request.getParameter("can")); //can
             ps.setInt(3, noteseq); //noteseq
@@ -446,12 +444,12 @@
             ps = null;
         }// try update report_status
 
-      
+
 		String emailFrom = nvl(configuration.getProperty("JUR_EMAIL_ADDRESS"),sitAccount.JUR_EMAIL_ADDRESS);
         if(isDefined(emailFrom)){
 
           // Send email
-          try { 
+          try {
             //String emailFrom = "jason.cook@lgbs.com";
             String emailSubject = request.getParameter("year") + " ANNUAL REPORT";
             //String emailBody = "Your " + emailSubject + " has been finalized for acct: " + request.getParameter("can") + ".";
@@ -484,5 +482,5 @@
           try { connection.close(); } catch (Exception e) { }
           connection = null;
       }
-  }// outer try  
+  }// outer try
 %>

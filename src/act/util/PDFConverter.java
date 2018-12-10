@@ -13,7 +13,7 @@ public class PDFConverter {
         try {
 
 
-            PDFConverter.convertToPdf("C:/Users/Duc.Nguyen/IdeaProjects/sit/out/artifacts/sit_war_exploded/temp/","","temp","Hello Duc","http://localhost:4430");
+            PDFConverter.convertToPdf("","C:\\Users\\Duc.Nguyen\\IdeaProjects\\sit\\out\\artifacts\\sit_war_exploded\\temp\\","temp","Hello Duc","http://localhost:4430");
 
         } catch (Exception e){
             System.out.println(e.toString());
